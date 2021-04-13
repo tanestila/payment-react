@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "../../redux/auth/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/modules/auth/auth";
 
 // async function loginUser(credentials) {
 //   // if (credentials) return { accessToken: "sds" };
@@ -8,13 +8,14 @@ import { login } from "../../redux/auth/auth";
 // }
 
 export default function Login() {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const dispatch = useDispatch();
+  const error = useSelector((state) => state.auth.error);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(login({ username, password }));
+    dispatch(login({ username, password, type: "login-password" }));
     // const token = await loginUser({ username, password });
     // login(token);
   };
@@ -27,11 +28,12 @@ export default function Login() {
       </label>
       <label>
         <p>Password</p>
-        <input type="password" onChange={(e) => setPassword(e.target.value)} />
+        <input type="text" onChange={(e) => setPassword(e.target.value)} />
       </label>
       <div>
         <button type="submit">Submit</button>
       </div>
+      {error && <div>{error}</div>}
     </form>
   );
 }

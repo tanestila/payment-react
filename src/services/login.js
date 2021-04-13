@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const authApiUrl = `http://localhost:8080/api/v1/auth`;
+// const managementApiUrl = `${config.node.host}/api/v1/management`;
 class AuthService {
   constructor() {
-    this.instance = axios.create({ baseURL: authApiUrl });
+    // this.instance = axios.create({ baseURL: authApiUrl });
   }
 
   async login(credentials) {
