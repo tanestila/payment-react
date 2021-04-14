@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../redux/modules/auth/auth";
+import { login } from "../../redux/modules/auth/actions";
 
 // async function loginUser(credentials) {
 //   // if (credentials) return { accessToken: "sds" };
@@ -12,6 +12,7 @@ export default function Login() {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const error = useSelector((state) => state.auth.error);
+  const loading = useSelector((state) => state.auth.loading);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +35,7 @@ export default function Login() {
         <button type="submit">Submit</button>
       </div>
       {error && <div>{error}</div>}
+      {loading && <div>loading</div>}
     </form>
   );
 }

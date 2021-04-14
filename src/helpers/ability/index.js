@@ -6,6 +6,7 @@ const ability = new Ability([]);
 
 let currentAuth;
 store.subscribe(() => {
+  console.log("UPDATE PRIV");
   const prevAuth = currentAuth;
   currentAuth = store.getState().auth.permissions;
   if (prevAuth !== currentAuth) {

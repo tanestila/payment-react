@@ -1,25 +1,27 @@
 import axios from "axios";
+import {
+  successResponseInterceptor,
+  tokenRefreshInterceptor,
+} from "./interceptor";
 
 const authApiUrl = `http://localhost:8080/api/v1/auth`;
-class AuthService {
-  constructor() {
-    this.instance = axios.create({ baseURL: authApiUrl });
-  }
 
-  async login(credentials) {
-    const response = await this.instance.post("/login", credentials, {
-      withCredentials: true,
-    });
-    return response.data;
-  }
+const authService = () => {
+  const instance = axios.create({ baseURL: authApiUrl });
+  instance.interceptors.response.use(
+    successResponseInterceptor,
+    tokenRefreshInterceptor
+  );
+  // Create instance
 
-  logout() {
-    return { message: "success" };
-  }
+  // Set the AUTH token for any request
+  // instance.interceptors.request.use(function (config) {
+  //   const token = localStorage.getItem('token');
+  //   config.headers.Authorization =  token ? `Bearer ${token}` : '';
+  //   return config;
+  // });
 
-  getToken() {
-    return this.instance.get("/get_token", { withCredentials: true });
-  }
-}
+  return instance;
+};
 
-export default new AuthService();
+export default authService();
