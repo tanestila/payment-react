@@ -4,7 +4,8 @@ const initialState = {
   accessToken: "",
   refreshToken: "",
   isLoggedIn: false,
-  credentialsExpired: false,
+  isCredentialsExpired: false,
+  isCredentialsExpires: false,
   isInitialized: false,
   isFirstTimeLogin: false,
   username: "",
@@ -12,6 +13,7 @@ const initialState = {
   permissions: [],
   error: "",
   loading: false,
+  otpAuth: false,
 };
 
 export function authReducer(state = initialState, action) {
@@ -33,7 +35,10 @@ export function authReducer(state = initialState, action) {
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
         username: action.username,
-        credentials_expired: action.credentials_expired,
+        isCredentialsExpired: action.credentials_expired,
+        isCredentialsExpires: action.credentials_expire_after ? true : false,
+        isFirstTimeLogin: action.first_time_login,
+        otpAuth: false,
       };
 
     case types.SET_PRIVILEGES:
@@ -55,6 +60,28 @@ export function authReducer(state = initialState, action) {
       return {
         ...state,
         loading: action.loading,
+      };
+
+    case types.LOGOUT:
+      return {
+        ...state,
+        accessToken: "",
+        refreshToken: "",
+        isLoggedIn: false,
+        isCredentialsExpired: false,
+        isCredentialsExpires: false,
+        isInitialized: true,
+        isFirstTimeLogin: false,
+        username: "",
+        loginGuid: "",
+        permissions: [],
+        error: "",
+      };
+
+    case types.OTP_AUTH:
+      return {
+        ...state,
+        otpAuth: true,
       };
 
     default:

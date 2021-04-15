@@ -13,7 +13,7 @@ store.subscribe(() => {
     ability.update(defineRulesFor(currentAuth));
   }
 });
-//["READ_CHARGEPERIODICDETAIL
+
 function defineRulesFor(permissions) {
   return permissions.map((permission) => {
     let [action, subject] = permission.split("_");

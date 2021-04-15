@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/modules/auth/actions";
 import { getMerchants } from "../../redux/modules/merchant/actions";
 import { AbilityContext, Can } from "../Common/Can";
 
@@ -11,6 +12,10 @@ export default function Dashboard() {
   useEffect(() => {
     dispatch(getMerchants());
   }, []);
+
+  function handleClickLogout() {
+    dispatch(logout());
+  }
 
   const username = useSelector((state) => state.auth.username);
   return (
@@ -31,8 +36,7 @@ export default function Dashboard() {
       <Can do="REPORT" on="ORDERDETAIL">
         ...
       </Can>
-      {console.log(ability.A)}
-      {console.log(ability.can("READ", "MERCHANT"))}
+      <button onClick={handleClickLogout}>Logout</button>
     </>
   );
 }

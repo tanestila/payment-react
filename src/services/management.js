@@ -7,24 +7,7 @@ import {
 
 const managementApiUrl = `http://localhost:8080/api/v1/management`;
 
-// class managementService {
-//   constructor() {
-//     this.instance = axios.create({ baseURL: managementApiUrl });
-//     this.instance.defaults.headers.common["Authorization"] = store.getState()
-//       .auth.accessToken
-//       ? `Bearer ${store.getState().auth.accessToken}`
-//       : undefined;
-//     this.instance.interceptors.response.use(
-//       successResponseInterceptor,
-//       tokenRefreshInterceptor
-//     );
-//   }
-// }
-
-// export default new managementService();
-
 const instance = axios.create({ baseURL: managementApiUrl });
-console.log(store.getState().auth);
 instance.defaults.headers.common["Authorization"] = store.getState().auth
   .accessToken
   ? `Bearer ${store.getState().auth.accessToken}`
@@ -36,7 +19,6 @@ instance.interceptors.response.use(
 
 let currentAuth;
 store.subscribe(() => {
-  console.log("UPDATE axios");
   const prevAuth = currentAuth;
   currentAuth = store.getState().auth.accessToken;
   if (prevAuth !== currentAuth) {

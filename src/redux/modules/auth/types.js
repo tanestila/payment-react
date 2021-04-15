@@ -4,4 +4,6 @@ export const types = {
   INIT_APP: "auth/INIT_APP",
   SET_PRIVILEGES: "auth/SET_PRIVILEGES",
   SET_LOADING: "auth/SET_LOADING",
+  LOGOUT: "auth/LOGOUT",
+  OTP_AUTH: "auth/OTP_AUTH",
 };

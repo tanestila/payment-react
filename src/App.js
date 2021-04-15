@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Dashboard from "./Components/Dashboard/Dashboard";
@@ -11,8 +11,8 @@ function App() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const isFirstTimeLogin = useSelector((state) => state.auth.isFirstTimeLogin);
-  const credentialsExpired = useSelector(
-    (state) => state.auth.credentialsExpired
+  const isCredentialsExpired = useSelector(
+    (state) => state.auth.isCredentialsExpired
   );
   const isInitialized = useSelector((state) => state.auth.isInitialized);
 
@@ -22,7 +22,7 @@ function App() {
 
   if (!isInitialized) return <div>loading</div>;
   if (!isLoggedIn) return <Login />;
-  if (true || credentialsExpired) return <ExpiredPassword />;
+  if (isFirstTimeLogin || isCredentialsExpired) return <ExpiredPassword />;
   return (
     <>
       <BrowserRouter>
