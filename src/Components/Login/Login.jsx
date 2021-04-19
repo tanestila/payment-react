@@ -1,51 +1,94 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../redux/modules/auth/actions";
+import background from "../../assets/img/background.png";
+import logo from "../../assets/img/login-logo.svg";
+import { Link } from "react-router-dom";
+import PasswordInputLogin from "../Common/inputs/PasswordInputLogin";
+import LoginInput from "../Common/inputs/LoginInput";
 
 export default function Login() {
   const dispatch = useDispatch();
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-  const [otp, setOtp] = useState();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const error = useSelector((state) => state.auth.error);
   const loading = useSelector((state) => state.auth.loading);
   const otpAuth = useSelector((state) => state.auth.otpAuth);
+  const status = useSelector((state) => state.auth.status);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     let data;
-    if (otp) data = { otp };
+    if (otpAuth) data = { otp };
     else data = { username, password };
     dispatch(login(data));
   };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      {!otpAuth ? (
-        <>
-          <label>
-            <p>Username</p>
-            <input type="text" onChange={(e) => setUsername(e.target.value)} />
-          </label>
-          <label>
-            <p>Password</p>
-            <input type="text" onChange={(e) => setPassword(e.target.value)} />
-          </label>
-        </>
-      ) : (
-        <>
-          <label>
-            <p>OTP</p>
-            <input type="text" onChange={(e) => setOtp(e.target.value)} />
-          </label>
-        </>
-      )}
-      <div>
-        <button type="submit">Submit</button>
-      </div>
+  function validateForm() {
+    if (!otpAuth) return username.length > 0 && password.length > 0;
+    else return username.length > 0 && password.length > 0 && otp.length > 0;
+  }
 
-      {error && <div>{error}</div>}
-      {loading && <div>loading</div>}
-    </form>
+  return (
+    <div className="login-page">
+      <form onSubmit={handleSubmit}>
+        <div className="login-container">
+          <div
+            className="login-image"
+            style={{ backgroundImage: `url(${background})` }}
+          >
+            <img className="logo" src={logo} alt="logo" />
+          </div>
+          <div className="form">
+            <form autoComplete="off">
+              <p className="header-login">Login</p>
+              {!otpAuth ? (
+                <>
+                  <LoginInput onChange={setUsername} value={username} />
+                  <PasswordInputLogin onChange={setPassword} value={password} />
+                  <div>
+                    <Link className="link" to={"/forgot"} tabIndex="4">
+                      <span>Password Recovery</span>
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="otp-status">{status}</p>
+                  <PasswordInputLogin
+                    onChange={setOtp}
+                    value={otp}
+                    placeholder="Verification code"
+                  />
+                </>
+              )}
+              <SubmitButton
+                loading={loading}
+                onSubmit={handleSubmit}
+                validateForm={validateForm}
+              />
+              {error && <p className="access-denied">{error}</p>}
+            </form>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function SubmitButton({ loading, onSubmit, validateForm }) {
+  return loading ? (
+    <button className="button-submit loading" disabled>
+      loading
+    </button>
+  ) : (
+    <button
+      className="button-submit"
+      onClick={onSubmit}
+      disabled={!validateForm()}
+    >
+      LOGIN
+    </button>
   );
 }

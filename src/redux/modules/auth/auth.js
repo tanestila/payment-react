@@ -11,9 +11,11 @@ const initialState = {
   username: "",
   loginGuid: "",
   permissions: [],
+  role: "",
   error: "",
   loading: false,
   otpAuth: false,
+  status: "",
 };
 
 export function authReducer(state = initialState, action) {
@@ -47,6 +49,7 @@ export function authReducer(state = initialState, action) {
         isAdmin: action.isAdmin,
         permissions: action.permissions,
         loginGuid: action.loginGuid,
+        role: action.role,
       };
 
     case types.LOGIN_FAIL:
@@ -82,6 +85,7 @@ export function authReducer(state = initialState, action) {
       return {
         ...state,
         otpAuth: true,
+        status: action.status,
       };
 
     default:

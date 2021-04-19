@@ -4,18 +4,26 @@ import publicKey from "../../../config/publicKey";
 import { loginAPI } from "../../../services/queries/management/login";
 import { types } from "./types";
 
-const getPermissions = async (accessToken) => {
+const getPermissions = async (token) => {
   const { data } = await loginAPI.getPrivilegesByLogin(
-    getLoginGuid(accessToken)
+    token.userPayload.loginGuid
   );
   return data;
 };
 
-const getLoginGuid = (accessToken) => {
-  const token = jwt.decode(accessToken, publicKey, {
-    algorithm: "RS256",
-  });
-  return token.userPayload.loginGuid;
+const getRole = (isAdmin, token) => {
+  let role = "";
+  if (isAdmin) {
+    role = "admin";
+  }
+  if (token.userPayload && token.userPayload.partner) {
+    role = "partner";
+  } else if (token.userPayload && token.userPayload.group) {
+    role = "group";
+  } else if (token.userPayload && token.userPayload.merchant) {
+    role = "merchant";
+  }
+  return role;
 };
 
 export const login = (credentials) => async (dispatch) => {
@@ -36,18 +44,24 @@ export const login = (credentials) => async (dispatch) => {
         username: data.username,
         credentials_expired: data.credentials_expired,
         credentials_expire_after: data.credentials_expire_after,
-        first_time_login: true,
+        first_time_login: data.first_time_login,
       });
-      const { isAdmin, privileges } = await getPermissions(data.accessToken);
+      const token = jwt.decode(data.accessToken, publicKey, {
+        algorithm: "RS256",
+      });
+      const { isAdmin, privileges } = await getPermissions(token);
+
       dispatch({
         type: types.SET_PRIVILEGES,
         isAdmin,
         permissions: privileges,
-        loginGuid: getLoginGuid(data.accessToken),
+        loginGuid: token.userPayload.loginGuid,
+        role: getRole(isAdmin, token),
       });
     } else {
       dispatch({
         type: types.OTP_AUTH,
+        status: data.status,
       });
     }
 
@@ -86,12 +100,16 @@ export const initApp = () => async (dispatch) => {
         accessToken: data.accessToken,
         refreshToken: data.accessToken,
       });
-      const { isAdmin, privileges } = await getPermissions(data.accessToken);
+      const token = jwt.decode(data.accessToken, publicKey, {
+        algorithm: "RS256",
+      });
+      const { isAdmin, privileges } = await getPermissions(token);
       dispatch({
         type: types.SET_PRIVILEGES,
         isAdmin,
         permissions: privileges,
-        loginGuid: getLoginGuid(data.accessToken),
+        loginGuid: token.userPayload.loginGuid,
+        role: getRole(isAdmin, token),
       });
     } else {
       dispatch({
