@@ -3,7 +3,10 @@ import { useQuery } from "react-query";
 
 export const merchantAPI = {
   getMerchants: async (args) => {
-    return managementService.get("users/merchants", { params: { ...args } });
+    let { data } = await managementService.get("users/merchants", {
+      params: { ...args },
+    });
+    return data;
   },
 };
 

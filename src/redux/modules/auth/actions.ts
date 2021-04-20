@@ -3,15 +3,16 @@ import jwt from "jsonwebtoken";
 import publicKey from "../../../config/publicKey";
 import { loginAPI } from "../../../services/queries/management/login";
 import { types } from "./types";
+import { Dispatch } from "redux";
 
-const getPermissions = async (token) => {
+const getPermissions = async (token: any) => {
   const { data } = await loginAPI.getPrivilegesByLogin(
     token.userPayload.loginGuid
   );
   return data;
 };
 
-const getRole = (isAdmin, token) => {
+const getRole = (isAdmin: boolean, token: any) => {
   let role = "";
   if (isAdmin) {
     role = "admin";
@@ -26,7 +27,14 @@ const getRole = (isAdmin, token) => {
   return role;
 };
 
-export const login = (credentials) => async (dispatch) => {
+interface ICredentials {
+  username: string;
+  password: string;
+}
+
+export const login = (credentials: ICredentials) => async (
+  dispatch: Dispatch
+) => {
   dispatch({
     type: types.SET_LOADING,
     loading: true,
@@ -35,8 +43,8 @@ export const login = (credentials) => async (dispatch) => {
     // let data = await AuthService.login(credentials);
     let { data } = await authAPI.login(credentials);
     if (!data.status) {
-      jwt.verify(data.accessToken, publicKey, { algorithm: "RS256" });
-      jwt.verify(data.refreshToken, publicKey, { algorithm: "RS256" });
+      jwt.verify(data.accessToken, publicKey);
+      jwt.verify(data.refreshToken, publicKey);
       dispatch({
         type: types.LOGIN_SUCCESS,
         accessToken: data.accessToken,
@@ -46,9 +54,7 @@ export const login = (credentials) => async (dispatch) => {
         credentials_expire_after: data.credentials_expire_after,
         first_time_login: data.first_time_login,
       });
-      const token = jwt.decode(data.accessToken, publicKey, {
-        algorithm: "RS256",
-      });
+      const token: any = jwt.decode(data.accessToken);
       const { isAdmin, privileges } = await getPermissions(token);
 
       dispatch({
@@ -89,7 +95,7 @@ export const login = (credentials) => async (dispatch) => {
   }
 };
 
-export const initApp = () => async (dispatch) => {
+export const initApp = () => async (dispatch: Dispatch) => {
   try {
     let { data } = await authAPI.getToken();
     if (data && data.accessToken) {
@@ -100,9 +106,7 @@ export const initApp = () => async (dispatch) => {
         accessToken: data.accessToken,
         refreshToken: data.accessToken,
       });
-      const token = jwt.decode(data.accessToken, publicKey, {
-        algorithm: "RS256",
-      });
+      const token: any = jwt.decode(data.accessToken);
       const { isAdmin, privileges } = await getPermissions(token);
       dispatch({
         type: types.SET_PRIVILEGES,
@@ -132,13 +136,13 @@ export const initApp = () => async (dispatch) => {
   }
 };
 
-export const logout = (credentials) => async (dispatch) => {
+export const logout = () => async (dispatch: Dispatch) => {
   dispatch({
     type: types.SET_LOADING,
     loading: true,
   });
   try {
-    await authAPI.logout(credentials);
+    await authAPI.logout();
     dispatch({
       type: types.LOGOUT,
     });

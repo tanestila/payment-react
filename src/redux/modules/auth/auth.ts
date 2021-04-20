@@ -18,7 +18,9 @@ const initialState = {
   status: "",
 };
 
-export function authReducer(state = initialState, action) {
+type AuthStateType = typeof initialState;
+
+export function authReducer(state: AuthStateType = initialState, action: any) {
   switch (action.type) {
     case types.INIT_APP:
       return {
@@ -92,11 +94,3 @@ export function authReducer(state = initialState, action) {
       return { ...state };
   }
 }
-
-export const LoginSuccessAC = () => ({
-  type: types.LOGIN_SUCCESS,
-});
-
-export const LoginFailAC = () => ({
-  type: types.LOGIN_FAIL,
-});
