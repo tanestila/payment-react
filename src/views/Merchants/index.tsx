@@ -1,18 +1,24 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import Table from "../../Components/TableFactory";
 import { merchantAPI } from "../../services/queries/management/merchant";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
-import { useDispatch, useSelector } from "react-redux";
-import { setNewTable, setPageTable } from "../../redux/modules/table";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { setNewTable } from "../../redux/modules/table";
+import Modal from "../../Components/Common/Modal";
+import { MerchantType } from "../../types/merchants";
+import { IResponse } from "../../types/common";
+import Editor from "./Editor";
+import Creator from "./Creator";
 
 export default function Merchants() {
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
-  const page = useSelector((state) => state.table.page);
-  const items = useSelector((state) => state.table.items);
-  // const { status, data, error, isFetching } = useMerchants();
+  const { page, items, sortKey, sortDirect, sortDirectState } = useSelector(
+    (state: RootStateOrAny) => state.table
+  );
+
   const {
     isLoading,
     isError,
@@ -20,9 +26,15 @@ export default function Merchants() {
     data,
     isFetching,
     // isPreviousData,
-  } = useQuery(
-    ["merchants", page, items],
-    () => merchantAPI.getMerchants({ page, items }),
+  } = useQuery<IResponse<MerchantType>, Error>(
+    ["merchants", page, items, sortKey, sortDirect],
+    () =>
+      merchantAPI.getMerchants({
+        page,
+        items,
+        sort_col: sortKey,
+        sort_dir: sortDirect,
+      }),
     {
       keepPreviousData: true,
     }
@@ -30,18 +42,14 @@ export default function Merchants() {
 
   useEffect(() => {
     dispatch(setNewTable());
-  }, []);
-
-  const fetchData = useCallback(({ pageSize, pageIndex }) => {
-    dispatch(setPageTable(pageIndex));
-  }, []);
+  }, [dispatch]);
 
   const columns = useMemo(
     () => [
       {
         header: "Merchant name",
         accessor: "merchant_name",
-        content: (cellInfo) => (
+        content: (cellInfo: MerchantType) => (
           <Link
             className="link"
             to={`/about/merchant/${cellInfo.merchant_guid}`}
@@ -49,6 +57,7 @@ export default function Merchants() {
             {cellInfo.merchant_name}
           </Link>
         ),
+        isSort: true,
       },
       {
         header: "Merchant type",
@@ -65,7 +74,7 @@ export default function Merchants() {
       {
         header: "Gateways",
         accessor: "gateways",
-        content: (cellInfo) => cellInfo.gateways.join(", "),
+        content: (cellInfo: MerchantType) => cellInfo.gateways.join(", "),
       },
       {
         header: "Username",
@@ -78,7 +87,7 @@ export default function Merchants() {
       {
         header: "Status",
         accessor: "enabled",
-        content: (cellInfo) => (
+        content: (cellInfo: MerchantType) => (
           <i
             className={
               cellInfo.enabled
@@ -91,7 +100,20 @@ export default function Merchants() {
       ability.can("EXECUTE", "USERMERCHANT") && {
         header: "Edit",
         accessor: "edit",
-        content: () => <p>Edit</p>,
+        content: (cellInfo: MerchantType) => (
+          <Modal
+            header="Edit merchant"
+            content={Editor}
+            contentProps={{ guid: cellInfo.merchant_guid }}
+            button={
+              <i
+                className="icon-edit icon gray"
+                style={{ cursor: "pointer" }}
+              />
+            }
+            // dialogClassName="modal-creator"
+          />
+        ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
         header: "Delete",
@@ -99,7 +121,7 @@ export default function Merchants() {
         content: () => <p>delete</p>,
       },
     ],
-    []
+    [ability]
   );
 
   return (
@@ -107,15 +129,27 @@ export default function Merchants() {
       {isLoading ? (
         "Loading..."
       ) : isError ? (
-        <span>Error: {error.message}</span>
+        <span>Error: {error && error.message}</span>
       ) : (
         <>
           <div>
             <Table
               columns={columns}
-              data={data.data}
-              fetchData={fetchData}
-              count={parseInt(data.count, 10)}
+              data={data?.data}
+              count={parseInt(data?.count!, 10)}
+              modalComponent={
+                <Modal
+                  allowed={ability.can("EXECUTE", "USERMERCHANT")}
+                  button={
+                    <button type="button" className="btn btn-fill btn-primary">
+                      Create merchant
+                    </button>
+                  }
+                  content={Creator}
+                  header="Create merchant"
+                  dialogClassName="modal-creator"
+                />
+              }
             />
             <div>{isFetching ? "Updating..." : " "}</div>
           </div>

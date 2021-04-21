@@ -1,4 +1,5 @@
 import axios from "axios";
+import store from "../redux/store";
 import {
   successResponseInterceptor,
   tokenRefreshInterceptor,
@@ -6,14 +7,23 @@ import {
 
 const authApiUrl = `http://localhost:8080/api/v1/auth`;
 
-const authService = () => {
-  const instance = axios.create({ baseURL: authApiUrl });
-  instance.interceptors.response.use(
-    successResponseInterceptor,
-    tokenRefreshInterceptor
-  );
+const instance = axios.create({ baseURL: authApiUrl });
+instance.defaults.headers.common["Authorization"] = store.getState().auth
+  .accessToken
+  ? `Bearer ${store.getState().auth.accessToken}`
+  : undefined;
+instance.interceptors.response.use(
+  successResponseInterceptor,
+  tokenRefreshInterceptor
+);
 
-  return instance;
-};
+let currentAuth;
+store.subscribe(() => {
+  const prevAuth = currentAuth;
+  currentAuth = store.getState().auth.accessToken;
+  if (prevAuth !== currentAuth) {
+    instance.defaults.headers.common["Authorization"] = `Bearer ${currentAuth}`;
+  }
+});
 
-export default authService();
+export default instance;

@@ -1,10 +1,14 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
 import TableBody from "./Body";
 import TableEmptyBody from "./EmptyBody";
 import TableHeader from "./Header";
 
-export default function Table({ columns, data, tableWidth, columnsComponent }) {
+export default function Table({
+  columns,
+  data,
+  tableWidth,
+  columnsComponent,
+  onSort,
+}) {
   if ((data && !data.length) || !data)
     return (
       <>
@@ -23,7 +27,7 @@ export default function Table({ columns, data, tableWidth, columnsComponent }) {
       style={tableWidth ? { width: tableWidth + "%" } : undefined}
     >
       {columnsComponent ? <colgroup>{columnsComponent}</colgroup> : null}
-      <TableHeader columns={columns} />
+      <TableHeader columns={columns} onSort={onSort} />
       <TableBody columns={columns} data={data} />
     </table>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import Select from "react-select";
 
-export default function Select({ options, ...props }) {
+export default function CustomSelect({ options, defaultValue, ...props }) {
   const [convertedOptions, setConvertedOptions] = useState([]);
 
   const convertOptions = (options = []) => {
@@ -11,9 +12,9 @@ export default function Select({ options, ...props }) {
     }));
   };
 
-  // useEffect(() => {
-  //   setConvertedOptions(convertOptions(options));
-  // }, [options]);
+  useEffect(() => {
+    setConvertedOptions(convertOptions(options));
+  }, [options]);
 
-  return <Select {...props} options={options} />;
+  return <Select {...props} options={convertedOptions} />;
 }

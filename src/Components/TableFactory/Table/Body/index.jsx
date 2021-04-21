@@ -30,7 +30,10 @@ export default function TableBody({ data, columns }) {
                 >
                   {columns.map((column) => {
                     if (
-                      Object.prototype.hasOwnProperty.call(item, column.path) &&
+                      Object.prototype.hasOwnProperty.call(
+                        item,
+                        column.accessor
+                      ) &&
                       index === 0
                     ) {
                       return (
@@ -45,7 +48,7 @@ export default function TableBody({ data, columns }) {
                     } else if (
                       Object.prototype.hasOwnProperty.call(
                         collapsedItem,
-                        column.path
+                        column.accessor
                       )
                     ) {
                       return (

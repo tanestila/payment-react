@@ -1,29 +1,41 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import Table from "./Table/index";
 import ButtonFilter from "./button";
 import { useDispatch, useSelector } from "react-redux";
-import { setPageTable } from "../../redux/modules/table";
+import {
+  setPageTable,
+  setPageSizeTable,
+  setSortKey,
+} from "../../redux/modules/table";
 import Pagination from "./Pagination";
 import Select from "../Common/Select";
 
-export default function TableFactory({
-  modalComponent,
-  columns,
-  data,
-  count,
-  fetchData,
-}) {
+export default function TableFactory({ modalComponent, columns, data, count }) {
   const dispatch = useDispatch();
   const page = useSelector((state) => state.table.page);
   const pageSize = useSelector((state) => state.table.items);
 
-  const setPage = useCallback((pageIndex) => {
-    dispatch(setPageTable(pageIndex));
-  }, []);
+  const setPage = useCallback(
+    (pageIndex) => {
+      dispatch(setPageTable(pageIndex));
+    },
+    [dispatch]
+  );
 
-  const setPageSize = useCallback((pageSize) => {
-    dispatch(setPageTable(pageSize));
-  }, []);
+  const setPageSize = useCallback(
+    (option) => {
+      dispatch(setPageSizeTable(option.name));
+    },
+    [dispatch]
+  );
+
+  const onSort = useCallback(
+    (sortKey) => {
+      console.log(sortKey);
+      dispatch(setSortKey(sortKey));
+    },
+    [dispatch]
+  );
 
   return (
     <>
@@ -53,6 +65,7 @@ export default function TableFactory({
             // tableWidth={tableWidth}
             // search={search}
             data={data}
+            onSort={onSort}
             // keyPath={keyPath}
             // get={get}
             // searchData={searchData}
@@ -72,7 +85,7 @@ export default function TableFactory({
               count / pageSize + (1 && !!(count % pageSize))
             )}
             currentPage={page}
-            onPageChange={setPageSize}
+            onPageChange={setPage}
             pageSize={pageSize}
             count={count}
           />
@@ -84,14 +97,13 @@ export default function TableFactory({
               multi={false}
               name="Select the page size"
               options={[
-                { guid: "1", name: "10" },
-                { guid: "2", name: "20" },
-                { guid: "3", name: "50" },
-                { guid: "4", name: "100" },
+                { guid: "1", name: 10 },
+                { guid: "2", name: 20 },
+                { guid: "3", name: 50 },
+                { guid: "4", name: 100 },
               ]}
-              // onSelect={this.handleSelectPageSize}
-              // isSearchable={false}
-              // placeholder={this.props.table.pageSize}
+              onChange={setPageSize}
+              placeholder={pageSize}
             />
           </div>
         </div>

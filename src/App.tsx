@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import ExpiredPassword from "./Components/Login/ExpiredPassword";
 import Login from "./Components/Login/Login";
@@ -9,14 +9,29 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import Logout from "./Components/Login/Logout";
 import ForgotPassword from "./Components/Login/ForgotPassword";
 
+type RouteType = {
+  path: string;
+};
+
+type RouteWithComponentType = {
+  path: string;
+  Component: React.FunctionComponent<any>;
+};
+
 function App() {
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const isFirstTimeLogin = useSelector((state) => state.auth.isFirstTimeLogin);
-  const isCredentialsExpired = useSelector(
-    (state) => state.auth.isCredentialsExpired
+  const isLoggedIn = useSelector(
+    (state: RootStateOrAny) => state.auth.isLoggedIn
   );
-  const isInitialized = useSelector((state) => state.auth.isInitialized);
+  const isFirstTimeLogin = useSelector(
+    (state: RootStateOrAny) => state.auth.isFirstTimeLogin
+  );
+  const isCredentialsExpired = useSelector(
+    (state: RootStateOrAny) => state.auth.isCredentialsExpired
+  );
+  const isInitialized = useSelector(
+    (state: RootStateOrAny) => state.auth.isInitialized
+  );
 
   useEffect(() => {
     dispatch(initApp());
@@ -26,9 +41,9 @@ function App() {
   // if (!isLoggedIn) return <Login />;
   // if (isFirstTimeLogin || isCredentialsExpired) return <ExpiredPassword />;
 
-  const LoginRoute = ({ component: Component, ...rest }) => (
+  const LoginRoute = (props: RouteType) => (
     <Route
-      {...rest}
+      path={props.path}
       render={() =>
         !isLoggedIn ? (
           <Route path="/login" component={Login} />
@@ -38,25 +53,28 @@ function App() {
       }
     />
   );
-  const LogoutRoute = ({ component: Component, ...rest }) => (
+  const LogoutRoute = (props: RouteWithComponentType) => {
+    const { Component } = props;
+    return (
+      <Route
+        path={props.path}
+        render={(props) =>
+          isLoggedIn ? <Component {...props} /> : <Redirect to="/login" />
+        }
+      />
+    );
+  };
+
+  const PrivateRoute = (props: RouteType) => (
     <Route
-      {...rest}
-      render={(props) =>
-        isLoggedIn ? <Component {...props} /> : <Redirect to="/login" />
-      }
+      path={props.path}
+      render={() => (isLoggedIn ? <Admin /> : <Redirect to="/login" />)}
     />
   );
 
-  const PrivateRoute = ({ ...rest }) => (
+  const ExpiredPasswordRoute = (props: RouteType) => (
     <Route
-      {...rest}
-      render={(props) => (isLoggedIn ? <Admin /> : <Redirect to="/login" />)}
-    />
-  );
-
-  const ExpiredPasswordRoute = ({ ...rest }) => (
-    <Route
-      {...rest}
+      path={props.path}
       render={() =>
         isLoggedIn && isCredentialsExpired ? (
           <Route path="/expired_password" component={ExpiredPassword} />
@@ -71,8 +89,8 @@ function App() {
     <>
       <BrowserRouter>
         <Switch>
-          <LoginRoute path="/login" component={Login} />
-          <LogoutRoute path="/logout" component={Logout} />
+          <LoginRoute path="/login" />
+          <LogoutRoute path="/logout" Component={Logout} />
           <Route path="/forgot">
             <ForgotPassword />
           </Route>

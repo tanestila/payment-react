@@ -1,14 +1,12 @@
 import _ from "lodash";
 
-import React from "react";
-
-const Pagination = ({
+export default function Pagination({
   pagesCount,
   currentPage,
   onPageChange,
   pageSize,
   count,
-}) => {
+}) {
   const from = currentPage * pageSize - pageSize + 1;
   const to = pageSize * currentPage < count ? pageSize * currentPage : count;
   if (pagesCount > 1) {
@@ -134,7 +132,7 @@ const Pagination = ({
               key={"Next"}
               className={currentPage === pagesCount ? " disabled" : ""}
             >
-              <sapn
+              <span
                 onClick={
                   currentPage === pagesCount
                     ? null
@@ -142,7 +140,7 @@ const Pagination = ({
                 }
               >
                 {">"}
-              </sapn>
+              </span>
             </li>
           </ul>
         </nav>
@@ -158,6 +156,4 @@ const Pagination = ({
       </div>
     );
   } else return <div></div>;
-};
-
-export default Pagination;
+}

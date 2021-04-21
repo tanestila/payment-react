@@ -1,6 +1,6 @@
 import { authAPI } from "../../../services/queries/auth";
 import jwt from "jsonwebtoken";
-import publicKey from "../../../config/publicKey";
+import { publicKey } from "../../../config/publicKey";
 import { loginAPI } from "../../../services/queries/management/login";
 import { types } from "./types";
 import { Dispatch } from "redux";
@@ -152,13 +152,13 @@ export const logout = () => async (dispatch: Dispatch) => {
     });
   } catch (error) {
     console.log(error);
-    const message =
-      (error.response &&
-        error.response.data &&
-        error.response.data.description &&
-        error.response.data.description.message) ||
-      error.message ||
-      error.toString();
+    // const message =
+    //   (error.response &&
+    //     error.response.data &&
+    //     error.response.data.description &&
+    //     error.response.data.description.message) ||
+    //   error.message ||
+    //   error.toString();
     dispatch({
       type: types.SET_LOADING,
       loading: false,

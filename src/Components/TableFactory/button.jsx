@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
-import { connect } from "react-redux";
-// import { inverseSearch } from "../actions/search";
-import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { toggleIsSearch } from "../../redux/modules/table";
 
 const ButtonFilter = (props) => {
   const [active, setActive] = useState(true);
+  const dispatch = useDispatch();
 
   const handleShowFilters = async () => {
-    await props.inverseSearch(!props.isSearch);
+    dispatch(toggleIsSearch());
     setActive(!active);
   };
 
@@ -24,15 +24,4 @@ const ButtonFilter = (props) => {
   );
 };
 
-// const mapStateToProps = (state) => {
-//   return {
-//     isSearch: state.search.isSearch,
-//   };
-// };
-
 export default ButtonFilter;
-
-ButtonFilter.propTypes = {
-  inverseSearch: PropTypes.func,
-  isSearch: PropTypes.bool,
-};

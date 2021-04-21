@@ -1,6 +1,8 @@
+import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
-export default function TableHeader({ columns }) {
+export default function TableHeader({ columns, disableSort = false, onSort }) {
+  const { sortDirectState } = useSelector((state) => state.table);
   const createKey = () => {
     return uuidv4();
   };
@@ -53,23 +55,17 @@ export default function TableHeader({ columns }) {
             className="table-header-title"
             style={column.align ? { textAlign: column.align } : {}}
           >
-            {/* {disableSort ||
-              notSortLabels.includes(column.label) ||
-              notSortKeys.includes(column.key) ? (
-                column.label
-              ) : (
-                <span
-                  onClick={() => onSort(column.path)}
-                  className="button-inline"
-                >
-                  {column.label}
-                </span>
-              )} */}
-            <span
-            // onClick={() => onSort(column.path)}
-            >
-              {column.header}
-            </span>
+            {disableSort || !column.isSort ? (
+              column.header
+            ) : (
+              <span
+                onClick={() => onSort(column.accessor)}
+                className="button-inline"
+              >
+                {column.header}{" "}
+                {sortDirectState !== -1 ? (!!sortDirectState ? "v" : "^") : ""}
+              </span>
+            )}
           </th>
         ))}
       </tr>

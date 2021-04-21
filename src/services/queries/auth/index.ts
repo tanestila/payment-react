@@ -9,5 +9,7 @@ export const authAPI = {
   getToken() {
     return authService.get("/get_token", { withCredentials: true });
   },
-  logout: () => {},
+  logout: () => {
+    return authService.post("/logout", { withCredentials: true });
+  },
 };
