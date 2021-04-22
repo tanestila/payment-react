@@ -2,32 +2,26 @@ import { useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import logo from "../../../assets/img/logo.svg";
 import { Nav } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleSidebar } from "../../../redux/modules/sidebar";
 
 function Sidebar({ color, routes }) {
-  const [isHide, setisHide] = useState(false);
+  const dispatch = useDispatch();
+  const isHide = useSelector((state) => state.sidebar.isHide);
   const location = useLocation();
   const activeRoute = (routeName) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
   return (
-    <div className="sidebar" data-color={color}>
+    <div
+      className={isHide ? " sidebar slideOut" : "sidebar slideIn"}
+      data-color={color}
+    >
       <div className="sidebar-wrapper">
-        {/* <div className="logo d-flex align-items-center justify-content-start">
-          <a
-            href="https://www.creative-tim.com?ref=lbd-sidebar"
-            className="simple-text logo-mini mx-1"
-          >
-
-          </a>
-          <a className="simple-text" href="http://www.creative-tim.com">
-            Creative Tim
-          </a>
-        </div> */}
         <div
           className={isHide ? "logo d-flex slideOut" : "logo d-flex slideIn"}
-          style={{ position: "absolute" }}
         >
-          <NavLink to="/dashboard" className="simple-text logo-mini">
+          <NavLink to="/dashboard" className="logo-mini">
             <div
               id="sidebar-header-logo"
               className={isHide ? "logo-img slideOut" : "logo-img slideIn"}
@@ -35,7 +29,21 @@ function Sidebar({ color, routes }) {
               <img src={logo} alt="logo" />
             </div>
           </NavLink>
+          <div
+            id="sidebar-hide-button-div"
+            className={isHide ? "slideOut" : "slideIn"}
+            onClick={() => dispatch(toggleSidebar())}
+          >
+            <i
+              id="sidebar-hide-button"
+              className={
+                isHide ? "icon-sidebar slideOut" : "icon-sidebar slideIn"
+              }
+            />
+          </div>
         </div>
+        {/* Sidebar button  */}
+
         <Nav>
           {routes.map((prop, key) => {
             if (!prop.redirect)
