@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import Table from "./Table/index";
-import ButtonFilter from "./button";
+import ButtonFilter from "./Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setPageTable,

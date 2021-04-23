@@ -8,6 +8,7 @@ import { initApp } from "./redux/modules/auth/actions";
 import { ReactQueryDevtools } from "react-query/devtools";
 import Logout from "./Components/Login/Logout";
 import ForgotPassword from "./Components/Login/ForgotPassword";
+import Loading from "./Components/Common/Loading";
 
 type RouteType = {
   path: string;
@@ -37,7 +38,7 @@ function App() {
     dispatch(initApp());
   }, []);
 
-  if (!isInitialized) return <div>loading</div>;
+  if (!isInitialized) return <Loading />;
   // if (!isLoggedIn) return <Login />;
   // if (isFirstTimeLogin || isCredentialsExpired) return <ExpiredPassword />;
 

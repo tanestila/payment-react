@@ -12,10 +12,9 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const error = useSelector((state) => state.auth.error);
-  const loading = useSelector((state) => state.auth.loading);
-  const otpAuth = useSelector((state) => state.auth.otpAuth);
-  const status = useSelector((state) => state.auth.status);
+  const { error, loading, otpAuth, status } = useSelector(
+    (state) => state.auth
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,47 +31,45 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <form onSubmit={handleSubmit}>
-        <div className="login-container">
-          <div
-            className="login-image"
-            style={{ backgroundImage: `url(${background})` }}
-          >
-            <img className="logo" src={logo} alt="logo" />
-          </div>
-          <div className="form">
-            <form autoComplete="off">
-              <p className="header-login">Login</p>
-              {!otpAuth ? (
-                <>
-                  <LoginInput onChange={setUsername} value={username} />
-                  <PasswordInputLogin onChange={setPassword} value={password} />
-                  <div>
-                    <Link className="link" to={"/forgot"} tabIndex="4">
-                      <span>Password Recovery</span>
-                    </Link>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="otp-status">{status}</p>
-                  <PasswordInputLogin
-                    onChange={setOtp}
-                    value={otp}
-                    placeholder="Verification code"
-                  />
-                </>
-              )}
-              <SubmitButton
-                loading={loading}
-                onSubmit={handleSubmit}
-                validateForm={validateForm}
-              />
-              {error && <p className="access-denied">{error}</p>}
-            </form>
-          </div>
+      <div className="login-container">
+        <div
+          className="login-image"
+          style={{ backgroundImage: `url(${background})` }}
+        >
+          <img className="logo" src={logo} alt="logo" />
         </div>
-      </form>
+        <div className="form">
+          <form autoComplete="off">
+            <p className="header-login">Login</p>
+            {!otpAuth ? (
+              <>
+                <LoginInput onChange={setUsername} value={username} />
+                <PasswordInputLogin onChange={setPassword} value={password} />
+                <div>
+                  <Link className="link" to={"/forgot"} tabIndex="4">
+                    <span>Password Recovery</span>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="otp-status">{status}</p>
+                <PasswordInputLogin
+                  onChange={setOtp}
+                  value={otp}
+                  placeholder="Verification code"
+                />
+              </>
+            )}
+            <SubmitButton
+              loading={loading}
+              onSubmit={handleSubmit}
+              validateForm={validateForm}
+            />
+            {error && <p className="access-denied">{error}</p>}
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

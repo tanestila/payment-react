@@ -25,6 +25,26 @@ export const adminRoutes = [
     component: Groups,
     layout: "/admin",
     privilege: "READ_USERGROUP",
+    collapse: true,
+    state: "ssd",
+    views: [
+      {
+        path: "/typography",
+        name: "Typography1",
+        icon: "nc-icon nc-paper-2",
+        component: Partners,
+        layout: "/admin",
+        privilege: "READ_USERPARTNER",
+      },
+      {
+        path: "/typography",
+        name: "Typography2",
+        icon: "nc-icon nc-paper-2",
+        component: Partners,
+        layout: "/admin",
+        privilege: "READ_USERPARTNER",
+      },
+    ],
   },
   {
     path: "/typography",

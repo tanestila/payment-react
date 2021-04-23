@@ -51,6 +51,7 @@ function Admin() {
       );
     });
   };
+
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -64,6 +65,7 @@ function Admin() {
       element.parentNode.removeChild(element);
     }
   }, [location]);
+
   return (
     <>
       <div className="wrapper">

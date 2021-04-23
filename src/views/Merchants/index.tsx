@@ -11,6 +11,7 @@ import { MerchantType } from "../../types/merchants";
 import { IResponse } from "../../types/common";
 import Editor from "./Editor";
 import Creator from "./Creator";
+import Loading from "../../Components/Common/Loading";
 
 export default function Merchants() {
   const ability = useContext(AbilityContext);
@@ -127,9 +128,9 @@ export default function Merchants() {
   return (
     <div>
       {isLoading ? (
-        "Loading..."
+        <Loading />
       ) : isError ? (
-        <span>Error: {error && error.message}</span>
+        <span>Server Error: {error && error.message}</span>
       ) : (
         <>
           <div>

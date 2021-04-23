@@ -6,15 +6,12 @@ import { updateUserAccount } from "../../redux/modules/userprofile/actions";
 export default function ExpiredPassword() {
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const loginGuid = useSelector((state) => state.auth.loginGuid);
-  const isFirstTimeLogin = useSelector((state) => state.auth.isFirstTimeLogin);
-  const isCredentialsExpired = useSelector(
-    (state) => state.auth.isCredentialsExpired
-  );
-  const isCredentialsExpires = useSelector(
-    (state) => state.auth.isCredentialsExpires
-  );
+  const {
+    loginGuid,
+    isFirstTimeLogin,
+    isCredentialsExpired,
+    isCredentialsExpires,
+  } = useSelector((state) => state.auth);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
