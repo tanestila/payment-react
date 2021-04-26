@@ -31,7 +31,6 @@ export default function TableFactory({ modalComponent, columns, data, count }) {
 
   const onSort = useCallback(
     (sortKey) => {
-      console.log(sortKey);
       dispatch(setSortKey(sortKey));
     },
     [dispatch]

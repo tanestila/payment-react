@@ -1,26 +1,36 @@
 import { types } from "./types";
 
 const initialState = {
+  name: "",
   page: 1,
   items: 100,
   isSearch: true,
   sortKey: null,
   sortDirectState: -1,
   sortDirect: null,
+  searchParams: {},
 };
 
 export function tableReducer(state = initialState, action: any) {
   switch (action.type) {
     case types.SET_NEW_TABLE:
-      return {
-        ...state,
-        page: 1,
-        items: 100,
-        isSearch: true,
-        sortKey: null,
-        sortDirectState: -1,
-        sortDirect: null,
-      };
+      if (action.name === state.name) {
+        return {
+          ...state,
+        };
+      } else {
+        return {
+          ...state,
+          page: 1,
+          items: 100,
+          isSearch: true,
+          sortKey: null,
+          sortDirectState: -1,
+          sortDirect: null,
+          name: action.name,
+        };
+      }
+
     case types.SET_PAGE:
       return {
         ...state,
@@ -41,9 +51,15 @@ export function tableReducer(state = initialState, action: any) {
         state.sortDirectState !== -1 ? state.sortDirectState - 1 : 1;
       return {
         ...state,
-        sortKey: sortDirectState !== 1 ? action.sortKey : null,
-        sortDirect: sortDirectState !== 1 ? !!sortDirectState : null,
+        sortKey: sortDirectState !== -1 ? action.sortKey : null,
+        sortDirect: sortDirectState !== -1 ? !!sortDirectState : null,
         sortDirectState,
+      };
+
+    case types.SET_SEARCH_PARAMS:
+      return {
+        ...state,
+        searchParams: { ...state.searchParams, ...action.params },
       };
 
     default:
@@ -51,8 +67,9 @@ export function tableReducer(state = initialState, action: any) {
   }
 }
 
-export const setNewTable = () => ({
+export const setNewTable = (name: string) => ({
   type: types.SET_NEW_TABLE,
+  name,
 });
 
 export const setPageTable = (page: number) => ({
@@ -72,4 +89,9 @@ export const toggleIsSearch = () => ({
 export const setSortKey = (key: string) => ({
   type: types.SET_SORT_KEY,
   sortKey: key,
+});
+
+export const setSearchParams = (params: any) => ({
+  type: types.SET_SEARCH_PARAMS,
+  params,
 });

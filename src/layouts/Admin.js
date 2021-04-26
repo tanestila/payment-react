@@ -31,10 +31,12 @@ function Admin() {
         break;
     }
     let changedRoutes = initialRoutes.map((route) => {
-      let [action, subject] = route.privilege.split("_");
-      if (ability.can(action, subject)) {
-        return route;
-      } else return undefined;
+      if (route.privilege) {
+        let [action, subject] = route.privilege.split("_");
+        if (ability.can(action, subject)) {
+          return route;
+        } else return undefined;
+      } else return route;
     });
     changedRoutes = changedRoutes.filter((r) => r);
     setRoutes(changedRoutes);
@@ -42,13 +44,24 @@ function Admin() {
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
-      return (
-        <Route
-          path={prop.layout + prop.path}
-          render={(props) => <prop.component {...props} />}
-          key={key}
-        />
-      );
+      if (prop.collapse) {
+        return prop.views.map((item, key) => {
+          return (
+            <Route
+              path={prop.layout + item.path}
+              render={(props) => <item.component {...props} />}
+              key={key + item.name}
+            />
+          );
+        });
+      } else
+        return (
+          <Route
+            path={prop.layout + prop.path}
+            render={(props) => <prop.component {...props} />}
+            key={key}
+          />
+        );
     });
   };
 
@@ -80,6 +93,7 @@ function Admin() {
           <Header />
           <div className="content">
             <Switch>{getRoutes(routes)}</Switch>
+            {console.log(getRoutes(routes))}
           </div>
           <Footer />
         </div>

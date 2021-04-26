@@ -1,5 +1,5 @@
 import { useHistory, useLocation } from "react-router-dom";
-import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
+import { Navbar, Container, Nav } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { logout } from "../../../redux/modules/auth/actions";
 import apiFile from "../../../public/api.pdf";
@@ -8,8 +8,8 @@ import apiFile from "../../../public/api.pdf";
 function Header() {
   const location = useLocation();
   const history = useHistory();
-  console.log(location);
-  console.log(history);
+  // console.log(location);
+  // console.log(history);
 
   const dispatch = useDispatch();
   // const mobileSidebarToggle = (e) => {

@@ -16,7 +16,7 @@ import Loading from "../../Components/Common/Loading";
 export default function Merchants() {
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
-  const { page, items, sortKey, sortDirect, sortDirectState } = useSelector(
+  const { page, items, sortKey, sortDirect } = useSelector(
     (state: RootStateOrAny) => state.table
   );
 
@@ -42,7 +42,7 @@ export default function Merchants() {
   );
 
   useEffect(() => {
-    dispatch(setNewTable());
+    dispatch(setNewTable("merchant"));
   }, [dispatch]);
 
   const columns = useMemo(
@@ -59,14 +59,17 @@ export default function Merchants() {
           </Link>
         ),
         isSort: true,
+        search: "text",
       },
       {
         header: "Merchant type",
         accessor: "merchant_type",
+        search: "text",
       },
       {
         header: "Group",
         accessor: "group_name",
+        search: "text",
       },
       {
         header: "Partner",
@@ -88,6 +91,7 @@ export default function Merchants() {
       {
         header: "Status",
         accessor: "enabled",
+        search: "bool",
         content: (cellInfo: MerchantType) => (
           <i
             className={

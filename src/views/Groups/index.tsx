@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo } from "react";
 import Table from "../../Components/TableFactory";
-import { merchantAPI } from "../../services/queries/management/merchant";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
@@ -11,11 +10,12 @@ import { MerchantType } from "../../types/merchants";
 import { IResponse } from "../../types/common";
 import Editor from "./Editor";
 import Creator from "./Creator";
+import { groupAPI } from "../../services/queries/management/group";
 
 export default function Groups() {
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
-  const { page, items, sortKey, sortDirect, sortDirectState } = useSelector(
+  const { page, items, sortKey, sortDirect } = useSelector(
     (state: RootStateOrAny) => state.table
   );
 
@@ -29,7 +29,7 @@ export default function Groups() {
   } = useQuery<IResponse<MerchantType>, Error>(
     ["groups", page, items, sortKey, sortDirect],
     () =>
-      merchantAPI.getMerchants({
+      groupAPI.getGroups({
         page,
         items,
         sort_col: sortKey,
@@ -41,7 +41,7 @@ export default function Groups() {
   );
 
   useEffect(() => {
-    dispatch(setNewTable());
+    dispatch(setNewTable("groups"));
   }, [dispatch]);
 
   const columns = useMemo(

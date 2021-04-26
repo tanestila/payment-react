@@ -1,0 +1,50 @@
+form {
+  font-size: 14px;
+
+  .form-control {
+    height: 28px;
+    font-size: 14px;
+  }
+  .form-label {
+    text-align: left !important;
+  }
+
+  .input-group-text {
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .select__control {
+    min-height: 28px;
+    .select__indicators {
+      height: 28px;
+      .select__indicator {
+        padding: 4px;
+      }
+    }
+  }
+
+  .select__option {
+    padding: 4px;
+    font-size: 12px;
+    text-align: left;
+  }
+
+  .select__menu {
+    z-index: 999;
+  }
+
+  .select__placeholder {
+    @include placeholder($medium-gray, 1);
+  }
+
+  .btn {
+    font-size: 14px;
+  }
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+  height: 14px;
+  width: 14px;
+}
