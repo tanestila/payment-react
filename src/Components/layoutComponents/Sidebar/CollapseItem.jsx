@@ -45,7 +45,9 @@ export default function CollapseItem({ prop, activeRoute }) {
         aria-expanded={prop.path === collapseItemState}
         // isOpen={true}
       >
-        <DropdownToggle className={classNames("nav-link", sidebarClass)}>
+        <DropdownToggle
+          className={classNames("nav-link", "d-flex", sidebarClass)}
+        >
           <i className={classNames("menu-icon", prop.icon, sidebarClass)} />
           <span className={classNames("menu-title", sidebarClass)}>
             {prop.name}
@@ -104,12 +106,17 @@ export default function CollapseItem({ prop, activeRoute }) {
 }
 
 function SidebarCollapseItem({ isHide, child, layout }) {
+  const sidebarClass = {
+    slideOut: isHide,
+    slideIn: !isHide,
+  };
+
   return (
     <li className={"nav-item "}>
       <NavLink
         id="sidebar-text-icon-active"
         title={isHide ? child.name : ""}
-        className={isHide ? "nav-link slideOut " : "nav-link slideIn "}
+        className={classNames("nav-link", "d-flex", sidebarClass)}
         to={layout + child.path}
         activeClassName=""
       >

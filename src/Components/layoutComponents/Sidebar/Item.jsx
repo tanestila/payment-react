@@ -9,15 +9,16 @@ export default function Item({ prop, activeRoute, sidebarClass }) {
         activeRoute(prop.layout + prop.path),
         sidebarClass
       )}
-      // className={activeRoute(prop.layout + prop.path)}
     >
       <NavLink
         to={prop.layout + prop.path}
-        className={classNames("nav-link", sidebarClass)}
+        className={classNames("nav-link", "d-flex", sidebarClass)}
         activeClassName="active"
       >
         <i className={classNames(prop.icon, "menu-icon", sidebarClass)} />
-        <p className={classNames("menu-title", sidebarClass)}>{prop.name}</p>
+        <span className={classNames("menu-title", sidebarClass)}>
+          {prop.name}
+        </span>
       </NavLink>
     </div>
   );

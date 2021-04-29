@@ -30,7 +30,6 @@ function Sidebar({ color, routes }) {
                 <CollapseItem
                   prop={prop}
                   activeRoute={activeRoute}
-                  // itemKey={key + prop.name}
                   key={key + prop.name}
                 />
               );

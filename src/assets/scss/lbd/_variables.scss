@@ -244,8 +244,9 @@ $bottombar-x: bottombar-x !default;
 $bottombar-back: bottombar-back !default;
 
 $white-navbar: rgba(#ffffff, 0.96);
-$blue-navbar: lighten($new-dark-blue, 10%);
-$azure-navbar: lighten($new-blue, 15%);
-$green-navbar: lighten($new-green, 10%);
-$orange-navbar: lighten($new-orange, 10%);
-$red-navbar: lighten($new-red, 10%);
+$blue-navbar: lighten($new-dark-blue, 5%);
+$azure-navbar: lighten($new-blue, 5%);
+$green-navbar: lighten($new-green, 5%);
+$orange-navbar: lighten($new-orange, 5%);
+$red-navbar: lighten($new-red, 5%);
+$purple-navbar: lighten($new-purple, 5%);

@@ -1,166 +1,119 @@
-// import React, { useState } from "react";
-// import ReactDOM from "react-dom";
-// import "antd/dist/antd.css";
-// import { Table, Input, Button, Space } from "antd";
-// // import Highlighter from "react-highlight-words";
-// import { SearchOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import "antd/dist/antd.css";
+import { Table, Space } from "antd";
+import { MerchantType } from "../../types/merchants";
+import { IResponse } from "../../types/common";
+import { useQuery } from "react-query";
+import { merchantAPI } from "../../services/queries/management/merchant";
+import { Link } from "react-router-dom";
+import Form from "./Form";
 
-// export default function Partners() {
-//   const [searchText, setSearchText] = useState("");
-//   const [searchedColumn, setSearchedColumn] = useState("");
-
-//   const data = [
-//     {
-//       key: "1",
-//       name: "John Brown",
-//       age: 32,
-//       address: "New York No. 1 Lake Park",
-//     },
-//     {
-//       key: "2",
-//       name: "Joe Black",
-//       age: 42,
-//       address: "London No. 1 Lake Park",
-//     },
-//     {
-//       key: "3",
-//       name: "Jim Green",
-//       age: 32,
-//       address: "Sidney No. 1 Lake Park",
-//     },
-//     {
-//       key: "4",
-//       name: "Jim Red",
-//       age: 32,
-//       address: "London No. 2 Lake Park",
-//     },
-//   ];
-
-//   const columns = [
-//     {
-//       title: "Name",
-//       dataIndex: "name",
-//       key: "name",
-//       width: "30%",
-//       ...this.getColumnSearchProps("name"),
-//     },
-//     {
-//       title: "Age",
-//       dataIndex: "age",
-//       key: "age",
-//       width: "20%",
-//       ...this.getColumnSearchProps("age"),
-//     },
-//     {
-//       title: "Address",
-//       dataIndex: "address",
-//       key: "address",
-//       ...this.getColumnSearchProps("address"),
-//     },
-//   ];
-
-//   // const getColumnSearchProps = (dataIndex) => ({
-//   //   filterDropdown: ({
-//   //     setSelectedKeys,
-//       // selectedKeys,
-//   //     confirm,
-//   //     clearFilters,
-//   //   }) => (
-//   //     <div style={{ padding: 8 }}>
-//   //       <Input
-//   //         ref={(node) => {
-//   //           this.searchInput = node;
-//   //         }}
-//   //         placeholder={`Search ${dataIndex}`}
-//   //         value={selectedKeys[0]}
-//   //         onChange={(e) =>
-//   //           setSelectedKeys(e.target.value ? [e.target.value] : [])
-//   //         }
-//   //         onPressEnter={() =>
-//   //           this.handleSearch(selectedKeys, confirm, dataIndex)
-//   //         }
-//   //         style={{ width: 188, marginBottom: 8, display: "block" }}
-//   //       />
-//   //       <Space>
-//   //         <Button
-//   //           type="primary"
-//   //           onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-//   //           icon={<SearchOutlined />}
-//   //           size="small"
-//   //           style={{ width: 90 }}
-//   //         >
-//   //           Search
-//   //         </Button>
-//   //         <Button
-//   //           onClick={() => this.handleReset(clearFilters)}
-//   //           size="small"
-//   //           style={{ width: 90 }}
-//   //         >
-//   //           Reset
-//   //         </Button>
-//   //         <Button
-//   //           type="link"
-//   //           size="small"
-//   //           onClick={() => {
-//   //             confirm({ closeDropdown: false });
-//   //             this.setState({
-//   //               searchText: selectedKeys[0],
-//   //               searchedColumn: dataIndex,
-//   //             });
-//   //           }}
-//   //         >
-//   //           Filter
-//   //         </Button>
-//   //       </Space>
-//   //     </div>
-//   //   ),
-//   //   filterIcon: (filtered) => (
-//   //     <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-//   //   ),
-//   //   onFilter: (value, record) =>
-//   //     record[dataIndex]
-//   //       ? record[dataIndex]
-//   //           .toString()
-//   //           .toLowerCase()
-//   //           .includes(value.toLowerCase())
-//   //       : "",
-//   //   onFilterDropdownVisibleChange: (visible) => {
-//   //     if (visible) {
-//   //       setTimeout(() => this.searchInput.select(), 100);
-//   //     }
-//   //   },
-//   //   render: (text) =>
-//   //     this.state.searchedColumn === dataIndex ? (
-//   //       // <Highlighter
-//   //       //   highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-//   //       //   searchWords={[this.state.searchText]}
-//   //       //   autoEscape
-//   //       //   textToHighlight={text ? text.toString() : ""}
-//   //       // />
-//   //     ) : (
-//   //       text
-//   //     ),
-//   // });
-
-//   // const handleSearch = (selectedKeys, confirm, dataIndex) => {
-//   //   confirm();
-//   //   this.setState({
-//   //     searchText: selectedKeys[0],
-//   //     searchedColumn: dataIndex,
-//   //   });
-//   // };
-
-//   // const handleReset = (clearFilters) => {
-//   //   clearFilters();
-//   //   this.setState({ searchText: "" });
-//   // };
-//   return (
-//     <div>
-//       <Table columns={columns} dataSource={data} />
-//     </div>
-//   );
+// interface AppListProps {
+//   // form: WrappedFormUtils;
 // }
 
-export default function index() {
-  return <div></div>;
+export default function Partners() {
+  const [page, setpage] = useState(1);
+  const [items, setitems] = useState(10);
+  const [sortField, setsortField] = useState();
+  const [sortOrder, setsortOrder] = useState();
+  const [search, setSearch] = useState({});
+
+  const {
+    isLoading,
+    isError,
+    error,
+    data,
+    isFetching,
+    // isPreviousData,
+  } = useQuery<IResponse<MerchantType>, Error>(
+    ["merchants", page, items, sortField, sortOrder, search],
+    () =>
+      merchantAPI.getMerchants({
+        page,
+        items,
+        sort_col: sortOrder && sortField,
+        sort_dir: sortOrder
+          ? sortOrder === "ascend"
+            ? false
+            : true
+          : undefined,
+        ...search,
+      }),
+    {
+      keepPreviousData: true,
+    }
+  );
+
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    setpage(pagination.current);
+    // setitems()
+    setsortField(sorter.field);
+    setsortOrder(sorter.order);
+  };
+
+  const onSearch = (params: any) => {
+    setSearch({ ...params });
+  };
+
+  const columns = [
+    {
+      title: "Merchant name",
+      dataIndex: "merchant_name",
+      key: "merchant_name",
+      sorter: true,
+      render: (text: any) => (
+        <Link className="link" to={`/about/merchant/${text}`}>
+          {text}
+        </Link>
+      ),
+
+    },
+    {
+      title: "Merchant type",
+      dataIndex: "merchant_type",
+      key: "merchant_type",
+      sorter: true,
+    },
+    {
+      title: "Group",
+      dataIndex: "group_name",
+      key: "group_name",
+      sorter: true,
+    },
+    {
+      title: "Partner",
+      dataIndex: "partner_name",
+      key: "partner_name",
+      sorter: true,
+    },
+    {
+      title: "Action",
+      key: "action",
+
+      render: (text: any, record: any) => (
+        <Space size="middle">
+          <a>Invite {record.name}</a>
+          <a>Delete</a>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <Form onSearch={onSearch} />
+      <Table
+        dataSource={data?.data}
+        columns={columns}
+        size="small"
+        onChange={handleTableChange}
+        pagination={{
+          total: parseInt(data?.count!, 10),
+          position: ["bottomLeft"],
+        }}
+        loading={isFetching}
+      />
+    </div>
+  );
 }

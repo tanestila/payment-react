@@ -40,6 +40,7 @@ body > .navbar-collapse {
     box-shadow: 0px 1px 15px rgba(69, 65, 78, 0.1);
     position: relative;
     z-index: 4;
+    transition: all 0.1s ease-in;
 
     a.logo-mini {
       float: left;
@@ -51,6 +52,12 @@ body > .navbar-collapse {
         height: 18px;
         margin-top: 29px;
         margin-left: 25px;
+      }
+    }
+
+    &.slideOut {
+      a.logo-mini {
+        margin-right: 25px;
       }
     }
 
@@ -70,14 +77,7 @@ body > .navbar-collapse {
   }
 
   .logo.slideOut {
-    // background: #1857b0;
-    // color: $white-color;
     width: 75px;
-    transition: all 0.1s ease-in;
-
-    #sidebar-hide-button-div {
-      color: $white-color;
-    }
   }
 
   #sidebar-hide-button-div {
@@ -110,23 +110,24 @@ body > .navbar-collapse {
           opacity: 1;
         }
 
-        p {
-          margin: 0;
-          line-height: 36px;
-          font-size: 12px;
-          font-weight: 600;
-          text-transform: uppercase;
-          display: inline-flex;
-        }
+        // p {
+        //   margin: 0;
+        //   line-height: 36px;
+        //   font-size: 12px;
+        //   font-weight: 600;
+        //   text-transform: uppercase;
+        //   display: inline-flex;
+        // }
 
         i {
           // font-size: 26px;
           // margin-right: 15px;
           margin: 5px 15px 5px 25px;
           width: 30px;
-          text-align: center;
-          vertical-align: middle;
+          // text-align: center;
+          // vertical-align: middle;
           // float: left;
+          display: inline-block;
         }
       }
 
@@ -161,38 +162,21 @@ body > .navbar-collapse {
     .nav-item {
       &.collapsed-menu {
         .nav-menu {
-          // padding-left: 0;
-          // margin-bottom: 0;
-          // list-style: none;
-
           .nav-item {
-            // position: relative;
-
             .nav-link {
-              // display: block;
-              // height: 36px;
-
               .menu-icon {
-                // width: 5px;
-                // height: 18px;
+                width: 5px;
                 font-size: $font-size-base;
-                margin-left: 50px;
-                // margin-top: 9px;
-                // margin-bottom: 9px;
+                margin: 9px 0 0 50px;
               }
 
               .menu-title {
-                // position: absolute;
-                // left: 67px;
-                // top: 9px;
                 text-transform: none;
-                // align-items: center;
               }
             }
 
             &.active,
             &:hover {
-              // background: $secondary-blue-color;
               opacity: 1 !important;
             }
           }
@@ -202,9 +186,7 @@ body > .navbar-collapse {
       &.hover-open {
         .nav-menu {
           &:not(.collapsing) {
-            // padding: 0;
             margin: 0;
-            // list-style: none;
             border: none;
             border-radius: 0%;
             width: 205px;
@@ -218,18 +200,15 @@ body > .navbar-collapse {
 
               .menu-title {
                 width: auto;
-                // position: absolute;
-                // left: 25px;
-                // top: 9px;
                 font-weight: $font-weight-normal;
                 text-transform: none;
                 align-items: center;
-                // color: $primary-dark-color;
+                color: #5d6072;
               }
 
               &.active,
               &:hover {
-                // background: $background;
+                background: $smoke-bg;
 
                 .menu-title {
                   // color: $secondary-blue-color;
@@ -239,7 +218,7 @@ body > .navbar-collapse {
 
             .menu-header {
               height: 36px;
-              // background: $secondary-blue-color;
+              background: $smoke-bg;
 
               .menu-title {
                 // position: absolute;
@@ -248,13 +227,14 @@ body > .navbar-collapse {
                 width: auto;
                 display: inline-block;
                 opacity: 1;
-                margin: 0;
+                // margin: 0;
+                margin: 0 0 0 30px;
                 line-height: 18px;
                 font-family: "Poppins", sans-serif;
                 font-style: normal;
                 font-size: $font-size-base;
                 text-transform: uppercase;
-                // color: $white-color;
+                color: $white-color;
               }
             }
           }
@@ -294,11 +274,12 @@ body > .navbar-collapse {
           color: #4577be;
           font-size: 26px;
           width: 26px;
+          // vertical-align: middle;
           // float: left;
           margin-left: 25px;
           margin-top: 5px;
           margin-bottom: 5px;
-          text-align: center;
+          // text-align: center;
         }
 
         .menu-title {
@@ -308,11 +289,12 @@ body > .navbar-collapse {
           width: auto;
           display: inline-block;
           opacity: 0.8;
-          margin: 0;
+          margin: 10px 0 0 10px;
           line-height: 18px;
           font-family: "Poppins", sans-serif;
           font-style: normal;
-          font-size: $font-size-small;
+          vertical-align: middle;
+          font-size: 13px;
           font-weight: $font-weight-normal;
           text-transform: uppercase;
         }
@@ -369,6 +351,7 @@ body > .navbar-collapse {
 
     .caret {
       position: absolute;
+      left: 216px;
       color: #4577be;
       width: 12px;
       height: 13px;
@@ -433,12 +416,11 @@ body > .navbar-collapse {
   &[data-color="black"] {
     .logo.slideOut {
       background: $default-states-color;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $default-states-color;
-      &:hover {
-        color: $default-states-color;
-      }
     }
   }
   &[data-color="blue"]:after {
@@ -446,13 +428,12 @@ body > .navbar-collapse {
   }
   &[data-color="blue"] {
     .logo.slideOut {
-      background: $new-dark-blue;
+      background: $blue-navbar;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $new-dark-blue;
-      &:hover {
-        color: $blue-color-bottom;
-      }
     }
   }
   &[data-color="azure"]:after {
@@ -460,13 +441,12 @@ body > .navbar-collapse {
   }
   &[data-color="azure"] {
     .logo.slideOut {
-      background: $new-blue;
+      background: $azure-navbar;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $new-blue;
-      &:hover {
-        color: $azure-color-bottom;
-      }
     }
   }
   &[data-color="green"]:after {
@@ -474,13 +454,12 @@ body > .navbar-collapse {
   }
   &[data-color="green"] {
     .logo.slideOut {
-      background: $new-green;
+      background: $green-navbar;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $new-green;
-      &:hover {
-        color: $green-color-bottom;
-      }
     }
   }
   &[data-color="orange"]:after {
@@ -488,13 +467,12 @@ body > .navbar-collapse {
   }
   &[data-color="orange"] {
     .logo.slideOut {
-      background: $new-orange;
+      background: $orange-navbar;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $new-orange;
-      &:hover {
-        color: $orange-color-bottom;
-      }
     }
   }
   &[data-color="red"]:after {
@@ -502,13 +480,12 @@ body > .navbar-collapse {
   }
   &[data-color="red"] {
     .logo.slideOut {
-      background: $new-red;
+      background: $red-navbar;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $new-red;
-      &:hover {
-        color: $red-color-bottom;
-      }
     }
   }
   &[data-color="purple"]:after {
@@ -516,27 +493,29 @@ body > .navbar-collapse {
   }
   &[data-color="purple"] {
     .logo.slideOut {
-      background: $new-purple;
+      background: $purple-navbar;
+      color: $white-color;
     }
-    #sidebar-hide-button-div {
+    .logo.slideIn {
+      background: $white-color;
       color: $new-purple;
-      &:hover {
-        color: $purple-color-bottom;
-      }
     }
   }
 }
 
 .main-panel {
-  background: rgba(203, 203, 210, 0.15);
+  background: $smoke-bg;
   position: relative;
   float: right;
   width: $sidebar-width;
   min-height: 100%;
 
   > .content {
-    padding: 30px 15px;
+    padding: 15px;
+    height: calc(100% - 76px);
     min-height: calc(100% - 123px);
+    background-color: #f9f9fc;
+    flex: 1;
   }
 
   > .footer {
@@ -545,6 +524,9 @@ body > .navbar-collapse {
 
   .navbar {
     margin-bottom: 0;
+    position: sticky;
+    top: 0px;
+    z-index: 2;
   }
 }
 
@@ -555,8 +537,8 @@ body > .navbar-collapse {
   height: 100%;
   -webkit-transition-property: top, bottom;
   transition-property: top, bottom;
-  -webkit-transition-duration: 0.2s, 0.2s;
-  transition-duration: 0.2s, 0.2s;
+  -webkit-transition-duration: 0.1s, 0.1s;
+  transition-duration: 0.1s, 0.1s;
   -webkit-transition-timing-function: linear, linear;
   transition-timing-function: linear, linear;
   -webkit-overflow-scrolling: touch;

@@ -17,18 +17,18 @@ export const adminRoutes = [
     state: "users",
     layout: "/admin",
     views: [
-      {
-        path: "/users/merchants",
-        name: "Merchants",
-        privilege: "READ_USERMERCHANT",
-        component: Merchants,
-      },
-      {
-        path: "/users/groups",
-        name: "Groups",
-        privilege: "READ_USERGROUP",
-        component: Groups,
-      },
+      // {
+      //   path: "/users/merchants",
+      //   name: "Merchants",
+      //   privilege: "READ_USERMERCHANT",
+      //   component: Merchants,
+      // },
+      // {
+      //   path: "/users/groups",
+      //   name: "Groups",
+      //   privilege: "READ_USERGROUP",
+      //   component: Groups,
+      // },
       {
         path: "/users/partners",
         name: "Partners",

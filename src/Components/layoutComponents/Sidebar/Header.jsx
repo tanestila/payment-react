@@ -10,10 +10,7 @@ export default function Header({ sidebarClass }) {
   return (
     <div className={classNames("logo", "d-flex", sidebarClass)}>
       <NavLink to="/dashboard" className="logo-mini">
-        <div
-          id="sidebar-header-logo"
-          className={classNames("logo-img", sidebarClass)}
-        >
+        <div className={classNames("logo-img", sidebarClass)}>
           <img src={logo} alt="logo" />
         </div>
       </NavLink>
