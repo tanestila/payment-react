@@ -46,11 +46,7 @@ function App() {
     <Route
       path={props.path}
       render={() =>
-        !isLoggedIn ? (
-          <Route path="/login" component={Login} />
-        ) : (
-          <Redirect to="/" />
-        )
+        !true ? <Route path="/login" component={Login} /> : <Redirect to="/" />
       }
     />
   );
@@ -69,7 +65,7 @@ function App() {
   const PrivateRoute = (props: RouteType) => (
     <Route
       path={props.path}
-      render={() => (isLoggedIn ? <Admin /> : <Redirect to="/login" />)}
+      render={() => (true ? <Admin /> : <Redirect to="/login" />)}
     />
   );
 

@@ -1,4 +1,10 @@
-import { Dashboard, Groups, Merchants, Partners } from "../views";
+import {
+  Dashboard,
+  Groups,
+  Merchants,
+  Partners,
+  AllTransactions,
+} from "../views";
 import MerchantDetail from "../views/Merchants/Detail";
 
 export const adminRoutes = [
@@ -62,7 +68,7 @@ export const adminRoutes = [
         path: "/transactions/history",
         name: "All transactions",
         privilege: "READ_SHOPS",
-        component: Partners,
+        component: AllTransactions,
       },
       {
         path: "/transactions/templates",

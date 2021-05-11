@@ -11,7 +11,7 @@ import Sidebar from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
 
 function Admin() {
-  const [color, setColor] = useState("blue");
+  const [color, setColor] = useState("green");
   const [routes, setRoutes] = useState([]);
   const [initialRoutes, setInitialRoutes] = useState([]);
   const location = useLocation();
@@ -30,13 +30,17 @@ function Admin() {
       default:
         break;
     }
+    setInitialRoutes(allRoutes.adminRoutes);
+    // setInitialRoutes(allRoutes.adminRoutes);
+
     let changedRoutes = initialRoutes.map((route) => {
-      if (route.privilege) {
-        let [action, subject] = route.privilege.split("_");
-        if (ability.can(action, subject)) {
-          return route;
-        } else return undefined;
-      } else return route;
+      // if (route.privilege) {
+      //   let [action, subject] = route.privilege.split("_");
+      //   if (ability.can(action, subject)) {
+      //     return route;
+      //   } else return undefined;
+      // } else
+      return route;
     });
     changedRoutes = changedRoutes.filter((r) => r);
     setRoutes(changedRoutes);
@@ -93,7 +97,6 @@ function Admin() {
           <Header />
           <div className="content">
             <Switch>{getRoutes(routes)}</Switch>
-            {console.log(getRoutes(routes))}
           </div>
           <Footer />
         </div>

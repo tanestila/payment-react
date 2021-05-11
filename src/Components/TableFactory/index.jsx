@@ -1,112 +1,149 @@
-import { useCallback } from "react";
-import Table from "./Table/index";
+import { useState } from "react";
+import { Table, Input, Button, Space } from "antd";
+import Form from "./Form";
+import "antd/dist/antd.css";
+import { SearchOutlined } from "@ant-design/icons";
 import ButtonFilter from "./Button";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setPageTable,
-  setPageSizeTable,
-  setSortKey,
-} from "../../redux/modules/table";
-import Pagination from "./Pagination";
-import Select from "../Common/Select";
 
-export default function TableFactory({ modalComponent, columns, data, count }) {
-  const dispatch = useDispatch();
-  const page = useSelector((state) => state.table.page);
-  const pageSize = useSelector((state) => state.table.items);
+export default function TableFactory({
+  onSearch,
+  search,
+  handleTableChange,
+  columns,
+  data = {},
+  items,
+  isFetching,
+  modalComponent,
+  isLoading,
+  isError,
+  error,
+}) {
+  const [isShowFrom, showForm] = useState(false);
 
-  const setPage = useCallback(
-    (pageIndex) => {
-      dispatch(setPageTable(pageIndex));
-    },
-    [dispatch]
-  );
+  function handleSearch(electedKeys, dataIndex, confirm = () => {}) {
+    confirm();
+    onSearch({ ...search, [dataIndex]: electedKeys });
+  }
 
-  const setPageSize = useCallback(
-    (option) => {
-      dispatch(setPageSizeTable(option.name));
-    },
-    [dispatch]
-  );
+  function handleReset(clearFilters, dataIndex) {
+    let params = { ...search };
+    delete params[dataIndex];
+    onSearch({ ...params });
+    clearFilters();
+  }
 
-  const onSort = useCallback(
-    (sortKey) => {
-      dispatch(setSortKey(sortKey));
-    },
-    [dispatch]
-  );
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, dataIndex, confirm)}
+          style={{ width: 188, marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, dataIndex, confirm)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => handleReset(clearFilters, dataIndex)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+  });
+
+  const getColumnBoolSearchProps = (dataIndex) => ({
+    filters: [
+      {
+        text: "enabled",
+        value: true,
+      },
+      {
+        text: "disabled",
+        value: false,
+      },
+    ],
+    filterMultiple: false,
+  });
+
+  const columnsWithSearch = columns.map((col) => {
+    if (!col.search) return { ...col, ...getColumnSearchProps(col.dataIndex) };
+    else {
+      switch (col.search) {
+        case "bool":
+          return { ...col, ...getColumnBoolSearchProps(col.dataIndex) };
+
+        default:
+          return col;
+      }
+    }
+  });
 
   return (
-    <>
-      <div className="main-table">
-        <div className="group-buttons">
-          <div className="main-buttons">
-            {modalComponent && modalComponent.props.allowed ? (
-              <div> {modalComponent} </div>
-            ) : null}
-            <ButtonFilter />
-          </div>
-
-          <div className="secondary-buttons">
-            {/* <Export
-                  searchData={searchData}
-                  exportFunction={exportFunction}
-                  columns={initColumns}
-                  name={name}
-                /> */}
-          </div>
+    <div className="main-table">
+      <div className="group-buttons">
+        <div className="main-buttons">
+          {modalComponent && modalComponent.props.allowed ? (
+            <div> {modalComponent} </div>
+          ) : null}
+          <ButtonFilter />
         </div>
 
-        <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
-          <Table
-            columns={columns}
-            // columnsComponent={columnsComponent}
-            // tableWidth={tableWidth}
-            // search={search}
-            data={data}
-            onSort={onSort}
-            // keyPath={keyPath}
-            // get={get}
-            // searchData={searchData}
-            // updateData={this.updateData}
-            // updateCurrentPage={this.updateCurrentPage}
-            // onSort={this.onSort}
-            // handleSortReset={this.handleSortReset}
-            // sortKey={this.state.sortKey}
-            // isSortReverse={this.state.isSortReverse}
-            // disableSearch={this.props.disableSearch}
-          />
-        </div>
+        <div className="secondary-buttons"></div>
+      </div>
+      <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
+        {isShowFrom && <Form onSearch={onSearch} />}
+        <Button
+          onClick={() => showForm(!isShowFrom)}
+          style={{ marginBottom: "15px" }}
+        >
+          SearchForm
+        </Button>
 
-        <div className="table-navigation">
-          <Pagination
-            pagesCount={Math.floor(
-              count / pageSize + (1 && !!(count % pageSize))
-            )}
-            currentPage={page}
-            onPageChange={setPage}
-            pageSize={pageSize}
-            count={count}
-          />
-
-          <div className="page-size-container">
-            <label>Page size:</label>
-
-            <Select
-              multi={false}
-              name="Select the page size"
-              options={[
-                { guid: "1", name: 10 },
-                { guid: "2", name: 20 },
-                { guid: "3", name: 50 },
-                { guid: "4", name: 100 },
-              ]}
-              onChange={setPageSize}
-              placeholder={pageSize}
+        {isLoading ? (
+          "Loading..."
+        ) : isError ? (
+          <span>Error: {error && error.message}</span>
+        ) : (
+          <div>
+            <Table
+              dataSource={data.data || []}
+              columns={columnsWithSearch}
+              size="small"
+              onChange={handleTableChange}
+              pagination={{
+                total: parseInt(data.count, 10),
+                position: ["bottomLeft"],
+                pageSize: items,
+              }}
+              bordered
+              loading={isFetching}
             />
           </div>
-        </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

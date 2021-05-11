@@ -112,36 +112,14 @@ export default function Groups() {
   );
 
   return (
-    <div>
-      {isLoading ? (
-        "Loading..."
-      ) : isError ? (
-        <span>Error: {error && error.message}</span>
-      ) : (
-        <>
-          <div>
-            <Table
-              columns={columns}
-              data={data?.data}
-              count={parseInt(data?.count!, 10)}
-              modalComponent={
-                <Modal
-                  allowed={ability.can("EXECUTE", "USERMERCHANT")}
-                  button={
-                    <button type="button" className="btn btn-fill btn-primary">
-                      Create merchant
-                    </button>
-                  }
-                  content={Creator}
-                  header="Create merchant"
-                  dialogClassName="modal-creator"
-                />
-              }
-            />
-            <div>{isFetching ? "Updating..." : " "}</div>
-          </div>
-        </>
-      )}
-    </div>
+    <Table
+      columns={columns}
+      handleTableChange={handleTableChange}
+      onSearch={onSearch}
+      search={search}
+      isFetching={isFetching}
+      data={data}
+      items={items}
+    />
   );
 }

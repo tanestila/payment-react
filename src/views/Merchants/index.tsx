@@ -138,7 +138,7 @@ export default function Merchants() {
       ) : (
         <>
           <div>
-            <Table
+            {/* <Table
               columns={columns}
               data={data?.data}
               count={parseInt(data?.count!, 10)}
@@ -155,7 +155,7 @@ export default function Merchants() {
                   dialogClassName="modal-creator"
                 />
               }
-            />
+            /> */}
             <div>{isFetching ? "Updating..." : " "}</div>
           </div>
         </>
