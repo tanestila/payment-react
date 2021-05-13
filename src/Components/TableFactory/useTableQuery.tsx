@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
 
-export default function useTableQuery(entity, method) {
-  const [page, setpage] = useState(1);
+export default function useTableQuery(entity: string, method: Function) {
+  const [page, setPage] = useState(1);
   const [items, setItems] = useState(100);
-  const [sortField, setsortField] = useState();
-  const [sortOrder, setsortOrder] = useState();
+  const [sortField, setSortField] = useState();
+  const [sortOrder, setSortOrder] = useState();
   const [search, setSearch] = useState({});
 
   const {
@@ -36,11 +36,10 @@ export default function useTableQuery(entity, method) {
   );
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log(pagination);
-    setpage(pagination.current);
+    setPage(pagination.current);
     setItems(pagination.pageSize);
-    setsortField(sorter.field);
-    setsortOrder(sorter.order);
+    setSortField(sorter.field);
+    setSortOrder(sorter.order);
     setSearch({ ...search, ...filters });
   };
 

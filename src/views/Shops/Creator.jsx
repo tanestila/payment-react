@@ -2,24 +2,21 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
-import { useMutation } from "react-query";
-import { merchantAPI } from "../../services/queries/management/merchant";
 
 export default function Creator() {
-  const mutation = useMutation(merchantAPI.addMerchant);
   return (
     <Formik
-      initialValues={{ first_name: "", last_name: "", email: "" }}
+      initialValues={{ firstName: "", lastName: "", email: "" }}
       validationSchema={Yup.object({
         email: Yup.string().email("Invalid email address").required("Required"),
-        first_name: Yup.string()
+        firstName: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
-        last_name: Yup.string()
+        lastName: Yup.string()
           .max(20, "Must be 20 characters or less")
           .required("Required"),
-        company_name: Yup.string().required("Required"),
-        company_address: Yup.string().required("Required"),
+        companyName: Yup.string().required("Required"),
+        companyAddress: Yup.string().required("Required"),
         name: Yup.string().required("Required"),
         type: Yup.string().required("Required"),
         monthlyFee: Yup.number().required("Required"),
@@ -32,29 +29,23 @@ export default function Creator() {
         customAmountLimit: Yup.string().max(15).required("Required"),
         customDaysLimit: Yup.number().max(1000).required("Required"),
       })}
-      onSubmit={async (values, { setSubmitting }) => {
-        alert(JSON.stringify(values, null, 2));
-        try {
-          const todo = await mutation.mutateAsync(values);
-          console.log(todo);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          console.log("done");
-        }
-        setSubmitting(false);
+      onSubmit={(values, { setSubmitting }) => {
+        setTimeout(() => {
+          alert(JSON.stringify(values, null, 2));
+          setSubmitting(false);
+        }, 400);
       }}
     >
       <Form>
         <Row>
           <Col xl={6} lg={12} md={12} sm={12} xs={12}>
             <Field name="email" type="email" label="Email" />
-            <Field name="first_name" type="text" label="First Name" />
-            <Field name="last_name" type="text" label="Last Name" />
+            <Field name="firstName" type="text" label="First Name" />
+            <Field name="lastName" type="text" label="Last Name" />
             <Field name="role" type="text" label="Role" />
             <Field name="phone" type="text" label="Phone" />
-            <Field name="company_name" type="text" label="Company name" />
-            <Field name="company_address" type="text" label="Company address" />
+            <Field name="companyName" type="text" label="Company name" />
+            <Field name="companyAddress" type="text" label="Company address" />
             <Field name="name" type="text" label="Merchant name" />
             <Field name="type" type="text" label="Merchant type" />
           </Col>
@@ -82,7 +73,7 @@ export default function Creator() {
             />
             <Field name="monthlyFeeDate" type="text" label="Monthly fee date" />
             <Field name="enabled" type="checkbox" label="Enable" />
-            <Field name="send_mail" type="checkbox" label="Send mail" />
+            <Field name="sendMail" type="checkbox" label="Send mail" />
             <Field name="language" type="text" label="Language" />
             <Field name="group" type="text" label="Group" />
           </Col>

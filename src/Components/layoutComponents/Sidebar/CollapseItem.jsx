@@ -30,7 +30,7 @@ export default function CollapseItem({ prop, activeRoute }) {
           "hover-open": isHide,
           "collapsed-menu": !isHide,
         },
-        activeRoute(prop.layout + prop.path),
+        activeRoute(prop.path),
         sidebarClass
       )}
     >
@@ -81,7 +81,6 @@ export default function CollapseItem({ prop, activeRoute }) {
                 key={key + prop.name + "_dropdown"}
                 child={child}
                 isHide={isHide}
-                layout={prop.layout}
               />
             );
           })}
@@ -95,7 +94,6 @@ export default function CollapseItem({ prop, activeRoute }) {
                 key={key + prop.name + "_collapse"}
                 child={child}
                 isHide={isHide}
-                layout={prop.layout}
               />
             );
           })}
@@ -105,7 +103,7 @@ export default function CollapseItem({ prop, activeRoute }) {
   );
 }
 
-function SidebarCollapseItem({ isHide, child, layout }) {
+function SidebarCollapseItem({ isHide, child }) {
   const sidebarClass = {
     slideOut: isHide,
     slideIn: !isHide,
@@ -117,7 +115,7 @@ function SidebarCollapseItem({ isHide, child, layout }) {
         id="sidebar-text-icon-active"
         title={isHide ? child.name : ""}
         className={classNames("nav-link", "d-flex", sidebarClass)}
-        to={layout + child.path}
+        to={child.path}
         activeClassName=""
       >
         <i className="menu-icon">•</i>

@@ -4,6 +4,9 @@ import {
   Merchants,
   Partners,
   AllTransactions,
+  Currencies,
+  Admins,
+  Shops,
 } from "../views";
 import MerchantDetail from "../views/Merchants/Detail";
 
@@ -23,18 +26,18 @@ export const adminRoutes = [
     state: "users",
     layout: "/admin",
     views: [
-      // {
-      //   path: "/users/merchants",
-      //   name: "Merchants",
-      //   privilege: "READ_USERMERCHANT",
-      //   component: Merchants,
-      // },
-      // {
-      //   path: "/users/groups",
-      //   name: "Groups",
-      //   privilege: "READ_USERGROUP",
-      //   component: Groups,
-      // },
+      {
+        path: "/users/merchants",
+        name: "Merchants",
+        privilege: "READ_USERMERCHANT",
+        component: Merchants,
+      },
+      {
+        path: "/users/groups",
+        name: "Groups",
+        privilege: "READ_USERGROUP",
+        component: Groups,
+      },
       {
         path: "/users/partners",
         name: "Partners",
@@ -45,7 +48,7 @@ export const adminRoutes = [
         path: "/users/admins",
         name: "Admins",
         privilege: "READ_USERADMIN",
-        component: Partners,
+        component: Admins,
       },
     ],
   },
@@ -55,7 +58,7 @@ export const adminRoutes = [
     layout: "/admin",
     icon: "icon-shops",
     privilege: "READ_SHOPS",
-    component: Partners,
+    component: Shops,
   },
   {
     collapse: true,
@@ -99,6 +102,21 @@ export const adminRoutes = [
         name: "Statements",
         privilege: "READ_STATEMENTS",
         component: Partners,
+      },
+    ],
+  },
+  {
+    collapse: true,
+    name: "System",
+    icon: "icon-system",
+    state: "system",
+    layout: "/admin",
+    views: [
+      {
+        path: "/currencies",
+        name: "Currencies",
+        privilege: "READ_CURRENCIES",
+        component: Currencies,
       },
     ],
   },
@@ -174,5 +192,38 @@ export const adminNonNav = [
     path: "/about/merchant/:id",
     privilege: "READ_USERMERCHANT",
     component: MerchantDetail,
+  },
+];
+
+export const merchantRoutes = [
+  {
+    path: "/shops",
+    name: "Shops",
+    layout: "/merchant",
+    icon: "icon-shops",
+    privilege: "READ_MERCHANTSHOP",
+    component: Shops,
+  },
+];
+
+export const groupRoutes = [
+  {
+    path: "/shops",
+    name: "Shops",
+    layout: "/group",
+    icon: "icon-shops",
+    privilege: "READ_SHOPS",
+    component: Shops,
+  },
+];
+
+export const partnerRoutes = [
+  {
+    path: "/shops",
+    name: "Shops",
+    layout: "/partner",
+    icon: "icon-shops",
+    privilege: "READ_SHOPS",
+    component: Shops,
   },
 ];

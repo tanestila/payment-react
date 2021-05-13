@@ -4,14 +4,10 @@ import { NavLink } from "react-router-dom";
 export default function Item({ prop, activeRoute, sidebarClass }) {
   return (
     <div
-      className={classNames(
-        "nav-item",
-        activeRoute(prop.layout + prop.path),
-        sidebarClass
-      )}
+      className={classNames("nav-item", activeRoute(prop.path), sidebarClass)}
     >
       <NavLink
-        to={prop.layout + prop.path}
+        to={prop.path}
         className={classNames("nav-link", "d-flex", sidebarClass)}
         activeClassName="active"
       >

@@ -98,11 +98,11 @@ export default function AllTransactions() {
       title: "Rates",
       dataIndex: "rates",
       key: "rates",
-      render: (text: any, record: any) => (
-        <button type="button" className="btn btn-table">
-          Show
-        </button>
-      ),
+      // render: (text: any, record: any) => (
+      //   <button type="button" className="btn btn-table">
+      //     Show
+      //   </button>
+      // ),
     },
     {
       title: "Status",

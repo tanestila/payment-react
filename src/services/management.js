@@ -5,7 +5,7 @@ import {
   tokenRefreshInterceptor,
 } from "./interceptor";
 
-const managementApiUrl = `http://10.2.201.24:8080/api/v1/management`;
+const managementApiUrl = `http://localhost:8080/api/v1/management`;
 
 const instance = axios.create({ baseURL: managementApiUrl });
 // instance.defaults.headers.common["Authorization"] = store.getState().auth

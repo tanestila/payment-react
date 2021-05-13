@@ -3,13 +3,14 @@ import { Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { toggleIsSearch } from "../../redux/modules/table";
 
-const ButtonFilter = () => {
+const ButtonFilter = ({ handleClick }) => {
   const [active, setActive] = useState(true);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const handleShowFilters = async () => {
-    dispatch(toggleIsSearch());
+    // dispatch(toggleIsSearch());
     setActive(!active);
+    handleClick();
   };
 
   return (

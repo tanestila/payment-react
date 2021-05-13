@@ -95,6 +95,28 @@
         &:hover {
           color: $info-color;
         }
+
+        i {
+          font-size: 26px;
+          display: flex;
+          align-items: center;
+          margin-right: 2px;
+          line-height: 40px;
+        }
+
+        &[id="docs"] {
+          border-right: 1px solid rgba(160, 168, 197, 0.3);
+
+          span {
+            display: none;
+          }
+        }
+
+        &[id="logout"] {
+          span {
+            display: none;
+          }
+        }
       }
 
       .dropdown-menu {

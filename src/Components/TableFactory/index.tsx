@@ -1,44 +1,84 @@
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Table, Input, Button, Space } from "antd";
 import Form from "./Form";
 import "antd/dist/antd.css";
 import { SearchOutlined } from "@ant-design/icons";
 import ButtonFilter from "./Button";
+import Loading from "../Common/Loading";
+import { ColumnsType } from "antd/lib/table";
+import useGateways from "../Common/SearchSelect/Table/gateways";
+import { useQuery } from "react-query";
+import { gatewayAPI } from "../../services/queries/management/gateway";
+import { AbilityContext } from "../Common/Can";
+
+type DataType = {
+  data: Array<any>;
+  count: string;
+};
+
+type TablePropsType = {
+  onSearch: Function;
+  search: any;
+  handleTableChange: any;
+  columns: ColumnsType[];
+  data: DataType;
+  items: number;
+  isFetching: boolean;
+  modalComponent: any;
+  isLoading: boolean;
+  isError: boolean;
+  error: any;
+  searchQuery: any;
+};
 
 export default function TableFactory({
   onSearch,
   search,
   handleTableChange,
   columns,
-  data = {},
+  data = { data: [], count: "0" },
   items,
   isFetching,
   modalComponent,
   isLoading,
   isError,
   error,
-}) {
+  searchQuery = {},
+}: TablePropsType) {
+  const ability = useContext(AbilityContext);
   const [isShowFrom, showForm] = useState(false);
+  const { data: gateways } = useQuery(
+    ["gateways"],
+    () => gatewayAPI.getGateways(),
+    {
+      keepPreviousData: true,
+      enabled: ability.can("READ", "GATEWAYS") && !!searchQuery.gateways,
+    }
+  );
 
-  function handleSearch(electedKeys, dataIndex, confirm = () => {}) {
+  function handleSearch(
+    electedKeys: string,
+    dataIndex: string,
+    confirm: Function
+  ) {
     confirm();
     onSearch({ ...search, [dataIndex]: electedKeys });
   }
 
-  function handleReset(clearFilters, dataIndex) {
+  function handleReset(clearFilters: Function, dataIndex: string) {
     let params = { ...search };
     delete params[dataIndex];
     onSearch({ ...params });
     clearFilters();
   }
 
-  const getColumnSearchProps = (dataIndex) => ({
+  const getColumnSearchProps = (dataIndex: string) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-    }) => (
+    }: any) => (
       <div style={{ padding: 8 }}>
         <Input
           placeholder={`Search ${dataIndex}`}
@@ -69,12 +109,12 @@ export default function TableFactory({
         </Space>
       </div>
     ),
-    filterIcon: (filtered) => (
+    filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
   });
 
-  const getColumnBoolSearchProps = (dataIndex) => ({
+  const getColumnBoolSearchProps = () => ({
     filters: [
       {
         text: "enabled",
@@ -88,12 +128,29 @@ export default function TableFactory({
     filterMultiple: false,
   });
 
-  const columnsWithSearch = columns.map((col) => {
-    if (!col.search) return { ...col, ...getColumnSearchProps(col.dataIndex) };
+  const getColumnGatewaysSearchProps = () => {
+    let gatewaysSearchParams = gateways
+      ? gateways.data.map((g) => ({
+          text: g.name,
+          value: g.name,
+        }))
+      : [];
+    return {
+      filters: gatewaysSearchParams,
+      filterMultiple: true,
+    };
+  };
+
+  const columnsWithSearch = columns.map((col: any) => {
+    if (!col.search) return col;
     else {
       switch (col.search) {
+        case "text":
+          return { ...col, ...getColumnSearchProps(col.dataIndex) };
         case "bool":
-          return { ...col, ...getColumnBoolSearchProps(col.dataIndex) };
+          return { ...col, ...getColumnBoolSearchProps() };
+        case "gateways":
+          return { ...col, ...getColumnGatewaysSearchProps() };
 
         default:
           return col;
@@ -108,22 +165,16 @@ export default function TableFactory({
           {modalComponent && modalComponent.props.allowed ? (
             <div> {modalComponent} </div>
           ) : null}
-          <ButtonFilter />
+          <ButtonFilter handleClick={() => showForm(!isShowFrom)} />
         </div>
 
         <div className="secondary-buttons"></div>
       </div>
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
-        {isShowFrom && <Form onSearch={onSearch} />}
-        <Button
-          onClick={() => showForm(!isShowFrom)}
-          style={{ marginBottom: "15px" }}
-        >
-          SearchForm
-        </Button>
+        {isShowFrom && <Form onSearch={onSearch} columns={columns} />}
 
         {isLoading ? (
-          "Loading..."
+          <Loading />
         ) : isError ? (
           <span>Error: {error && error.message}</span>
         ) : (

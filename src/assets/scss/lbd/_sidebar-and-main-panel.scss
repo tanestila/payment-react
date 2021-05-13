@@ -177,6 +177,7 @@ body > .navbar-collapse {
 
             &.active,
             &:hover {
+              background: #1378cb;
               opacity: 1 !important;
             }
           }
@@ -211,14 +212,14 @@ body > .navbar-collapse {
                 background: $smoke-bg;
 
                 .menu-title {
-                  // color: $secondary-blue-color;
+                  color: #1378cb;
                 }
               }
             }
 
             .menu-header {
               height: 36px;
-              background: $smoke-bg;
+              background: #1378cb;
 
               .menu-title {
                 // position: absolute;
@@ -253,6 +254,14 @@ body > .navbar-collapse {
                 text-transform: none;
                 display: none;
               }
+              &.active,
+              &:hover {
+                background: $white-color;
+
+                .menu-title {
+                  color: #1378cb;
+                }
+              }
             }
           }
         }
@@ -271,7 +280,7 @@ body > .navbar-collapse {
         box-shadow: none;
 
         .menu-icon {
-          color: #4577be;
+          // color: #4577be;
           font-size: 26px;
           width: 26px;
           // vertical-align: middle;
@@ -323,7 +332,7 @@ body > .navbar-collapse {
 
         &.active,
         &:hover {
-          // background: $secondary-blue-color;
+          background: #1378cb;
           opacity: 1;
           .menu-icon {
             color: $white-color;
@@ -352,7 +361,7 @@ body > .navbar-collapse {
     .caret {
       position: absolute;
       left: 216px;
-      color: #4577be;
+      // color: #4577be;
       width: 12px;
       height: 13px;
       font-style: normal;
@@ -422,6 +431,16 @@ body > .navbar-collapse {
       background: $white-color;
       color: $default-states-color;
     }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $white-color;
+        }
+      }
+    }
+    .caret {
+      color: $white-color;
+    }
   }
   &[data-color="blue"]:after {
     @include icon-gradient($new-dark-blue, $blue-color-bottom);
@@ -434,6 +453,16 @@ body > .navbar-collapse {
     .logo.slideIn {
       background: $white-color;
       color: $new-dark-blue;
+    }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $blue-color-icon;
+        }
+      }
+    }
+    .caret {
+      color: $blue-color-icon;
     }
   }
   &[data-color="azure"]:after {
@@ -448,6 +477,16 @@ body > .navbar-collapse {
       background: $white-color;
       color: $new-blue;
     }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $azure-color-bottom;
+        }
+      }
+    }
+    .caret {
+      color: $azure-color-bottom;
+    }
   }
   &[data-color="green"]:after {
     @include icon-gradient($new-green, $green-color-bottom);
@@ -460,6 +499,16 @@ body > .navbar-collapse {
     .logo.slideIn {
       background: $white-color;
       color: $new-green;
+    }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $success-states-color;
+        }
+      }
+    }
+    .caret {
+      color: $success-states-color;
     }
   }
   &[data-color="orange"]:after {
@@ -474,6 +523,16 @@ body > .navbar-collapse {
       background: $white-color;
       color: $new-orange;
     }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $orange-color-bottom;
+        }
+      }
+    }
+    .caret {
+      color: $orange-color-bottom;
+    }
   }
   &[data-color="red"]:after {
     @include icon-gradient($new-red, $red-color-bottom);
@@ -486,6 +545,16 @@ body > .navbar-collapse {
     .logo.slideIn {
       background: $white-color;
       color: $new-red;
+    }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $red-color-bottom;
+        }
+      }
+    }
+    .caret {
+      color: $red-color-bottom;
     }
   }
   &[data-color="purple"]:after {
@@ -500,6 +569,16 @@ body > .navbar-collapse {
       background: $white-color;
       color: $new-purple;
     }
+    .nav-item {
+      .nav-link {
+        .menu-icon {
+          color: $purple-color-icon;
+        }
+      }
+    }
+    .caret {
+      color: $purple-color-icon;
+    }
   }
 }
 
@@ -512,7 +591,7 @@ body > .navbar-collapse {
 
   > .content {
     padding: 15px;
-    height: calc(100% - 76px);
+    // height: calc(100% - 76px);
     min-height: calc(100% - 123px);
     background-color: #f9f9fc;
     flex: 1;

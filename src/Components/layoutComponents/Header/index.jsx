@@ -33,7 +33,7 @@ function Header() {
   //   return "Brand";
   // };
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar expand="lg">
       <Container fluid>
         <div className="d-flex justify-content-center align-items-center ml-2 ml-lg-0">
           {/* <Button
@@ -133,10 +133,11 @@ function Header() {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link
+                id="profile"
                 className="m-0"
                 onClick={() => history.push("/admin/useraccount")}
               >
-                <i className="icon-user_ico">
+                <i className=" icon-user_ico">
                   <span className="path1"></span>
                   <span className="path2"></span>
                   <span className="path3"></span>
@@ -146,6 +147,7 @@ function Header() {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link
+                id="docs"
                 className="m-0"
                 onClick={() => {
                   window.open(apiFile);
@@ -157,6 +159,7 @@ function Header() {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link
+                id="logout"
                 className="m-0"
                 onClick={() => {
                   dispatch(logout());

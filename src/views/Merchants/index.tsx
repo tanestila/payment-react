@@ -11,91 +11,106 @@ import { MerchantType } from "../../types/merchants";
 import { IResponse } from "../../types/common";
 import Editor from "./Editor";
 import Creator from "./Creator";
-import Loading from "../../Components/Common/Loading";
+import useTableQuery from "../../Components/TableFactory/useTableQuery";
+import { Space } from "antd";
 
 export default function Merchants() {
   const ability = useContext(AbilityContext);
-  const dispatch = useDispatch();
-  const { page, items, sortKey, sortDirect } = useSelector(
-    (state: RootStateOrAny) => state.table
-  );
 
   const {
     isLoading,
     isError,
     error,
     data,
+    items,
+    search,
     isFetching,
-    // isPreviousData,
-  } = useQuery<IResponse<MerchantType>, Error>(
-    ["merchants", page, items, sortKey, sortDirect],
-    () =>
-      merchantAPI.getMerchants({
-        page,
-        items,
-        sort_col: sortKey,
-        sort_dir: sortDirect,
-      }),
-    {
-      keepPreviousData: true,
-    }
-  );
+    handleTableChange,
+    onSearch,
+  } = useTableQuery("merchants", merchantAPI.getMerchants);
 
-  useEffect(() => {
-    dispatch(setNewTable("merchant"));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(setNewTable("merchant"));
+  // }, [dispatch]);
 
   const columns = useMemo(
     () => [
       {
-        header: "Merchant name",
-        accessor: "merchant_name",
-        content: (cellInfo: MerchantType) => (
-          <Link
-            className="link"
-            to={`/about/merchant/${cellInfo.merchant_guid}`}
-          >
-            {cellInfo.merchant_name}
+        title: "Merchant name",
+        dataIndex: "merchant_name",
+        key: "merchant_name",
+        sorter: true,
+        search: "text",
+        render: (text: any) => (
+          <Link className="link" to={`/about/merchant/${text}`}>
+            {text}
           </Link>
         ),
-        isSort: true,
+      },
+      {
+        title: "Merchant type",
+        dataIndex: "merchant_type",
+        key: "merchant_type",
+        sorter: true,
         search: "text",
       },
       {
-        header: "Merchant type",
-        accessor: "merchant_type",
+        title: "Group",
+        dataIndex: "group_name",
+        key: "group_name",
+        sorter: true,
         search: "text",
       },
       {
-        header: "Group",
-        accessor: "group_name",
+        title: "Partner",
+        dataIndex: "partner_name",
+        key: "partner_name",
+        sorter: true,
+        search: "text",
+      },
+
+      {
+        title: "Gateways",
+        dataIndex: "gateways",
+        key: "gateways",
+        search: "gateways",
+        render: (text: any, record: any) => record.gateways.join(", "),
+      },
+      {
+        title: "Username",
+        dataIndex: "username",
+        key: "group_name",
+        sorter: true,
         search: "text",
       },
       {
-        header: "Partner",
-        accessor: "partner_name",
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+        sorter: true,
+        search: "text",
       },
+      // {
+      //   title: "Action",
+      //   key: "action",
+
+      //   render: (text: any, record: any) => (
+      //     <Space size="middle">
+      //       <a>Invite {record.name}</a>
+      //       <a>Delete</a>
+      //     </Space>
+      //   ),
+      // },
       {
-        header: "Gateways",
-        accessor: "gateways",
-        content: (cellInfo: MerchantType) => cellInfo.gateways.join(", "),
-      },
-      {
-        header: "Username",
-        accessor: "username",
-      },
-      {
-        header: "Email",
-        accessor: "email",
-      },
-      {
-        header: "Status",
-        accessor: "enabled",
+        title: "Status",
+        dataIndex: "enabled",
+        key: "enabled",
         search: "bool",
-        content: (cellInfo: MerchantType) => (
+        width: 70,
+        render: (text: any, record: any) => (
           <i
             className={
-              cellInfo.enabled
+              record.enabled
                 ? "icon-success green icon"
                 : "icon-failed red icon"
             }
@@ -103,9 +118,9 @@ export default function Merchants() {
         ),
       },
       ability.can("EXECUTE", "USERMERCHANT") && {
-        header: "Edit",
-        accessor: "edit",
-        content: (cellInfo: MerchantType) => (
+        title: "Edit",
+        key: "edit",
+        render: (cellInfo: MerchantType) => (
           <Modal
             header="Edit merchant"
             content={Editor}
@@ -121,45 +136,41 @@ export default function Merchants() {
         ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
-        header: "Delete",
-        accessor: "delete",
-        content: () => <p>delete</p>,
+        title: "Delete",
+        key: "delete",
+        render: () => <span>delete</span>,
       },
     ],
     [ability]
   );
 
   return (
-    <div>
-      {isLoading ? (
-        <Loading />
-      ) : isError ? (
-        <span>Server Error: {error && error.message}</span>
-      ) : (
-        <>
-          <div>
-            {/* <Table
-              columns={columns}
-              data={data?.data}
-              count={parseInt(data?.count!, 10)}
-              modalComponent={
-                <Modal
-                  allowed={ability.can("EXECUTE", "USERMERCHANT")}
-                  button={
-                    <button type="button" className="btn btn-fill btn-primary">
-                      Create merchant
-                    </button>
-                  }
-                  content={Creator}
-                  header="Create merchant"
-                  dialogClassName="modal-creator"
-                />
-              }
-            /> */}
-            <div>{isFetching ? "Updating..." : " "}</div>
-          </div>
-        </>
-      )}
-    </div>
+    <Table
+      columns={columns}
+      handleTableChange={handleTableChange}
+      onSearch={onSearch}
+      search={search}
+      isFetching={isFetching}
+      data={data}
+      items={items}
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      searchQuery={{ gateways: true }}
+      modalComponent={
+        <Modal
+          allowed={ability.can("EXECUTE", "USERMERCHANT")}
+          // allowed={true}
+          button={
+            <button className="btn btn-fill btn-primary">
+              Create merchant
+            </button>
+          }
+          content={Creator}
+          header="Create merchant"
+          dialogClassName="modal-creator"
+        />
+      }
+    />
   );
 }

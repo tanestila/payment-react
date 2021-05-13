@@ -11,7 +11,7 @@ import Sidebar from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
 
 function Admin() {
-  const [color, setColor] = useState("green");
+  const [color, setColor] = useState("blue");
   const [routes, setRoutes] = useState([]);
   const [initialRoutes, setInitialRoutes] = useState([]);
   const location = useLocation();
@@ -26,21 +26,29 @@ function Admin() {
       case "admin":
         setInitialRoutes(allRoutes.adminRoutes);
         break;
+      case "merchant":
+        setInitialRoutes(allRoutes.merchantRoutes);
+        break;
+      case "group":
+        setInitialRoutes(allRoutes.groupRoutes);
+        break;
+      case "partner":
+        setInitialRoutes(allRoutes.partnerRoutes);
+        break;
 
       default:
         break;
     }
-    setInitialRoutes(allRoutes.adminRoutes);
+    console.log(role);
     // setInitialRoutes(allRoutes.adminRoutes);
 
     let changedRoutes = initialRoutes.map((route) => {
-      // if (route.privilege) {
-      //   let [action, subject] = route.privilege.split("_");
-      //   if (ability.can(action, subject)) {
-      //     return route;
-      //   } else return undefined;
-      // } else
-      return route;
+      if (route.privilege) {
+        let [action, subject] = route.privilege.split("_");
+        if (ability.can(action, subject)) {
+          return route;
+        } else return undefined;
+      } else return route;
     });
     changedRoutes = changedRoutes.filter((r) => r);
     setRoutes(changedRoutes);
@@ -52,7 +60,7 @@ function Admin() {
         return prop.views.map((item, key) => {
           return (
             <Route
-              path={prop.layout + item.path}
+              path={item.path}
               render={(props) => <item.component {...props} />}
               key={key + item.name}
             />
@@ -61,7 +69,7 @@ function Admin() {
       } else
         return (
           <Route
-            path={prop.layout + prop.path}
+            path={prop.path}
             render={(props) => <prop.component {...props} />}
             key={key}
           />

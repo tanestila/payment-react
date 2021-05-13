@@ -1,97 +1,95 @@
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import Table from "../../Components/TableFactory";
-import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { setNewTable } from "../../redux/modules/table";
 import Modal from "../../Components/Common/Modal";
-import { MerchantType } from "../../types/merchants";
-import { IResponse } from "../../types/common";
 import Editor from "./Editor";
 import Creator from "./Creator";
 import { groupAPI } from "../../services/queries/management/group";
+import useTableQuery from "../../Components/TableFactory/useTableQuery";
+import { GroupType } from "../../types/groups";
+import DeleteModal from "../../Components/Common/DeleteModal";
 
 export default function Groups() {
   const ability = useContext(AbilityContext);
-  const dispatch = useDispatch();
-  const { page, items, sortKey, sortDirect } = useSelector(
-    (state: RootStateOrAny) => state.table
-  );
-
   const {
     isLoading,
     isError,
     error,
     data,
+    items,
+    search,
     isFetching,
-    // isPreviousData,
-  } = useQuery<IResponse<MerchantType>, Error>(
-    ["groups", page, items, sortKey, sortDirect],
-    () =>
-      groupAPI.getGroups({
-        page,
-        items,
-        sort_col: sortKey,
-        sort_dir: sortDirect,
-      }),
-    {
-      keepPreviousData: true,
-    }
-  );
-
-  useEffect(() => {
-    dispatch(setNewTable("groups"));
-  }, [dispatch]);
+    handleTableChange,
+    onSearch,
+  } = useTableQuery("groups", groupAPI.getGroups);
 
   const columns = useMemo(
     () => [
       {
-        header: "Group name",
-        accessor: "group_name",
-        content: (cellInfo: MerchantType) => (
-          <Link className="link" to={`/about/merchant/${cellInfo.group_guid}`}>
-            {cellInfo.group_name}
+        title: "Group name",
+        dataIndex: "group_name",
+        key: "group_name",
+        sorter: true,
+        search: "text",
+        render: (text: string, record: GroupType) => (
+          <Link className="link" to={`/about/group/${record.group_guid}`}>
+            {text}
           </Link>
         ),
-        isSort: true,
       },
       {
-        header: "Group type",
-        accessor: "group_type",
+        title: "Group type",
+        dataIndex: "group_type",
+        key: "group_type",
+        sorter: true,
+        search: "text",
       },
       {
-        header: "Partner",
-        accessor: "partner_name",
+        title: "Partner",
+        dataIndex: "partner_name",
+        key: "partner_name",
+        sorter: true,
+        search: "text",
       },
       {
-        header: "Username",
-        accessor: "username",
+        title: "Username",
+        dataIndex: "username",
+        key: "group_name",
+        sorter: true,
+        search: "text",
       },
       {
-        header: "Email",
-        accessor: "email",
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+        sorter: true,
+        search: "text",
       },
       {
-        header: "Status",
-        accessor: "enabled",
-        content: (cellInfo: MerchantType) => (
+        title: "Status",
+        dataIndex: "enabled",
+        key: "enabled",
+        search: "bool",
+        render: (text: any, record: any) => (
           <i
             className={
-              cellInfo.enabled
+              record.enabled
                 ? "icon-success green icon"
                 : "icon-failed red icon"
             }
           />
         ),
       },
+
       ability.can("EXECUTE", "USERMERCHANT") && {
-        header: "Edit",
-        accessor: "edit",
-        content: () => (
+        title: "Edit",
+        key: "edit",
+        render: (text: string, record: GroupType) => (
           <Modal
             header="Edit merchant"
             content={Editor}
+            contentProps={{ guid: record.group_guid }}
             button={
               <i
                 className="icon-edit icon gray"
@@ -103,9 +101,15 @@ export default function Groups() {
         ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
-        header: "Delete",
-        accessor: "delete",
-        content: () => <p>delete</p>,
+        title: "Delete",
+        key: "delete",
+        render: (text: string, record: GroupType) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.group_guid)}
+          />
+        ),
       },
     ],
     [ability]
@@ -120,6 +124,21 @@ export default function Groups() {
       isFetching={isFetching}
       data={data}
       items={items}
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      modalComponent={
+        <Modal
+          allowed={ability.can("EXECUTE", "USERMERCHANT")}
+          // allowed={true}
+          button={
+            <button className="btn btn-fill btn-primary">Create partner</button>
+          }
+          content={Creator}
+          header="Create merchant"
+          dialogClassName="modal-creator"
+        />
+      }
     />
   );
 }
