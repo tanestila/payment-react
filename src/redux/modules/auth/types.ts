@@ -6,4 +6,5 @@ export const types = {
   SET_LOADING: "auth/SET_LOADING",
   LOGOUT: "auth/LOGOUT",
   OTP_AUTH: "auth/OTP_AUTH",
+  SET_TOKENS: "auth/SET_TOKENS",
 };

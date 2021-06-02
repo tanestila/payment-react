@@ -1,6 +1,15 @@
 import { Formik, Form } from "formik";
 import { TextInput } from "../Common/SearchSelect/Form/TextInput";
-export default function SearchForm({ onSearch, columns }) {
+
+type SearchFormProps = {
+  onSearch: Function;
+  columns: Array<any>;
+};
+
+export const SearchForm: React.FC<SearchFormProps> = ({
+  onSearch,
+  columns,
+}) => {
   const params = {};
   columns.forEach((c) => {
     params[c.dataIndex] = null;
@@ -15,8 +24,7 @@ export default function SearchForm({ onSearch, columns }) {
         keys.forEach((key) => {
           if (values[key]) obj[key] = values[key];
         });
-        console.log(values);
-        console.log(obj);
+
         onSearch(obj);
       }}
     >
@@ -36,4 +44,4 @@ export default function SearchForm({ onSearch, columns }) {
       </Form>
     </Formik>
   );
-}
+};

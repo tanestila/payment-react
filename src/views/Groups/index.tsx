@@ -8,7 +8,7 @@ import Creator from "./Creator";
 import { groupAPI } from "../../services/queries/management/group";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { GroupType } from "../../types/groups";
-import DeleteModal from "../../Components/Common/DeleteModal";
+import { DeleteModal } from "../../Components/Common/DeleteModal";
 
 export default function Groups() {
   const ability = useContext(AbilityContext);

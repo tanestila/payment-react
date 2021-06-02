@@ -9,6 +9,7 @@ import {
   Shops,
 } from "../views";
 import MerchantDetail from "../views/Merchants/Detail";
+import { StoryUI } from "../Components/StoryUI";
 
 export const adminRoutes = [
   {
@@ -16,7 +17,7 @@ export const adminRoutes = [
     name: "Dashboard",
     icon: "icon-dashboard",
     component: Dashboard,
-    layout: "/admin",
+
     privilege: "READ_MERCHANTLOGIN",
   },
   {
@@ -24,7 +25,7 @@ export const adminRoutes = [
     name: "Users",
     icon: "icon-users",
     state: "users",
-    layout: "/admin",
+
     views: [
       {
         path: "/users/merchants",
@@ -55,7 +56,7 @@ export const adminRoutes = [
   {
     path: "/shops",
     name: "Shops",
-    layout: "/admin",
+
     icon: "icon-shops",
     privilege: "READ_SHOPS",
     component: Shops,
@@ -65,7 +66,7 @@ export const adminRoutes = [
     name: "Transactions",
     icon: "icon-transactions",
     state: "transactions",
-    layout: "/admin",
+
     views: [
       {
         path: "/transactions/history",
@@ -119,6 +120,13 @@ export const adminRoutes = [
         component: Currencies,
       },
     ],
+  },
+  {
+    path: "/ui",
+    name: "UI COMPONENTS",
+    icon: "icon-shops",
+    privilege: "READ_SHOPS",
+    component: StoryUI,
   },
   // {
   //   path: "/merchants",

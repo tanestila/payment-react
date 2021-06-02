@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { MouseEventHandler, useState } from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { login } from "../../redux/modules/auth/actions";
 import background from "../../assets/img/background.png";
 import logo from "../../assets/img/login-logo.svg";
-import { Link } from "react-router-dom";
-import PasswordInputLogin from "../Common/inputs/PasswordInputLogin";
+import { Link, Redirect } from "react-router-dom";
+import { PasswordInputLogin } from "../Common/inputs/PasswordInputLogin";
 import LoginInput from "../Common/inputs/LoginInput";
 
 export default function Login() {
@@ -12,11 +12,11 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const { error, loading, otpAuth, status } = useSelector(
-    (state) => state.auth
+  const { error, loading, otpAuth, status, isLoggedIn } = useSelector(
+    (state: RootStateOrAny) => state.auth
   );
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let data;
     if (otpAuth) data = { otp };
@@ -28,6 +28,7 @@ export default function Login() {
     if (!otpAuth) return username.length > 0 && password.length > 0;
     else return username.length > 0 && password.length > 0 && otp.length > 0;
   }
+  if (isLoggedIn) return <Redirect to="/" />;
 
   return (
     <div className="login-page">
@@ -46,7 +47,7 @@ export default function Login() {
                 <LoginInput onChange={setUsername} value={username} />
                 <PasswordInputLogin onChange={setPassword} value={password} />
                 <div>
-                  <Link className="link" to={"/forgot"} tabIndex="4">
+                  <Link className="link" to={"/forgot"} tabIndex={4}>
                     <span>Password Recovery</span>
                   </Link>
                 </div>
@@ -74,9 +75,19 @@ export default function Login() {
   );
 }
 
-function SubmitButton({ loading, onSubmit, validateForm }) {
+type SubmitButtonProps = {
+  loading: boolean;
+  onSubmit: MouseEventHandler<HTMLButtonElement>;
+  validateForm: Function;
+};
+
+const SubmitButton: React.FC<SubmitButtonProps> = ({
+  loading,
+  onSubmit,
+  validateForm,
+}) => {
   return loading ? (
-    <button className="button-submit loading" disabled>
+    <button className="button-submit " disabled>
       loading
     </button>
   ) : (
@@ -88,4 +99,4 @@ function SubmitButton({ loading, onSubmit, validateForm }) {
       LOGIN
     </button>
   );
-}
+};

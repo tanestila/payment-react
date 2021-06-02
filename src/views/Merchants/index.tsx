@@ -1,18 +1,13 @@
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import Table from "../../Components/TableFactory";
 import { merchantAPI } from "../../services/queries/management/merchant";
-import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { setNewTable } from "../../redux/modules/table";
 import Modal from "../../Components/Common/Modal";
 import { MerchantType } from "../../types/merchants";
-import { IResponse } from "../../types/common";
 import Editor from "./Editor";
 import Creator from "./Creator";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
-import { Space } from "antd";
 
 export default function Merchants() {
   const ability = useContext(AbilityContext);

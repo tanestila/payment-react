@@ -2,14 +2,10 @@ import authService from "../../auth";
 
 export const authAPI = {
   async login(credentials: any) {
-    return authService.post("/login", credentials, {
-      withCredentials: true,
-    });
+    return authService.post("/login", credentials);
   },
-  getToken() {
-    return authService.get("/get_token", { withCredentials: true });
-  },
+
   logout: () => {
-    return authService.post("/logout", { withCredentials: true });
+    return authService.post("/logout");
   },
 };

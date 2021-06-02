@@ -1,47 +1,45 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, Route, Switch } from "react-router-dom";
-
 import * as allRoutes from "../routes";
-
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AbilityContext } from "../Components/Common/Can";
 import { Footer } from "../Components/layoutComponents/Footer";
 import Header from "../Components/layoutComponents/Header";
 import Sidebar from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
+import { logout } from "../redux/modules/auth/actions";
 
 function Admin() {
   const [color, setColor] = useState("blue");
   const [routes, setRoutes] = useState([]);
-  const [initialRoutes, setInitialRoutes] = useState([]);
   const location = useLocation();
   const mainPanel = React.useRef(null);
-  const permissions = useSelector((state) => state.auth.permissions);
-  const role = useSelector((state) => state.auth.role);
+  const role = useSelector(({ auth }) => auth.role);
   const ability = useContext(AbilityContext);
-  const isHide = useSelector((state) => state.sidebar.isHide);
+  const isHide = useSelector(({ sidebar }) => sidebar.isHide);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    let initialRoutes = [];
     switch (role) {
       case "admin":
-        setInitialRoutes(allRoutes.adminRoutes);
+        initialRoutes = allRoutes.adminRoutes;
         break;
       case "merchant":
-        setInitialRoutes(allRoutes.merchantRoutes);
+        initialRoutes = allRoutes.merchantRoutes;
         break;
       case "group":
-        setInitialRoutes(allRoutes.groupRoutes);
+        initialRoutes = allRoutes.groupRoutes;
         break;
       case "partner":
-        setInitialRoutes(allRoutes.partnerRoutes);
+        initialRoutes = allRoutes.partnerRoutes;
         break;
 
       default:
         break;
     }
-    console.log(role);
-    // setInitialRoutes(allRoutes.adminRoutes);
 
+    // setInitialRoutes(allRoutes.adminRoutes);
     let changedRoutes = initialRoutes.map((route) => {
       if (route.privilege) {
         let [action, subject] = route.privilege.split("_");
@@ -50,9 +48,10 @@ function Admin() {
         } else return undefined;
       } else return route;
     });
+
     changedRoutes = changedRoutes.filter((r) => r);
     setRoutes(changedRoutes);
-  }, [permissions, role, initialRoutes, ability]);
+  }, []);
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
@@ -77,24 +76,28 @@ function Admin() {
     });
   };
 
+  // const updateDimensions = () => {
+  //   if (window.innerWidth <= 991) {
+  //     this.props.hideSidebar();
+  //   } else {
+  //     this.props.showSidebar();
+  //   }
+  // };
+
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     mainPanel.current.scrollTop = 0;
-    if (
-      window.innerWidth < 993 &&
-      document.documentElement.className.indexOf("nav-open") !== -1
-    ) {
-      document.documentElement.classList.toggle("nav-open");
-      var element = document.getElementById("bodyClick");
-      element.parentNode.removeChild(element);
-    }
   }, [location]);
+
+  const handleLogoutClick = useCallback(() => {
+    dispatch(logout());
+  }, [dispatch]);
 
   return (
     <>
       <div className="wrapper">
-        <Sidebar color={color} routes={routes} />
+        <Sidebar color={color} routes={routes} isHide={isHide} />
         <div
           className={classNames("main-panel", {
             slideOut: isHide,
@@ -102,7 +105,7 @@ function Admin() {
           })}
           ref={mainPanel}
         >
-          <Header />
+          <Header handleLogoutClick={handleLogoutClick} />
           <div className="content">
             <Switch>{getRoutes(routes)}</Switch>
           </div>

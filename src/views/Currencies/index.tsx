@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import Table from "../../Components/TableFactory";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";

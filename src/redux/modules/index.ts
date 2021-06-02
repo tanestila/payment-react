@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { authReducer } from "./auth/auth";
+import { authReducer } from "./auth";
 import { userProfileReducer } from "./userprofile";
 import { tableReducer } from "./table";
 import { sidebarReducer } from "./sidebar";

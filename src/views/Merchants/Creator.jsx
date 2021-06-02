@@ -2,11 +2,22 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { merchantAPI } from "../../services/queries/management/merchant";
+import { roleAPI } from "../../services/queries/management/role";
 
 export default function Creator() {
   const mutation = useMutation(merchantAPI.addMerchant);
+  const {
+    isLoading,
+    isError,
+    error,
+    data: roles,
+    isFetching,
+  } = useQuery(["roles"], () => roleAPI.getRoles({ type: "merchant" }), {
+    keepPreviousData: true,
+  });
+  console.log(roles);
   return (
     <Formik
       initialValues={{ first_name: "", last_name: "", email: "" }}
@@ -22,15 +33,25 @@ export default function Creator() {
         company_address: Yup.string().required("Required"),
         name: Yup.string().required("Required"),
         type: Yup.string().required("Required"),
-        monthlyFee: Yup.number().required("Required"),
+        monthlyFee: Yup.number()
+          .typeError("You must specify a number")
+          .required("Required"),
         monthlyFeeCurrency: Yup.string().required("Required"),
         monthlyFeeDate: Yup.string().required("Required"),
-        monthlyAmountLimit: Yup.number().required("Required"),
+        monthlyAmountLimit: Yup.number()
+          .typeError("You must specify a number")
+          .required("Required"),
         phone: Yup.string().required().min(5).required("Required"),
         role: Yup.string().required("Required"),
         language: Yup.string().required("Required"),
-        customAmountLimit: Yup.string().max(15).required("Required"),
-        customDaysLimit: Yup.number().max(1000).required("Required"),
+        customAmountLimit: Yup.string()
+          .typeError("You must specify a number")
+          .max(15)
+          .required("Required"),
+        customDaysLimit: Yup.number()
+          .typeError("You must specify a number")
+          .max(1000)
+          .required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         alert(JSON.stringify(values, null, 2));
@@ -51,7 +72,11 @@ export default function Creator() {
             <Field name="email" type="email" label="Email" />
             <Field name="first_name" type="text" label="First Name" />
             <Field name="last_name" type="text" label="Last Name" />
-            <Field name="role" type="text" label="Role" />
+            <Field name="role" type="text" label="Role" as="select" options>
+              {roles.data.map((role) => (
+                <option value={role.guid}>{role.name}</option>
+              ))}
+            </Field>
             <Field name="phone" type="text" label="Phone" />
             <Field name="company_name" type="text" label="Company name" />
             <Field name="company_address" type="text" label="Company address" />
