@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
-import { BooleanLiteral } from "typescript";
 
 type CustomModalProps = {
   button: React.ReactNode;

@@ -17,7 +17,6 @@ export const adminRoutes = [
     name: "Dashboard",
     icon: "icon-dashboard",
     component: Dashboard,
-
     privilege: "READ_MERCHANTLOGIN",
   },
   {
@@ -25,7 +24,6 @@ export const adminRoutes = [
     name: "Users",
     icon: "icon-users",
     state: "users",
-
     views: [
       {
         path: "/users/merchants",
@@ -56,7 +54,6 @@ export const adminRoutes = [
   {
     path: "/shops",
     name: "Shops",
-
     icon: "icon-shops",
     privilege: "READ_SHOPS",
     component: Shops,
@@ -66,7 +63,6 @@ export const adminRoutes = [
     name: "Transactions",
     icon: "icon-transactions",
     state: "transactions",
-
     views: [
       {
         path: "/transactions/history",

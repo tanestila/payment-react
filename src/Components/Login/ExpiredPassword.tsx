@@ -10,14 +10,12 @@ export const ExpiredPassword = () => {
   const {
     loginGuid,
     isFirstTimeLogin,
-    isCredentialsExpired,
+    // isCredentialsExpired,
     isCredentialsExpires,
   } = useSelector((state: RootStateOrAny) => state.auth);
 
-  const [_, setCredentialsExpireAfter] = useLocalStorageState(
-    "isCredentialsExpired",
-    "false"
-  );
+  const [isCredentialsExpired, setCredentialsExpireAfter] =
+    useLocalStorageState("isCredentialsExpired", "false");
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -64,7 +62,7 @@ export const ExpiredPassword = () => {
           <p className="header-login">
             {isCredentialsExpires
               ? "Your password will expire soon"
-              : isFirstTimeLogin && isCredentialsExpired
+              : isFirstTimeLogin && isCredentialsExpired === "true"
               ? "Please, set up a new password"
               : "Password expired"}
           </p>
