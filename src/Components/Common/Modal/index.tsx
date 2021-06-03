@@ -27,8 +27,8 @@ export default function CustomModal({
       <span onClick={handleShow}>{button}</span>
 
       <Modal show={show} onHide={handleClose} dialogClassName={dialogClassName}>
-        <Modal.Header closeButton>
-          <Modal.Title>{header}</Modal.Title>
+        <Modal.Header style={{ borderBottom: "1px #dddddd solid" }} closeButton>
+          <Modal.Title style={{ margin: "20px 0 15px" }}>{header}</Modal.Title>
         </Modal.Header>
         {/* <Modal.Body>{content}</Modal.Body> */}
         <Modal.Body>

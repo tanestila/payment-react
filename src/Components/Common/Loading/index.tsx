@@ -1,7 +1,7 @@
 import { ClassicSpinner } from "react-spinners-kit";
 
 type LoadingProps = {
-  style: any;
+  style?: any;
 };
 
 export default function Loading(props: LoadingProps) {

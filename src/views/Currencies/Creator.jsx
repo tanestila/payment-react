@@ -3,10 +3,10 @@ import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation } from "react-query";
-import { currencyAPI } from "../../services/queries/management/currency";
+import { currenciesAPI } from "../../services/queries/management/currencies";
 
 export default function Creator({ handleClose }) {
-  const mutation = useMutation(currencyAPI.addCurrency);
+  const mutation = useMutation(currenciesAPI.addCurrency);
   return (
     <Formik
       initialValues={{

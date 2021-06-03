@@ -1,15 +1,12 @@
 import { Formik, Form } from "formik";
 import { TextInput } from "../Common/SearchSelect/Form/TextInput";
 
-type SearchFormProps = {
-  onSearch: Function;
-  columns: Array<any>;
-};
+// type SearchFormProps = {
+//   onSearch: Function;
+//   columns: Array<any>;
+// };
 
-export const SearchForm: React.FC<SearchFormProps> = ({
-  onSearch,
-  columns,
-}) => {
+export const SearchForm = ({ onSearch, columns }) => {
   const params = {};
   columns.forEach((c) => {
     params[c.dataIndex] = null;

@@ -1,6 +1,6 @@
 import managementService from "../../../management";
 
-export const roleAPI = {
+export const rolesAPI = {
   getRoles: async (args) => {
     let { data } = await managementService.get("roles", {
       params: { ...args },

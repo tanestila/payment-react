@@ -1,6 +1,6 @@
 import { useContext, useMemo } from "react";
 import Table from "../../Components/TableFactory";
-import { merchantAPI } from "../../services/queries/management/merchant";
+import { merchantsAPI } from "../../services/queries/management/merchants";
 import { Link } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
 import Modal from "../../Components/Common/Modal";
@@ -22,7 +22,7 @@ export default function Merchants() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("merchants", merchantAPI.getMerchants);
+  } = useTableQuery("merchants", merchantsAPI.getMerchants);
 
   // useEffect(() => {
   //   dispatch(setNewTable("merchant"));

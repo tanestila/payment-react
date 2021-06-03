@@ -5,7 +5,7 @@ import { AbilityContext } from "../../Components/Common/Can";
 import Modal from "../../Components/Common/Modal";
 import Editor from "./Editor";
 import Creator from "./Creator";
-import { groupAPI } from "../../services/queries/management/group";
+import { groupsAPI } from "../../services/queries/management/groups";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { GroupType } from "../../types/groups";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
@@ -22,7 +22,7 @@ export default function Groups() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("groups", groupAPI.getGroups);
+  } = useTableQuery("groups", groupsAPI.getGroups);
 
   const columns = useMemo(
     () => [

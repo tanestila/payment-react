@@ -1,4 +1,4 @@
-import { transactionAPI } from "../../services/queries/management/transaction";
+import { transactionsAPI } from "../../services/queries/management/transactions";
 import { Link } from "react-router-dom";
 import Table from "../../Components/TableFactory";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
@@ -16,7 +16,7 @@ export default function AllTransactions() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("transactions", transactionAPI.getTransactions);
+  } = useTableQuery("transactions", transactionsAPI.getTransactions);
 
   const columns = [
     {

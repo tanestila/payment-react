@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { AbilityContext } from "../../Components/Common/Can";
 import Creator from "./Creator";
 import Modal from "../../Components/Common/Modal";
-import { currencyAPI } from "../../services/queries/management/currency";
+import { currenciesAPI } from "../../services/queries/management/currencies";
 import { PartnerType } from "../../types/partners";
 
 export default function Currencies() {
@@ -19,7 +19,7 @@ export default function Currencies() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("currencies", currencyAPI.getCurrencies);
+  } = useTableQuery("currencies", currenciesAPI.getCurrencies);
 
   const columns = [
     {

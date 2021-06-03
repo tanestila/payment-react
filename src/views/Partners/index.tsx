@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { AbilityContext } from "../../Components/Common/Can";
 import Creator from "./Creator";
 import Modal from "../../Components/Common/Modal";
-import { partnerAPI } from "../../services/queries/management/partner";
+import { partnersAPI } from "../../services/queries/management/partners";
 import { PartnerType } from "../../types/partners";
 
 export default function Partners() {
@@ -20,7 +20,7 @@ export default function Partners() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("partners", partnerAPI.getPartners);
+  } = useTableQuery("partners", partnersAPI.getPartners);
 
   const columns = [
     {

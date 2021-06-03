@@ -1,6 +1,6 @@
 import managementService from "../../../management";
 
-export const merchantAPI = {
+export const merchantsAPI = {
   getMerchants: async (args) => {
     let { data } = await managementService.get("users/merchants", {
       params: { ...args },

@@ -3,12 +3,14 @@ import Select from "react-select";
 
 type CustomSelectProps = {
   options: Array<any>;
-  defaultValue: any;
+  onChange: Function;
+  defaultValue?: any;
+  styles?: any;
+  value?: any;
 };
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
-  defaultValue,
   ...props
 }) => {
   const [convertedOptions, setConvertedOptions] = useState<Array<any>>([]);
@@ -25,5 +27,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     setConvertedOptions(convertOptions(options));
   }, [options]);
 
-  return <Select {...props} options={convertedOptions} />;
+  return (
+    <Select {...props} classNamePrefix="select" options={convertedOptions} />
+  );
 };

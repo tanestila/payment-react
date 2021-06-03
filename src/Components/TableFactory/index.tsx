@@ -1,14 +1,13 @@
 import React, { useContext, useState } from "react";
 import { Table, Input, Button, Space } from "antd";
-import Form from "./Form";
+import { SearchForm } from "./Form";
 import "antd/dist/antd.css";
 import { SearchOutlined } from "@ant-design/icons";
-import ButtonFilter from "./Button";
+import { ButtonFilter } from "./Button";
 import Loading from "../Common/Loading";
 import { ColumnsType } from "antd/lib/table";
-import useGateways from "../Common/SearchSelect/Table/gateways";
 import { useQuery } from "react-query";
-import { gatewayAPI } from "../../services/queries/management/gateway";
+import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { AbilityContext } from "../Common/Can";
 
 type DataType = {
@@ -49,7 +48,7 @@ export default function TableFactory({
   const [isShowFrom, showForm] = useState(false);
   const { data: gateways } = useQuery(
     ["gateways"],
-    () => gatewayAPI.getGateways(),
+    () => gatewaysAPI.getGateways(),
     {
       keepPreviousData: true,
       enabled: ability.can("READ", "GATEWAYS") && !!searchQuery.gateways,
@@ -130,7 +129,7 @@ export default function TableFactory({
 
   const getColumnGatewaysSearchProps = () => {
     let gatewaysSearchParams = gateways
-      ? gateways.data.map((g) => ({
+      ? gateways.data.map((g: any) => ({
           text: g.name,
           value: g.name,
         }))
@@ -171,7 +170,7 @@ export default function TableFactory({
         <div className="secondary-buttons"></div>
       </div>
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
-        {isShowFrom && <Form onSearch={onSearch} columns={columns} />}
+        {isShowFrom && <SearchForm onSearch={onSearch} columns={columns} />}
 
         {isLoading ? (
           <Loading />

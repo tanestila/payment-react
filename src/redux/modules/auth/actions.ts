@@ -1,7 +1,7 @@
 import { authAPI } from "../../../services/queries/auth";
 import jwt from "jsonwebtoken";
 import { publicKey } from "../../../config/publicKey";
-import { loginAPI } from "../../../services/queries/management/login";
+import { loginsAPI } from "../../../services/queries/management/logins";
 import { types } from "./types";
 import { Dispatch } from "redux";
 import { getTokens } from "../../../helpers/getTokens";
@@ -16,7 +16,7 @@ interface ICredentialsOTP {
 }
 
 const getPermissions = async (token: any) => {
-  const { data } = await loginAPI.getPrivilegesByLogin(
+  const { data } = await loginsAPI.getPrivilegesByLogin(
     token.userPayload.loginGuid
   );
   return data;

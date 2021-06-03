@@ -6,7 +6,7 @@ type CustomInputProps = {
   label: string;
   children?: ReactNode;
   name: string;
-  id: string;
+  id?: string;
   type: string;
 };
 
@@ -18,10 +18,10 @@ export const Field: React.FC<CustomInputProps> = ({
   const [field, meta] = useField(props.name);
   return (
     <Row>
-      <Col md={3} sm={5} xs={6} className="form-label">
+      <Col lg={4} md={4} sm={5} xs={6}>
         <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
       </Col>
-      <Col md={9} sm={7} xs={6}>
+      <Col lg={8} md={8} sm={7} xs={6} className="form-input">
         <Form.Control className="form-control" {...field} {...props} />
         {meta.touched && meta.error ? (
           <span className="validate-error">{meta.error}</span>

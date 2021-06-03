@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import ExpiredPassword from "./Components/Login/ExpiredPassword";
+import { ExpiredPassword } from "./Components/Login/ExpiredPassword";
 import Login from "./Components/Login/Login";
 import Admin from "./layouts/Admin";
 import { initApp } from "./redux/modules/auth/actions";
 import { ReactQueryDevtools } from "react-query/devtools";
-import ForgotPassword from "./Components/Login/ForgotPassword";
+import { ForgotPassword } from "./Components/Login/ForgotPassword";
 import Loading from "./Components/Common/Loading";
 
 function App() {
