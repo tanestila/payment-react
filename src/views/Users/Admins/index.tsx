@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import Table from "../../Components/TableFactory";
-import useTableQuery from "../../Components/TableFactory/useTableQuery";
+import Table from "../../../Components/TableFactory";
+import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
-import { AbilityContext } from "../../Components/Common/Can";
+import { AbilityContext } from "../../../Components/Common/Can";
 import Creator from "./Creator";
-import Modal from "../../Components/Common/Modal";
-import { shopsAPI } from "../../services/queries/management/shops";
-import { PartnerType } from "../../types/partners";
+import Modal from "../../../Components/Common/Modal";
+import { adminsAPI } from "../../../services/queries/management/users/admins";
+import { PartnerType } from "../../../types/partners";
 
-export default function Shops() {
+export default function Admins() {
   const ability = useContext(AbilityContext);
   const {
     isLoading,
@@ -20,37 +20,25 @@ export default function Shops() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("shops", shopsAPI.getShops);
+  } = useTableQuery("admins", adminsAPI.getAdmins);
 
   const columns = [
     {
-      title: "Merchant name",
-      dataIndex: "merchant_name",
-      key: "merchant_name",
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
       sorter: true,
       search: "text",
       render: (text: string, record: PartnerType) => (
-        <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
+        <Link className="link" to={`/about/partner/${record.guid}`}>
           {text}
         </Link>
       ),
     },
     {
-      title: "Shop name",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-      search: "text",
-      render: (text: string, record: PartnerType) => (
-        <Link className="link" to={`/about/shop/${record.guid}`}>
-          {text}
-        </Link>
-      ),
-    },
-    {
-      title: "Terminal count",
-      dataIndex: "terminal_count",
-      key: "terminal_count",
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
       sorter: true,
       search: "text",
     },
@@ -78,7 +66,7 @@ export default function Shops() {
     //     </Space>
     //   ),
     // },
-    ability.can("EXECUTE", "USERMERCHANT") && {
+    ability.can("EXECUTE", "USERADMIN") && {
       title: "Edit",
       key: "edit",
       render: (text: string, record: PartnerType) => (
@@ -93,7 +81,7 @@ export default function Shops() {
         />
       ),
     },
-    ability.can("DELETE", "USERMERCHANT") && {
+    ability.can("DELETE", "USERADMIN") && {
       title: "Delete",
       key: "delete",
       render: () => <span>delete</span>,

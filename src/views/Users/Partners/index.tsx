@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import Table from "../../Components/TableFactory";
-import useTableQuery from "../../Components/TableFactory/useTableQuery";
+import Table from "../../../Components/TableFactory";
+import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
-import { AbilityContext } from "../../Components/Common/Can";
+import { AbilityContext } from "../../../Components/Common/Can";
 import Creator from "./Creator";
-import Modal from "../../Components/Common/Modal";
-import { shopsAPI } from "../../services/queries/management/shops";
-import { PartnerType } from "../../types/partners";
+import Modal from "../../../Components/Common/Modal";
+import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { PartnerType } from "../../../types/partners";
 
-export default function Shops() {
+export default function Partners() {
   const ability = useContext(AbilityContext);
   const {
     isLoading,
@@ -20,37 +20,39 @@ export default function Shops() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("shops", shopsAPI.getShops);
+  } = useTableQuery("partners", partnersAPI.getPartners);
 
   const columns = [
     {
-      title: "Merchant name",
-      dataIndex: "merchant_name",
-      key: "merchant_name",
+      title: "Partner name",
+      dataIndex: "partner_name",
+      key: "partner_name",
       sorter: true,
       search: "text",
       render: (text: string, record: PartnerType) => (
-        <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
+        <Link className="link" to={`/about/partner/${record.partner_guid}`}>
           {text}
         </Link>
       ),
     },
     {
-      title: "Shop name",
-      dataIndex: "name",
-      key: "name",
+      title: "Partner type",
+      dataIndex: "partner_type",
+      key: "partner_type",
       sorter: true,
       search: "text",
-      render: (text: string, record: PartnerType) => (
-        <Link className="link" to={`/about/shop/${record.guid}`}>
-          {text}
-        </Link>
-      ),
     },
     {
-      title: "Terminal count",
-      dataIndex: "terminal_count",
-      key: "terminal_count",
+      title: "Username",
+      dataIndex: "username",
+      key: "group_name",
+      sorter: true,
+      search: "text",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
       sorter: true,
       search: "text",
     },

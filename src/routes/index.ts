@@ -7,8 +7,9 @@ import {
   Currencies,
   Admins,
   Shops,
+  Chargebacks,
 } from "../views";
-import MerchantDetail from "../views/Merchants/Detail";
+import MerchantDetail from "../views/Users/Merchants/Detail";
 import { StoryUI } from "../Components/StoryUI";
 
 export const adminRoutes = [
@@ -86,7 +87,7 @@ export const adminRoutes = [
         path: "/transactions/chargebacks",
         name: "Chargebacks",
         privilege: "READ_CHARGEBACKS",
-        component: Partners,
+        component: Chargebacks,
       },
       {
         path: "/transactions/mismatch",

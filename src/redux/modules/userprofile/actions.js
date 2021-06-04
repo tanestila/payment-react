@@ -1,9 +1,9 @@
-import { userprofileAPI } from "../../../services/queries/management/userprofile";
+import { profileAPI } from "../../../services/queries/management/users/profile";
 import { types } from "./types";
 
 export const getUserAccount = () => async (dispatch) => {
   try {
-    let { data } = await userprofileAPI.getUserAccount();
+    let { data } = await profileAPI.getUserAccount();
     dispatch({
       type: types.GET_USERPROFILE,
       profile: data,
@@ -15,7 +15,7 @@ export const getUserAccount = () => async (dispatch) => {
 
 export const updateUserAccount = (body, loginGuid) => async (dispatch) => {
   try {
-    let { data } = await userprofileAPI.updateUserAccount(body, loginGuid);
+    let { data } = await profileAPI.updateUserAccount(body, loginGuid);
     dispatch({
       type: types.UPDATE_USERPROFILE,
       profile: data,

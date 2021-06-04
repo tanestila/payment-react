@@ -1,6 +1,10 @@
-export default function LoginLogin({ onChange, value }) {
-  const handleChange = (e) => {
-    onChange(e.target.value);
+type Props = {
+  onChange: Function;
+  value: string;
+};
+export const LoginInput: React.FC<Props> = ({ onChange, value }) => {
+  const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+    onChange(e.currentTarget.value);
   };
 
   return (
@@ -15,4 +19,4 @@ export default function LoginLogin({ onChange, value }) {
       />
     </div>
   );
-}
+};

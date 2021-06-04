@@ -8,7 +8,7 @@ import {
   setSortKey,
 } from "../../redux/modules/table";
 import Pagination from "./Pagination";
-import Select from "../Common/Select";
+import Select from "../Common/Select/CustomSelect";
 
 export default function TableFactory({ modalComponent, columns, data, count }) {
   const dispatch = useDispatch();

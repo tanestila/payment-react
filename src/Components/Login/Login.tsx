@@ -5,7 +5,7 @@ import background from "../../assets/img/background.png";
 import logo from "../../assets/img/login-logo.svg";
 import { Link, Redirect } from "react-router-dom";
 import { PasswordInputLogin } from "../Common/inputs/PasswordInputLogin";
-import LoginInput from "../Common/inputs/LoginInput";
+import { LoginInput } from "../Common/inputs/LoginInput";
 
 export default function Login() {
   const dispatch = useDispatch();
