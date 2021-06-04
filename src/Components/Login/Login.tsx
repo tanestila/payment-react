@@ -4,8 +4,8 @@ import { login } from "../../redux/modules/auth/actions";
 import background from "../../assets/img/background.png";
 import logo from "../../assets/img/login-logo.svg";
 import { Link, Redirect } from "react-router-dom";
-import { PasswordInputLogin } from "../Common/inputs/PasswordInputLogin";
-import { LoginInput } from "../Common/inputs/LoginInput";
+import { PasswordInputLogin } from "../Common/Inputs/PasswordInputLogin";
+import { LoginInput } from "../Common/Inputs/LoginInput";
 
 export default function Login() {
   const dispatch = useDispatch();

@@ -4,6 +4,7 @@ import Table from "../../../Components/TableFactory";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { Space } from "antd";
 import { cutGuid } from "../../../helpers/cutGuid";
+import { Copy } from "../../../Components/Common/CopyToClipboard";
 
 export default function AllTransactions() {
   const {
@@ -25,7 +26,7 @@ export default function AllTransactions() {
       key: "guid",
       render: (text: any, record: any) => (
         <>
-          {/* <Copy text={transaction.guid} /> */}
+          <Copy text={text} />
           <Link className="link" to={`/about/processing/${text}`}>
             {cutGuid(text)}
           </Link>

@@ -6,7 +6,7 @@ import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
-import moment from "antd/node_modules/moment";
+import moment from "moment";
 import { usersAPI } from "../../../services/queries/management/users/users";
 import { useState } from "react";
 

@@ -4,6 +4,7 @@ import { Navbar, Container, Nav } from "react-bootstrap";
 import apiFile from "../../../public/api.pdf";
 import { MouseEventHandler } from "react";
 // import routes from "routes.js";
+import { Timer } from "./Timer";
 
 type HeaderProps = {
   handleLogoutClick: MouseEventHandler<HTMLAnchorElement>;
@@ -56,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({ handleLogoutClick }) => {
           <Nav className="ml-auto" navbar>
             <Nav.Item>
               <Nav.Link disabled className="m-0">
-                timer
+                <Timer />
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

@@ -35,6 +35,8 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
     slideIn: !isHide,
   };
 
+  // const urlsString = prop.views.reduce(( str: string, child: any) => str + child.path )
+
   return (
     <div
       className={classNames(

@@ -30,6 +30,7 @@ interface IRoute {
 function Admin() {
   const [color, setColor] = useState("blue");
   const [routes, setRoutes] = useState<Array<any>>([]);
+  const [nonNavRoutes, setNonNavRoutes] = useState<Array<any>>([]);
   const location = useLocation();
   const mainPanel = React.useRef(null);
   const role = useSelector(({ auth }: RootStateOrAny) => auth.role);
@@ -39,18 +40,22 @@ function Admin() {
 
   useEffect(() => {
     let initialRoutes: Array<any> = [];
+
     switch (role) {
       case "admin":
-        initialRoutes = allRoutes.adminRoutes;
+        initialRoutes = [...allRoutes.adminRoutes, ...allRoutes.adminNonNav];
         break;
       case "merchant":
-        initialRoutes = allRoutes.merchantRoutes;
+        initialRoutes = [...allRoutes.merchantRoutes, ...allRoutes.adminNonNav];
+
         break;
       case "group":
-        initialRoutes = allRoutes.groupRoutes;
+        initialRoutes = [...allRoutes.groupRoutes, ...allRoutes.adminNonNav];
+
         break;
       case "partner":
-        initialRoutes = allRoutes.partnerRoutes;
+        initialRoutes = [...allRoutes.partnerRoutes, ...allRoutes.adminNonNav];
+
         break;
 
       default:
@@ -86,12 +91,7 @@ function Admin() {
         });
       } else
         return (
-          <Route
-            path={prop.path}
-            component={prop.component}
-            // render={(props) => <prop.component {...props} />}
-            key={key}
-          />
+          <Route path={prop.path!} component={prop.component!} key={key} />
         );
     });
   };

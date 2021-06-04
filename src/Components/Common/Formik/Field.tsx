@@ -2,10 +2,10 @@ import { useField } from "formik";
 import { ReactNode, useCallback } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import { HelpTip } from "../HelpTip";
-import { CustomSelect } from "../inputs/CustomSelect";
+import { CustomSelect } from "../Inputs/CustomSelect";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import "bootstrap-daterangepicker/daterangepicker.css";
-import moment from "antd/node_modules/moment";
+import moment from "moment";
 
 type CustomInputProps = {
   label: string;
