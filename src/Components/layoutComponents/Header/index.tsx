@@ -13,8 +13,6 @@ type HeaderProps = {
 export const Header: React.FC<HeaderProps> = ({ handleLogoutClick }) => {
   // const location = useLocation();
   const history = useHistory();
-  // console.log(location);
-  // console.log(history);
 
   // const mobileSidebarToggle = (e) => {
   //   e.preventDefault();
@@ -39,22 +37,29 @@ export const Header: React.FC<HeaderProps> = ({ handleLogoutClick }) => {
   return (
     <Navbar expand="lg">
       <Container fluid>
-        <div className="d-flex justify-content-center align-items-center ml-2 ml-lg-0">
+        <Navbar.Brand
+          href="#home"
+          onClick={(e: any) => e.preventDefault()}
+          className="mr-2"
+        >
+          fdfsd
+        </Navbar.Brand>
+        {/* <div className="d-flex justify-content-center align-items-center ml-2 ml-lg-0">
           <Navbar.Brand
             href="#home"
             onClick={(e: any) => e.preventDefault()}
             className="mr-2"
           >
-            {/* {getBrandText()} */}
+             {getBrandText()}
           </Navbar.Brand>
-        </div>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" className="mr-2">
+        </div> */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        {/* <span className="navbar-toggler-bar burger-lines"></span>
           <span className="navbar-toggler-bar burger-lines"></span>
-          <span className="navbar-toggler-bar burger-lines"></span>
-          <span className="navbar-toggler-bar burger-lines"></span>
-        </Navbar.Toggle>
+          <span className="navbar-toggler-bar burger-lines"></span> */}
+        {/* </Navbar.Toggle> */}
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto" navbar>
+          <Nav className="ml-auto">
             <Nav.Item>
               <Nav.Link disabled className="m-0">
                 <Timer />

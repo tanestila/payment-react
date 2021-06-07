@@ -114,6 +114,7 @@ export default function Partners() {
       isLoading={isLoading}
       isError={isError}
       error={error}
+      rowKey={"login_guid"}
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}

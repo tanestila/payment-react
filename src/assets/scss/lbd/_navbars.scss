@@ -11,7 +11,6 @@
   font-size: $font-size-navbar;
   border-radius: 0;
   height: 76px;
-  background-color: $white-navbar;
   box-shadow: 9px 1px 15px rgba(69, 65, 78, 0.1);
   background-color: hsla(0, 0%, 100%, 0.96);
   margin: 0;
@@ -19,7 +18,8 @@
 
   .navbar-brand {
     font-weight: normal;
-    // margin: 29px auto 29px 25px !important;
+    margin: 29px auto 29px 25px !important;
+    padding: 0px;
     font-size: 13px;
     line-height: 18px;
     color: #878a99 !important;
@@ -32,6 +32,7 @@
     vertical-align: middle;
     outline: 0;
     cursor: pointer;
+    margin-right: 25px;
 
     &.navbar-toggler-left {
       position: relative;
@@ -380,21 +381,29 @@
   border-bottom: 1px solid transparent;
 }
 
-.navbar-toggle {
-  margin-top: 19px;
-  margin-bottom: 19px;
-  border: $none;
+// .navbar-toggle {
+//   margin-top: 19px;
+//   margin-bottom: 19px;
+//   border: $none;
 
-  .icon-bar {
-    background-color: $white-color;
-  }
-  .navbar-collapse,
-  .navbar-form {
-    border-color: transparent;
-  }
+//   .icon-bar {
+//     background-color: $white-color;
+//   }
+//   .navbar-collapse,
+//   .navbar-form {
+//     border-color: transparent;
+//   }
 
-  &.navbar-default .navbar-toggle:hover,
-  &.navbar-default .navbar-toggle:focus {
-    background-color: transparent;
-  }
+//   &.navbar-default .navbar-toggle:hover,
+//   &.navbar-default .navbar-toggle:focus {
+//     background-color: transparent;
+//   }
+// }
+
+.ml-auto.navbar-nav {
+  background-color: hsla(0, 0%, 100%, 0.96);
 }
+
+// .navbar-collapse {
+//   box-shadow: 0px 10px 15px 1px #c4c4c4;
+// }

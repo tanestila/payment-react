@@ -3,6 +3,7 @@ import { ReactNode, useCallback } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import { HelpTip } from "../HelpTip";
 import { CustomSelect } from "../Inputs/CustomSelect";
+import { CustomPhoneInput } from "../Inputs/CustomPhoneInput";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import "bootstrap-daterangepicker/daterangepicker.css";
 import moment from "moment";
@@ -11,8 +12,13 @@ type CustomInputProps = {
   label: string;
   name: string;
   options?: Array<any>;
-  defaultValue?: any;
-  inputType?: "select" | "date-single" | "date-range" | "input";
+  inputType?:
+    | "select"
+    | "date-single"
+    | "date-range"
+    | "input"
+    | "phone"
+    | "checkbox";
   children?: ReactNode;
   id?: string;
   type?: string;
@@ -52,7 +58,6 @@ export const Field: React.FC<CustomInputProps> = ({
   tip,
   options = [],
   inputType,
-  defaultValue,
   children,
   ...props
 }) => {
@@ -110,11 +115,45 @@ export const Field: React.FC<CustomInputProps> = ({
             <input type="text" className="form-control" />
           </DateRangePicker>
         );
+      case "phone":
+        return (
+          <CustomPhoneInput
+            {...field}
+            {...props}
+            className="form-control ant-input"
+            defaultValue={field.value}
+            onChange={onChangeCallback}
+          />
+        );
+
+      case "checkbox":
+        return (
+          <Form.Control
+            className="form-control ant-input"
+            type="checkbox"
+            checked={field.value}
+            {...field}
+            {...props}
+          />
+        );
+
       case "input":
-        return <Form.Control className="form-control" {...field} {...props} />;
+        return (
+          <Form.Control
+            className="form-control ant-input"
+            {...field}
+            {...props}
+          />
+        );
 
       default:
-        return <Form.Control className="form-control" {...field} {...props} />;
+        return (
+          <Form.Control
+            className="form-control ant-input"
+            {...field}
+            {...props}
+          />
+        );
     }
   };
 

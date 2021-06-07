@@ -36,8 +36,8 @@ export default function Merchants() {
         key: "merchant_name",
         sorter: true,
         search: "text",
-        render: (text: any) => (
-          <Link className="link" to={`/about/merchant/${text}`}>
+        render: (text: any, record: any) => (
+          <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
             {text}
           </Link>
         ),
@@ -102,6 +102,7 @@ export default function Merchants() {
         key: "enabled",
         search: "bool",
         width: 70,
+        align: "center",
         render: (text: any, record: any) => (
           <i
             className={
@@ -115,6 +116,7 @@ export default function Merchants() {
       ability.can("EXECUTE", "USERMERCHANT") && {
         title: "Edit",
         key: "edit",
+        align: "center",
         render: (cellInfo: MerchantType) => (
           <Modal
             header="Edit merchant"
@@ -133,6 +135,7 @@ export default function Merchants() {
       ability.can("DELETE", "USERMERCHANT") && {
         title: "Delete",
         key: "delete",
+        align: "center",
         render: () => <span>delete</span>,
       },
     ],
@@ -152,6 +155,7 @@ export default function Merchants() {
       isError={isError}
       error={error}
       searchQuery={{ gateways: true }}
+      rowKey={"login_guid"}
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}

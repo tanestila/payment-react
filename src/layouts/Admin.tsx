@@ -74,6 +74,10 @@ function Admin() {
 
     changedRoutes = changedRoutes.filter((r: any) => r);
     setRoutes(changedRoutes);
+    console.log(changedRoutes);
+    return () => {
+      setRoutes([]);
+    };
   }, []);
 
   const getRoutes = (routes: Array<IRoute>) => {

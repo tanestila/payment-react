@@ -10,7 +10,6 @@ store.subscribe(() => {
   currentAuth = store.getState().auth.permissions;
   if (prevAuth !== currentAuth) {
     ability.update(defineRulesFor(currentAuth));
-    console.log(ability);
   }
 });
 

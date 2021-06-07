@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Table, Input, Button, Space } from "antd";
 import { SearchForm } from "./Form";
 import "antd/dist/antd.css";
@@ -19,7 +19,7 @@ type TablePropsType = {
   onSearch: Function;
   search: any;
   handleTableChange: any;
-  columns: ColumnsType[];
+  columns: any;
   data: DataType;
   items: number;
   isFetching: boolean;
@@ -27,7 +27,8 @@ type TablePropsType = {
   isLoading: boolean;
   isError: boolean;
   error: any;
-  searchQuery: any;
+  searchQuery?: any;
+  rowKey?: any;
 };
 
 export default function TableFactory({
@@ -43,6 +44,7 @@ export default function TableFactory({
   isError,
   error,
   searchQuery = {},
+  rowKey,
 }: TablePropsType) {
   const ability = useContext(AbilityContext);
   const [isShowFrom, showForm] = useState(false);
@@ -190,6 +192,7 @@ export default function TableFactory({
               }}
               bordered
               loading={isFetching}
+              rowKey={(record) => (rowKey ? record[rowKey] : record.guid)}
             />
           </div>
         )}

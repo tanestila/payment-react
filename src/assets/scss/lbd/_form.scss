@@ -7,7 +7,7 @@ form {
   }
   .form-label {
     text-align: left !important;
-    color: #5a5a5a;
+    color: #878a99;
   }
 
   .input-group-text {
@@ -17,6 +17,10 @@ form {
 
   .select__control {
     min-height: 28px;
+    background-color: $white-bg;
+    border: 1px solid $light-gray;
+    border-radius: $border-radius-base;
+    color: #565656;
     .select__indicators {
       height: 28px;
       .select__indicator {
