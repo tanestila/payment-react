@@ -74,7 +74,6 @@ function Admin() {
 
     changedRoutes = changedRoutes.filter((r: any) => r);
     setRoutes(changedRoutes);
-    console.log(changedRoutes);
     return () => {
       setRoutes([]);
     };
@@ -131,6 +130,7 @@ function Admin() {
         >
           <Header handleLogoutClick={handleLogoutClick} />
           <div className="content">
+            {console.log(getRoutes(routes))}
             <Switch>{getRoutes(routes)}</Switch>
           </div>
           <Footer />
