@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Table from "../../../Components/TableFactory";
+import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";

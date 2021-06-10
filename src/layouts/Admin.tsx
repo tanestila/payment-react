@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useLocation, Route, Switch } from "react-router-dom";
+import { useLocation, Route, Switch, Redirect } from "react-router-dom";
 import * as allRoutes from "../routes";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { AbilityContext } from "../Components/Common/Can";
@@ -18,10 +18,12 @@ interface IChildRoute {
 
 interface IRoute {
   path?: string;
-  collapse: boolean;
-  name: string;
-  icon: string;
-  state: string;
+  redirect?: boolean;
+  to?: string;
+  collapse?: boolean;
+  name?: string;
+  icon?: string;
+  state?: string;
   component?: React.ComponentType<any>;
   privilege?: string;
   views?: Array<IChildRoute>;
@@ -30,7 +32,6 @@ interface IRoute {
 function Admin() {
   const [color, setColor] = useState("blue");
   const [routes, setRoutes] = useState<Array<any>>([]);
-  const [nonNavRoutes, setNonNavRoutes] = useState<Array<any>>([]);
   const location = useLocation();
   const mainPanel = React.useRef(null);
   const role = useSelector(({ auth }: RootStateOrAny) => auth.role);
@@ -77,7 +78,7 @@ function Admin() {
     return () => {
       setRoutes([]);
     };
-  }, []);
+  }, [ability, role]);
 
   const getRoutes = (routes: Array<IRoute>) => {
     return routes.map((prop, key) => {
@@ -92,10 +93,11 @@ function Admin() {
             />
           );
         });
-      } else
+      } else if (!prop.redirect) {
         return (
           <Route path={prop.path!} component={prop.component!} key={key} />
         );
+      } else return <Redirect exact from={prop.path!} to={prop.to!} />;
     });
   };
 
@@ -130,7 +132,6 @@ function Admin() {
         >
           <Header handleLogoutClick={handleLogoutClick} />
           <div className="content">
-            {console.log(getRoutes(routes))}
             <Switch>{getRoutes(routes)}</Switch>
           </div>
           <Footer />

@@ -20,7 +20,6 @@ type SidebarProps = {
 export const Sidebar: React.FC<SidebarProps> = ({ color, routes, isHide }) => {
   const location = useLocation();
   let match = useRouteMatch();
-  console.log(match);
 
   const activeRoute = (routeName: string) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";

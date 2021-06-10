@@ -294,7 +294,7 @@ export const adminRoutes = [
     privilege: "READ_SHOPS",
     component: StoryUI,
   },
-  // { redirect: true, path: "/", to: "/dashboard", name: "Dashboard" },
+  { redirect: true, path: "/", to: "/dashboard", name: "Dashboard" },
 ];
 
 export const adminNonNav = [

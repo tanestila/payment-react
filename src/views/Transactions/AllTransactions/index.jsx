@@ -1,6 +1,6 @@
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 import { Link } from "react-router-dom";
-import Table from "../../../Components/TableFactory";
+import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { Space } from "antd";
 import { cutGuid } from "../../../helpers/cutGuid";

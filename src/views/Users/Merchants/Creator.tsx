@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
 
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Form as BForm } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
@@ -10,6 +10,7 @@ import moment from "moment";
 import { usersAPI } from "../../../services/queries/management/users/users";
 import { useEffect, useMemo, useState } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
+import { Button } from "antd";
 
 export default function Creator() {
   const [prevEmail, setPrevEmail] = useState("");
@@ -156,7 +157,7 @@ export default function Creator() {
         setSubmitting(false);
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ values, isSubmitting, meta }) => (
         <Form className="modal-form">
           <Row>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
@@ -195,6 +196,7 @@ export default function Creator() {
                 type="number"
                 label="Monthly amount limit*"
               />
+
               <Field name="monthly_fee" type="text" label="Monthly fee*" />
               <Field
                 name="monthly_fee_currency"
@@ -231,7 +233,7 @@ export default function Creator() {
               <Field name="group" type="text" label="Group" />
             </Col>
           </Row>
-          {isSubmitting ? "lodaing" : <button type="submit">Submit</button>}
+          {isSubmitting ? "lodaing" : <Button>Submit</Button>}
         </Form>
       )}
     </Formik>

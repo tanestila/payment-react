@@ -7,6 +7,16 @@ export const merchantsAPI = {
     });
     return data;
   },
+  getMerchant: async (guid) => {
+    let { data } = await managementService.get(`users/merchants/${guid}`);
+    return data;
+  },
+  getMerchantLogins: async (guid, args) => {
+    let { data } = await managementService.get(`merchants/${guid}/logins`, {
+      params: { ...args },
+    });
+    return data;
+  },
   addMerchant: async (body) => {
     let { data } = await managementService.post("users/merchants", body);
     return data;

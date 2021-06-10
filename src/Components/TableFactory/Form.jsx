@@ -1,3 +1,4 @@
+import { Card, Button, Row } from "antd";
 import { Formik, Form } from "formik";
 import { TextInput } from "../Common/SearchSelect/Form/TextInput";
 
@@ -12,33 +13,36 @@ export const SearchForm = ({ onSearch, columns }) => {
     params[c.dataIndex] = null;
   });
   return (
-    <Formik
-      initialValues={{ ...params }}
-      validate={(values) => {}}
-      onSubmit={(values, { setSubmitting }) => {
-        let keys = Object.keys(values);
-        let obj = {};
-        keys.forEach((key) => {
-          if (values[key]) obj[key] = values[key];
-        });
+    <Card>
+      <Formik
+        initialValues={{ ...params }}
+        validate={(values) => {}}
+        onSubmit={(values, { setSubmitting }) => {
+          let keys = Object.keys(values);
+          let obj = {};
+          keys.forEach((key) => {
+            if (values[key]) obj[key] = values[key];
+          });
 
-        onSearch(obj);
-      }}
-    >
-      <Form className="ant-form ant-form-inline">
-        {columns.map((c) => {
-          if (c.search)
-            return (
-              <>
-                <TextInput label={c.title} name={c.dataIndex} />
-              </>
-            );
-          else return null;
-        })}
-        {/* <label htmlFor="firstName">merchant_name</label>
+          onSearch(obj);
+        }}
+      >
+        <Form className="ant-form ant-form-inline">
+          {columns.map((c) => {
+            if (c.search)
+              return (
+                <>
+                  <TextInput label={c.title} name={c.dataIndex} />
+                </>
+              );
+            else return null;
+          })}
+          {/* <label htmlFor="firstName">merchant_name</label>
         <Field type="text" name="merchant_name" /> */}
-        <button type="submit">Submit</button>
-      </Form>
-    </Formik>
+
+          <Button type="submit">Search</Button>
+        </Form>
+      </Formik>
+    </Card>
   );
 };

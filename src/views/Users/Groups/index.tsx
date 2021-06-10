@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import Table from "../../../Components/TableFactory";
+import Table from "../../../Components/TableFactory/MainTable";
 import { Link } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import Modal from "../../../Components/Common/Modal";

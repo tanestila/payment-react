@@ -179,22 +179,20 @@ export default function TableFactory({
         ) : isError ? (
           <span>Error: {error && error.message}</span>
         ) : (
-          <div>
-            <Table
-              dataSource={data.data || []}
-              columns={columnsWithSearch}
-              size="small"
-              onChange={handleTableChange}
-              pagination={{
-                total: parseInt(data.count, 10),
-                position: ["bottomLeft"],
-                pageSize: items,
-              }}
-              bordered
-              loading={isFetching}
-              rowKey={(record) => (rowKey ? record[rowKey] : record.guid)}
-            />
-          </div>
+          <Table
+            dataSource={data.data || []}
+            columns={columnsWithSearch}
+            size="small"
+            onChange={handleTableChange}
+            pagination={{
+              total: parseInt(data.count, 10),
+              position: ["bottomLeft"],
+              pageSize: items,
+            }}
+            bordered
+            loading={isFetching}
+            rowKey={(record) => (rowKey ? record[rowKey] : record.guid)}
+          />
         )}
       </div>
     </div>

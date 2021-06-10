@@ -14,6 +14,7 @@ export default function useTableQuery(entity: string, method: Function) {
     error,
     data,
     isFetching,
+    status,
     // isPreviousData,
   } = useQuery(
     // <IResponse<MerchantType>, Error>
@@ -29,10 +30,7 @@ export default function useTableQuery(entity: string, method: Function) {
             : true
           : undefined,
         ...search,
-      }),
-    {
-      keepPreviousData: true,
-    }
+      })
   );
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -49,6 +47,7 @@ export default function useTableQuery(entity: string, method: Function) {
 
   return {
     isLoading,
+    status,
     isError,
     error,
     data,
