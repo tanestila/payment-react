@@ -18,13 +18,12 @@ type SidebarProps = {
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ color, routes, isHide }) => {
+  const [state, setState] = useState("");
   const location = useLocation();
-  let match = useRouteMatch();
 
   const activeRoute = (routeName: string) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
-  const [state, setState] = useState("");
 
   const onClickItem = (newState: string) => {
     if (state === newState) setState("");
@@ -53,6 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ color, routes, isHide }) => {
                     onClickItem={onClickItem}
                     activeRoute={activeRoute}
                     key={key + prop.name}
+                    location={location}
                   />
                 );
               else if (!prop.redirect)

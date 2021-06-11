@@ -1,11 +1,10 @@
-import React, { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Table, Input, Button, Space } from "antd";
 import { SearchForm } from "./Form";
 import "antd/dist/antd.css";
 import { SearchOutlined } from "@ant-design/icons";
 import { ButtonFilter } from "./Button";
 import Loading from "../Common/Loading";
-import { ColumnsType } from "antd/lib/table";
 import { useQuery } from "react-query";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { AbilityContext } from "../Common/Can";
@@ -16,6 +15,7 @@ type DataType = {
 };
 
 type TablePropsType = {
+  name: string;
   onSearch: Function;
   search: any;
   handleTableChange: any;
@@ -32,6 +32,7 @@ type TablePropsType = {
 };
 
 export default function TableFactory({
+  name,
   onSearch,
   search,
   handleTableChange,
@@ -111,7 +112,7 @@ export default function TableFactory({
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : "" }} />
     ),
   });
 

@@ -8,5 +8,4 @@ export default combineReducers({
   auth: authReducer,
   sidebar: sidebarReducer,
   userprofile: userProfileReducer,
-  table: tableReducer,
 });

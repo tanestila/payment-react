@@ -8,6 +8,7 @@ import { Header } from "../Components/layoutComponents/Header";
 import { Sidebar } from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
 import { logout } from "../redux/modules/auth/actions";
+import { toggleSidebar } from "../redux/modules/sidebar";
 
 interface IChildRoute {
   path: string;
@@ -79,6 +80,10 @@ function Admin() {
       setRoutes([]);
     };
   }, [ability, role]);
+
+  // useEffect(() => {
+  //   if (window.innerWidth < 993) dispatch(toggleSidebar());
+  // }, []);
 
   const getRoutes = (routes: Array<IRoute>) => {
     return routes.map((prop, key) => {

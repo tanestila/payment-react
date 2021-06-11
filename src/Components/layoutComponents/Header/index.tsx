@@ -62,7 +62,9 @@ export const Header: React.FC<HeaderProps> = ({ handleLogoutClick }) => {
           <Nav className="ml-auto">
             <Nav.Item>
               <Nav.Link disabled className="m-0">
-                <Timer />
+                <span style={{ paddingTop: "3px" }}>
+                  Your session will expire in <Timer />
+                </span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

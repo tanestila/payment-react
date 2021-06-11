@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { useDispatch } from "react-redux";
+import { setNewTable } from "../../redux/modules/table";
 
 export default function useTableQuery(entity: string, method: Function) {
+  const dispatch = useDispatch();
+
   const [page, setPage] = useState(1);
   const [items, setItems] = useState(100);
   const [sortField, setSortField] = useState();
@@ -32,6 +36,10 @@ export default function useTableQuery(entity: string, method: Function) {
         ...search,
       })
   );
+
+  // useEffect(() => {
+  //   dispatch(setNewTable("merchants"));
+  // }, []);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     setPage(pagination.current);

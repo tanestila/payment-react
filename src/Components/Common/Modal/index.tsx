@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 type CustomModalProps = {
   button: React.ReactNode;
   header: string;
-  content: React.ComponentType;
+  content: React.ComponentType | React.FC<any>;
   allowed?: boolean;
   dialogClassName?: string;
   contentProps?: any;

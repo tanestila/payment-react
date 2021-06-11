@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Collapse } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { Dropdown, DropdownMenu, DropdownToggle } from "reactstrap";
@@ -10,6 +10,7 @@ type CollapseItemProp = {
   onClickItem: Function;
   state: string;
   isHide: boolean;
+  location: any;
 };
 
 export const CollapseItem: React.FC<CollapseItemProp> = ({
@@ -18,8 +19,10 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
   onClickItem,
   state: collapseItemState,
   isHide,
+  location,
 }) => {
   const [dropdownOpen, setOpen] = useState(false);
+  const [activeChildComponent, setActive] = useState(false);
   const hideClass = isHide ? " hover-open " : " collapsed-menu ";
 
   const toggle = () => {
@@ -35,7 +38,17 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
     slideIn: !isHide,
   };
 
+  // useEffect(() => {}, [location, prop.views]);
   // const urlsString = prop.views.reduce(( str: string, child: any) => str + child.path )
+
+  const activeRouteChild = () => {
+    let urlsArray: Array<string> = [];
+    prop.views.forEach((child: any) => {
+      urlsArray.push(child.path);
+    });
+    if (urlsArray.includes(location)) return "active";
+    else return dropdownOpen ? "active" : "";
+  };
 
   return (
     <div
@@ -62,7 +75,12 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
         // isOpen={true}
       >
         <DropdownToggle
-          className={classNames("nav-link", "d-flex", sidebarClass)}
+          className={classNames(
+            "nav-link",
+            "d-flex",
+            sidebarClass,
+            activeRouteChild()
+          )}
         >
           <i className={classNames("menu-icon", prop.icon, sidebarClass)} />
           <span className={classNames("menu-title", sidebarClass)}>
@@ -93,6 +111,7 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
                 key={key + prop.name + "_dropdown"}
                 child={child}
                 isHide={isHide}
+                activeRoute={activeRoute}
               />
             );
           })}
@@ -106,6 +125,7 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
                 key={key + prop.name + "_collapse"}
                 child={child}
                 isHide={isHide}
+                activeRoute={activeRoute}
               />
             );
           })}
@@ -118,11 +138,13 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
 type SidebarCollapseItemProp = {
   child: any;
   isHide: boolean;
+  activeRoute: Function;
 };
 
 const SidebarCollapseItem: React.FC<SidebarCollapseItemProp> = ({
   isHide,
   child,
+  activeRoute,
 }) => {
   const sidebarClass = {
     slideOut: isHide,
@@ -134,7 +156,12 @@ const SidebarCollapseItem: React.FC<SidebarCollapseItemProp> = ({
       <NavLink
         id="sidebar-text-icon-active"
         title={isHide ? child.name : ""}
-        className={classNames("nav-link", "d-flex", sidebarClass)}
+        className={classNames(
+          "nav-link",
+          "d-flex",
+          sidebarClass,
+          activeRoute(child.path)
+        )}
         to={child.path}
         activeClassName=""
       >

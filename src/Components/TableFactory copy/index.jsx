@@ -11,30 +11,30 @@ import Pagination from "./Pagination";
 import Select from "../Common/Select/CustomSelect";
 
 export default function TableFactory({ modalComponent, columns, data, count }) {
-  const dispatch = useDispatch();
-  const page = useSelector((state) => state.table.page);
-  const pageSize = useSelector((state) => state.table.items);
+  // const dispatch = useDispatch();
+  // const page = useSelector((state) => state.table.page);
+  // const pageSize = useSelector((state) => state.table.items);
 
-  const setPage = useCallback(
-    (pageIndex) => {
-      dispatch(setPageTable(pageIndex));
-    },
-    [dispatch]
-  );
+  // const setPage = useCallback(
+  //   (pageIndex) => {
+  //     dispatch(setPageTable(pageIndex));
+  //   },
+  //   [dispatch]
+  // );
 
-  const setPageSize = useCallback(
-    (option) => {
-      dispatch(setPageSizeTable(option.name));
-    },
-    [dispatch]
-  );
+  // const setPageSize = useCallback(
+  //   (option) => {
+  //     dispatch(setPageSizeTable(option.name));
+  //   },
+  //   [dispatch]
+  // );
 
-  const onSort = useCallback(
-    (sortKey) => {
-      dispatch(setSortKey(sortKey));
-    },
-    [dispatch]
-  );
+  // const onSort = useCallback(
+  //   (sortKey) => {
+  //     dispatch(setSortKey(sortKey));
+  //   },
+  //   [dispatch]
+  // );
 
   return (
     <>

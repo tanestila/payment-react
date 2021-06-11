@@ -23,21 +23,4 @@ export const DeleteModal = (handleDelete: Function, guid: string) => {
       });
     }
   });
-  // return swal({
-  //   title: "Are you sure?",
-  //   text: "Once deleted, you will not be able to recover this. Type reason below.",
-  //   content: "input",
-  //   icon: "warning",
-  //   buttons: true,
-  //   dangerMode: true,
-  // }).then((value) => {
-  //   if (value) {
-  //     this.handleDelete(item.guid, value);
-  //     swal("Deleted", {
-  //       icon: "success",
-  //       button: false,
-  //       timer: 2000,
-  //     });
-  //   }
-  // });
 };

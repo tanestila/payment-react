@@ -2,7 +2,7 @@ import Table from "../../Components/TableFactory/MainTable";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../Components/Common/Can";
-import Creator from "./Creator";
+import { Creator } from "./Creator";
 import Modal from "../../Components/Common/Modal";
 import { currenciesAPI } from "../../services/queries/management/currencies";
 import { PartnerType } from "../../types/partners";

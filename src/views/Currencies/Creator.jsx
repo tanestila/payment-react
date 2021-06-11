@@ -5,7 +5,7 @@ import { Col, Row } from "react-bootstrap";
 import { useMutation } from "react-query";
 import { currenciesAPI } from "../../services/queries/management/currencies";
 
-export default function Creator({ handleClose }) {
+export const Creator = ({ handleClose }) => {
   const mutation = useMutation(currenciesAPI.addCurrency);
   return (
     <Formik
@@ -67,4 +67,4 @@ export default function Creator({ handleClose }) {
       )}
     </Formik>
   );
-}
+};

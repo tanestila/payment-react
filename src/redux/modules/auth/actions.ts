@@ -75,7 +75,9 @@ export const initApp = () => async (dispatch: Dispatch) => {
       const token: any = jwt.decode(auth.accessToken);
       dispatch({
         type: types.SET_PRIVILEGES,
-        permissions: JSON.parse(localStorage.getItem("permissions") || ""),
+        permissions: localStorage.getItem("permissions")
+          ? JSON.parse(localStorage.getItem("permissions")!)
+          : [],
         loginGuid: token.userPayload.loginGuid,
         role: getRole(localStorage.getItem("isAdmin") === "true", token),
       });

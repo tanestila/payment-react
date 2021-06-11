@@ -39,10 +39,14 @@ function App() {
   const PrivateRoute = () => (
     <Route
       path="/"
-      render={() => (isLoggedIn ? <Admin /> : <Redirect to="/login" />)}
+      render={() =>
+        isLoggedIn ? <ExpiredPasswordRoute /> : <Redirect to="/login" />
+      }
     />
   );
 
+  console.log(isCredentialsExpired);
+  console.log(isLoggedIn);
   const ExpiredPasswordRoute = () => {
     return isLoggedIn && isCredentialsExpired ? (
       <Redirect to="/expired_password" />
@@ -50,8 +54,11 @@ function App() {
       <Redirect to="/first_time_login" />
     ) : isLoggedIn && isCredentialsExpires ? (
       <Redirect to="/expires_password" />
-    ) : null;
+    ) : (
+      <Admin />
+    );
   };
+  console.log(ExpiredPasswordRoute());
 
   return (
     <>
@@ -63,7 +70,7 @@ function App() {
           <Route path="/expires_password" component={ExpiredPassword} />
           <Route path="/login" component={Login} />
           <PrivateRoute />
-          <ExpiredPasswordRoute />
+          {ExpiredPasswordRoute()}
         </Switch>
       </BrowserRouter>
       <ReactQueryDevtools />
