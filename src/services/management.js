@@ -5,7 +5,8 @@ import {
   tokenRefreshInterceptor,
 } from "./interceptor";
 
-const managementApiUrl = `${process.env.REACT_APP_BACKEND_HOST}/api/v1/management`;
+import { config } from "../config";
+const managementApiUrl = `${config.node.host}/api/v1/management`;
 
 const instance = axios.create({ baseURL: managementApiUrl });
 instance.defaults.headers.common["Authorization"] = store.getState().auth

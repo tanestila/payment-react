@@ -4,8 +4,9 @@ import {
   successResponseInterceptor,
   tokenRefreshInterceptor,
 } from "./interceptor";
+import { config } from "../config";
 
-const authApiUrl = `${process.env.REACT_APP_BACKEND_HOST}/api/v1/auth`;
+const authApiUrl = `${config.node.host}/api/v1/auth`;
 
 const instance = axios.create({ baseURL: authApiUrl });
 instance.defaults.headers.common["Authorization"] = store.getState().auth
