@@ -63,9 +63,13 @@ export const Field: React.FC<CustomInputProps> = ({
 }) => {
   const [field, meta, helpers] = useField(props.name);
 
-  const onChangeCallback = useCallback((value) => {
-    helpers.setValue(value);
-  }, []);
+  const onChangeCallback = useCallback(
+    (value) => {
+      helpers.setTouched(true);
+      helpers.setValue(value);
+    },
+    [helpers]
+  );
 
   // const onSingleDateChange = useCallback((date) => {
   //   helpers.setValue(date);

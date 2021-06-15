@@ -1,39 +1,44 @@
+import { Dispatch } from "react";
+
 const types = {
-  TOGGLE_SIDEBAR: "sidebar/TOGGLE_SIDEBAR",
-  COLLAPSE_ITEM_CLICK: "sidebar/COLLAPSE_ITEM_CLICK",
+  PUSH_HISTORY: "router/PUSH_HISTORY",
 };
 
 const initialState = {
-  isHide: false,
-  collapseItemState: "",
-  activeItemPath: "",
+  history: [],
 };
 
-export function sidebarReducer(state = initialState, action: any) {
+export function routerReducer(state = initialState, action: any) {
   switch (action.type) {
-    case types.TOGGLE_SIDEBAR:
+    case types.PUSH_HISTORY: {
+      // if (action.route.main) {
+      //   return {
+      //     ...state,
+      //     history: [action.route],
+      //   };
+      // } else {
+      //   // if (state.history.indexOf(action.route)) {
+
+      //   // }
+      //   return {
+      //     ...state,
+      //     // history: [...state.history, action.route],
+      //   };
+      // }
       return {
         ...state,
-        isHide: !state.isHide,
-        collapseItemState: "",
+        // history: [...state.history, action.route],
       };
-    case types.COLLAPSE_ITEM_CLICK:
-      return {
-        ...state,
-        collapseItemState:
-          action.state === state.collapseItemState ? "" : action.state,
-      };
+    }
 
     default:
       return { ...state };
   }
 }
 
-export const toggleSidebar = () => ({
-  type: types.TOGGLE_SIDEBAR,
-});
-
-export const collapseItemClick = (statePath: any) => ({
-  type: types.COLLAPSE_ITEM_CLICK,
-  state: statePath,
-});
+export const pushHistory = (route: any) => async (dispatch: Dispatch) => {
+  dispatch({
+    type: types.PUSH_HISTORY,
+    route,
+  });
+};

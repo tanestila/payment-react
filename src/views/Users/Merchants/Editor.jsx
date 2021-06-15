@@ -1,31 +1,29 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-
-import { Col, Row, Form as BForm } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import moment from "moment";
 import { usersAPI } from "../../../services/queries/management/users/users";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
 
 export default function Editor({ guid }) {
-  const [prevEmail, setPrevEmail] = useState("");
-  const [isEmailExistEmail, setIsEmailExistEmail] = useState(false);
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
+
+  const {
+    data: merchant,
+    status,
+    error,
+  } = useQuery(["merchant"], () => merchantsAPI.getMerchant(guid), {
+    keepPreviousData: true,
+  });
 
   const mutation = useMutation(merchantsAPI.addMerchant);
 
-  const { data: roles } = useQuery(
-    ["roles"],
-    () => rolesAPI.getRoles({ type: "merchant" }),
-    {
-      keepPreviousData: true,
-    }
-  );
   const { data: currencies } = useQuery(
     ["currencies"],
     () => currenciesAPI.getCurrencies(),
@@ -40,28 +38,18 @@ export default function Editor({ guid }) {
       : [];
   }, [currencies]);
 
+  if (status === "loading") return <>loading</>;
   return (
     <Formik
       initialValues={{
-        email: "",
-        first_name: "",
-        last_name: "",
-        company_name: "",
-        company_address: "",
-        name: "",
-        type: "",
+        name: merchant.merchant_name,
+        type: merchant.merchant_type,
         monthly_fee: "",
         monthly_fee_currency: null,
         monthly_fee_date: moment(),
         monthly_amount_limit: "",
-        phone: "",
-        role: null,
-        language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
         custom_amount_limit: "",
         custom_days_limit: "",
-        enabled: true,
-        send_mail: true,
-        password: "",
         group: "",
       }}
       validationSchema={Yup.object({
@@ -160,27 +148,10 @@ export default function Editor({ guid }) {
       {({ values, isSubmitting, meta }) => (
         <Form className="modal-form">
           <Row>
-            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-              <Field name="email" type="email" label="Email*" />
-              <Field name="first_name" type="text" label="First Name*" />
-              <Field name="last_name" type="text" label="Last Name*" />
-              <Field name="phone" inputType="phone" label="Phone*" />
-              <Field name="company_name" type="text" label="Company name*" />
-              <Field
-                name="company_address"
-                type="text"
-                label="Company address*"
-              />
+            <Col>
               <Field name="name" type="text" label="Merchant name*" />
               <Field name="type" type="text" label="Merchant type*" />
-              <Field
-                name="role"
-                label="Role*"
-                inputType="select"
-                options={roles?.data}
-              />
-            </Col>
-            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
+
               <Field
                 name="custom_days_limit"
                 type="number"
@@ -210,25 +181,6 @@ export default function Editor({ guid }) {
                 label="Monthly fee date*"
                 inputType="date-single"
                 tip="From this date begins the payment of monthly fee."
-              />
-              <Field name="enabled" inputType="checkbox" label="Enable" />
-              <Field
-                name="send_mail"
-                inputType="checkbox"
-                label="Send mail"
-                tip="We will send your generated username and password to your email."
-              />
-              {!values.send_mail ? (
-                <Field name="password" type="text" label="Password" />
-              ) : null}
-              <Field
-                name="language"
-                label="Language*"
-                inputType="select"
-                options={[
-                  { name: "ENG", guid: "en" },
-                  { name: "RU", guid: "ru" },
-                ]}
               />
               <Field name="group" type="text" label="Group" />
             </Col>

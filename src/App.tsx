@@ -1,6 +1,12 @@
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter,
+  Redirect,
+  Route,
+  Switch,
+  useLocation,
+} from "react-router-dom";
 import { ExpiredPassword } from "./Components/Login/ExpiredPassword";
 import Login from "./Components/Login/Login";
 import Admin from "./layouts/Admin";
@@ -8,9 +14,14 @@ import { initApp } from "./redux/modules/auth/actions";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ForgotPassword } from "./Components/Login/ForgotPassword";
 import Loading from "./Components/Common/Loading";
+import * as allRoutes from "./routes";
+import { AbilityContext } from "./Components/Common/Can";
+import { pushHistory } from "./redux/modules/router";
 
 function App() {
   const dispatch = useDispatch();
+  const ability = useContext(AbilityContext);
+
   const isLoggedIn = useSelector(
     (state: RootStateOrAny) => state.auth.isLoggedIn
   );
@@ -19,7 +30,9 @@ function App() {
     isCredentialsExpired,
     isCredentialsExpires,
     isInitialized,
+    role,
   } = useSelector((state: RootStateOrAny) => state.auth);
+  const [routes, setRoutes] = useState<Array<any>>([]);
   // const isCredentialsExpired = useSelector(
   //   (state: RootStateOrAny) => state.auth.isCredentialsExpired
   // );
@@ -34,6 +47,53 @@ function App() {
     dispatch(initApp());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (isInitialized && isLoggedIn) {
+      let initialRoutes: Array<any> = [];
+
+      switch (role) {
+        case "admin":
+          initialRoutes = [...allRoutes.adminRoutes, ...allRoutes.adminNonNav];
+          break;
+        case "merchant":
+          initialRoutes = [
+            ...allRoutes.merchantRoutes,
+            ...allRoutes.adminNonNav,
+          ];
+
+          break;
+        case "group":
+          initialRoutes = [...allRoutes.groupRoutes, ...allRoutes.adminNonNav];
+
+          break;
+        case "partner":
+          initialRoutes = [
+            ...allRoutes.partnerRoutes,
+            ...allRoutes.adminNonNav,
+          ];
+
+          break;
+
+        default:
+          break;
+      }
+      let changedRoutes = initialRoutes.map((route) => {
+        if (route.privilege) {
+          let [action, subject] = route.privilege.split("_");
+          if (ability.can(action, subject)) {
+            return route;
+          } else return undefined;
+        } else return route;
+      });
+
+      changedRoutes = changedRoutes.filter((r: any) => r);
+      setRoutes(changedRoutes);
+    }
+    return () => {
+      setRoutes([]);
+    };
+  }, [ability, role]);
+
   if (!isInitialized) return <Loading />;
 
   const PrivateRoute = () => (
@@ -45,8 +105,6 @@ function App() {
     />
   );
 
-  console.log(isCredentialsExpired);
-  console.log(isLoggedIn);
   const ExpiredPasswordRoute = () => {
     return isLoggedIn && isCredentialsExpired ? (
       <Redirect to="/expired_password" />
@@ -55,10 +113,10 @@ function App() {
     ) : isLoggedIn && isCredentialsExpires ? (
       <Redirect to="/expires_password" />
     ) : (
-      <Admin />
+      <Admin dispatch={dispatch} routes={routes} />
     );
   };
-  console.log(ExpiredPasswordRoute());
+  // console.log(ExpiredPasswordRoute());
 
   return (
     <>

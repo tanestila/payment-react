@@ -11,12 +11,15 @@ const initialState = {
 
 export function sidebarReducer(state = initialState, action: any) {
   switch (action.type) {
-    case types.TOGGLE_SIDEBAR:
+    case types.TOGGLE_SIDEBAR: {
+      let isHide = state.isHide;
       return {
         ...state,
-        isHide: !state.isHide,
+        isHide: !isHide,
         collapseItemState: "",
       };
+    }
+
     case types.COLLAPSE_ITEM_CLICK:
       return {
         ...state,

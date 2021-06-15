@@ -46,6 +46,7 @@ export default function TableFactory({
   error,
   searchQuery = {},
   rowKey,
+  status,
 }: TablePropsType) {
   const ability = useContext(AbilityContext);
   const [isShowFrom, showForm] = useState(false);
@@ -175,9 +176,9 @@ export default function TableFactory({
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
         {isShowFrom && <SearchForm onSearch={onSearch} columns={columns} />}
 
-        {isLoading ? (
+        {isLoading || status === "loading" ? (
           <Loading />
-        ) : isError ? (
+        ) : isError || status === "error" ? (
           <span>Error: {error && error.message}</span>
         ) : (
           <Table

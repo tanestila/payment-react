@@ -6,6 +6,7 @@ import logo from "../../assets/img/login-logo.svg";
 import { Link, Redirect } from "react-router-dom";
 import { PasswordInputLogin } from "../Common/Inputs/PasswordInputLogin";
 import { LoginInput } from "../Common/Inputs/LoginInput";
+import Loading from "../Common/Loading";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -87,10 +88,13 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   validateForm,
 }) => {
   return loading ? (
-    <button className="button-submit " disabled>
-      loading
-    </button>
+    <>
+      <Loading />
+    </>
   ) : (
+    // <button className="button-submit " disabled>
+    //   loading
+    // </button>
     <button
       className="button-submit"
       onClick={onSubmit}

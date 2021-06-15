@@ -9,6 +9,7 @@ import { Sidebar } from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
 import { logout } from "../redux/modules/auth/actions";
 import { toggleSidebar } from "../redux/modules/sidebar";
+import { pushHistory } from "../redux/modules/router";
 
 interface IChildRoute {
   path: string;
@@ -30,60 +31,34 @@ interface IRoute {
   views?: Array<IChildRoute>;
 }
 
-function Admin() {
+function Admin({ dispatch, routes }) {
   const [color, setColor] = useState("blue");
-  const [routes, setRoutes] = useState<Array<any>>([]);
   const location = useLocation();
+  const [history, setHistory] = useState([
+    { name: "Dashboard", path: "/dashboard" },
+  ]);
+
   const mainPanel = React.useRef(null);
-  const role = useSelector(({ auth }: RootStateOrAny) => auth.role);
-  const ability = useContext(AbilityContext);
   const isHide = useSelector(({ sidebar }: RootStateOrAny) => sidebar.isHide);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    let initialRoutes: Array<any> = [];
-
-    switch (role) {
-      case "admin":
-        initialRoutes = [...allRoutes.adminRoutes, ...allRoutes.adminNonNav];
-        break;
-      case "merchant":
-        initialRoutes = [...allRoutes.merchantRoutes, ...allRoutes.adminNonNav];
-
-        break;
-      case "group":
-        initialRoutes = [...allRoutes.groupRoutes, ...allRoutes.adminNonNav];
-
-        break;
-      case "partner":
-        initialRoutes = [...allRoutes.partnerRoutes, ...allRoutes.adminNonNav];
-
-        break;
-
-      default:
-        break;
-    }
-
-    // setInitialRoutes(allRoutes.adminRoutes);
-    let changedRoutes = initialRoutes.map((route) => {
-      if (route.privilege) {
-        let [action, subject] = route.privilege.split("_");
-        if (ability.can(action, subject)) {
-          return route;
-        } else return undefined;
-      } else return route;
-    });
-
-    changedRoutes = changedRoutes.filter((r: any) => r);
-    setRoutes(changedRoutes);
-    return () => {
-      setRoutes([]);
-    };
-  }, [ability, role]);
 
   // useEffect(() => {
   //   if (window.innerWidth < 993) dispatch(toggleSidebar());
   // }, []);
+
+  useEffect(() => {
+    if (routes.length) {
+      let route = routes.filter((route) => {
+        console.log(location.pathname.includes(route.path));
+        return !route.redirect && location.pathname.includes(route.path);
+      });
+      console.log(...route);
+      console.log(location.pathname);
+
+      if (route.length && route[0].name) {
+        setHistory([...history, ...route]);
+      }
+    }
+  }, [location.pathname]);
 
   const getRoutes = (routes: Array<IRoute>) => {
     return routes.map((prop, key) => {
@@ -135,7 +110,10 @@ function Admin() {
           })}
           ref={mainPanel}
         >
-          <Header handleLogoutClick={handleLogoutClick} />
+          <Header
+            handleLogoutClick={handleLogoutClick}
+            headerHistory={history}
+          />
           <div className="content">
             <Switch>{getRoutes(routes)}</Switch>
           </div>

@@ -1,4 +1,4 @@
-import { useHistory } from "react-router-dom";
+import { useHistory, NavLink } from "react-router-dom";
 import { Navbar, Container, Nav } from "react-bootstrap";
 // @ts-ignore
 import apiFile from "../../../public/api.pdf";
@@ -8,10 +8,13 @@ import { Timer } from "./Timer";
 
 type HeaderProps = {
   handleLogoutClick: MouseEventHandler<HTMLAnchorElement>;
+  headerHistory: Array<any>;
 };
 
-export const Header: React.FC<HeaderProps> = ({ handleLogoutClick }) => {
-  // const location = useLocation();
+export const Header: React.FC<HeaderProps> = ({
+  handleLogoutClick,
+  headerHistory,
+}) => {
   const history = useHistory();
 
   // const mobileSidebarToggle = (e) => {
@@ -41,9 +44,14 @@ export const Header: React.FC<HeaderProps> = ({ handleLogoutClick }) => {
           href="#home"
           onClick={(e: any) => e.preventDefault()}
           className="mr-2"
-        >
-          fdfsd
-        </Navbar.Brand>
+        ></Navbar.Brand>
+        <Nav className="mr-auto">
+          {headerHistory.map((h) => (
+            <>
+              <NavLink to={h.name}>{h.name}</NavLink> {">"}
+            </>
+          ))}
+        </Nav>
         {/* <div className="d-flex justify-content-center align-items-center ml-2 ml-lg-0">
           <Navbar.Brand
             href="#home"

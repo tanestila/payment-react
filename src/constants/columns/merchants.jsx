@@ -4,6 +4,7 @@ import { Button } from "antd";
 import Editor from "../../views/Users/Merchants/Editor";
 import { MerchantType } from "../../types/merchants";
 import { Link } from "react-router-dom";
+import { DeleteModal } from "../../Components/Common/DeleteModal";
 
 export default function useMerchantsColumns(ability) {
   return useMemo(
@@ -113,8 +114,13 @@ export default function useMerchantsColumns(ability) {
       ability.can("DELETE", "USERMERCHANT") && {
         title: "Delete",
         key: "delete",
-        align: "center",
-        render: () => <span>delete</span>,
+        render: (text: string, record: any) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.merchant_guid)}
+          />
+        ),
       },
     ],
     [ability]

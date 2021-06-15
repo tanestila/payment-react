@@ -68,12 +68,12 @@
       .nav-link {
         color: $default-color;
         // padding: $navbar-padding-a;
-        padding: 0 10px;
+        // padding: 0 10px;
         margin: $navbar-margin-a;
         position: relative;
         display: inline-flex;
         // line-height: 40px;
-
+        padding: 0 22px;
         &.btn {
           margin: $navbar-margin-a-btn;
           padding: $padding-base-vertical $padding-base-horizontal;
@@ -107,12 +107,20 @@
           // margin-top: 8px;
           // line-height: 40px;
         }
-        span {
-          margin: auto;
+        // span {
+        //   margin: auto;
+        // }
+
+        &[id="profile"] {
+          border-left: 1px solid rgba(160, 168, 197, 0.3);
+          border-right: 1px solid rgba(160, 168, 197, 0.3);
+
+          height: 20px;
         }
 
         &[id="docs"] {
           border-right: 1px solid rgba(160, 168, 197, 0.3);
+          height: 20px;
 
           span {
             display: none;
@@ -120,8 +128,45 @@
         }
 
         &[id="logout"] {
+          height: 20px;
+
           span {
             display: none;
+          }
+        }
+      }
+
+      @media (max-width: 991px) {
+        .nav-link {
+          margin: 8px 0;
+          width: 100%;
+
+          &[id="timer"] {
+            width: 100%;
+          }
+
+          &[id="profile"] {
+            border-left: none;
+            border-right: none;
+          }
+
+          &[id="docs"] {
+            border-right: none;
+            span {
+              display: inline;
+              vertical-align: top;
+              margin-top: 2px;
+              margin-left: 6px;
+            }
+          }
+
+          &[id="logout"] {
+            span {
+              display: inline;
+              vertical-align: top;
+              margin-top: 2px;
+              margin-left: 6px;
+            }
           }
         }
       }
@@ -179,6 +224,7 @@
       border-left: 4px solid transparent;
     }
   }
+
   .btn {
     margin: $navbar-margin-btn;
     font-size: $font-size-base;

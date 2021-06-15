@@ -2,17 +2,17 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
 
-import { Col, Row, Form as BForm } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import moment from "moment";
-import { usersAPI } from "../../../services/queries/management/users/users";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
+import { usersAPI } from "../../../services/queries/management/users/users";
 
-export default function Creator() {
+export default function Creator({ handleClose }) {
   const [prevEmail, setPrevEmail] = useState("");
   const [isEmailExistEmail, setIsEmailExistEmail] = useState(false);
   const [error, setError] = useState(false);
@@ -65,30 +65,27 @@ export default function Creator() {
         group: "",
       }}
       validationSchema={Yup.object({
-        email: Yup.string().email("Invalid email address").required("Required"),
-        // .test("email", "Email exists", async (value) => {
-        //   if (
-        //     value &&
-        //     value?.length > 8 &&
-        //     value?.indexOf(".") !== -1 &&
-        //     value?.indexOf("@") !== -1 &&
-        //     prevEmail !== value
-        //   ) {
-        //     try {
-        //       setPrevEmail(value);
-
-        //       const { data: checkResponse } = await usersAPI.checkExists({
-        //         email: value,
-        //       });
-        //       setIsEmailExistEmail(checkResponse.email_exists);
-        //       console.log(!checkResponse.email_exists);
-
-        //       return !checkResponse.email_exists;
-        //     } catch (error) {
-        //       return isEmailExistEmail;
-        //     }
-        //   }
-        // }),
+        email: Yup.string()
+          .email("Invalid email address")
+          .required("Required")
+          .test("emailExist", "Email exists", async (value) => {
+            if (
+              value &&
+              value?.length > 8 &&
+              value?.indexOf(".") !== -1 &&
+              value?.indexOf("@") !== -1
+            )
+              try {
+                const { data: checkResponse } = await usersAPI.checkExists({
+                  email: value,
+                });
+                if (checkResponse) return !checkResponse.email_exists;
+                else return false;
+              } catch (error) {
+                return false;
+              }
+            return true;
+          }),
         first_name: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
@@ -136,7 +133,7 @@ export default function Creator() {
             role_guid: values.role?.["guid"],
             password: values.send_mail ? undefined : values.password,
             send_mail: values.send_mail ? 1 : 0,
-            language: values.language,
+            language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
             monthly_fee_currency: values.monthly_fee_currency?.["name"],
             monthly_fee: +values.monthly_fee * 100,
@@ -149,15 +146,18 @@ export default function Creator() {
           };
           const todo = await mutation.mutateAsync(data);
           console.log(todo);
+          alert("done");
+          handleClose();
         } catch (error) {
           console.log(error);
+          alert(error);
         } finally {
           console.log("done");
         }
         setSubmitting(false);
       }}
     >
-      {({ values, isSubmitting, meta }) => (
+      {({ values, isSubmitting }) => (
         <Form className="modal-form">
           <Row>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
@@ -233,7 +233,13 @@ export default function Creator() {
               <Field name="group" type="text" label="Group" />
             </Col>
           </Row>
-          {isSubmitting ? "lodaing" : <Button>Submit</Button>}
+          {isSubmitting ? (
+            "lodaing"
+          ) : (
+            <Button htmlType="submit" type="primary">
+              Submit
+            </Button>
+          )}
         </Form>
       )}
     </Formik>
