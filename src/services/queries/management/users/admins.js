@@ -7,4 +7,8 @@ export const adminsAPI = {
     });
     return data;
   },
+  getAdmin: async (guid) => {
+    let { data } = await managementService.get(`users/admins/${guid}`);
+    return data;
+  },
 };

@@ -9,3 +9,7 @@ export { default as Admins } from "./Users/Admins";
 export { default as Shops } from "./Shops";
 export { default as Chargebacks } from "./Transactions/Chargebacks";
 export { default as Statements } from "./Transactions/Statements";
+export { default as MerchantDetail } from "./Users/Merchants/Detail";
+export { default as GroupDetail } from "./Users/Groups/Detail";
+export { default as PartnerDetail } from "./Users/Partners/Detail";
+export { default as AdminDetail } from "./Users/Admins/Detail";

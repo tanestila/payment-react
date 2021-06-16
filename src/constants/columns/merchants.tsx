@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import CustomModal from "../../Components/Common/Modal";
-import { Button } from "antd";
 import Editor from "../../views/Users/Merchants/Editor";
 import { MerchantType } from "../../types/merchants";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
+import { AppAbility } from "../../Components/Common/Can";
 
-export default function useMerchantsColumns(ability) {
+export default function useMerchantsColumns(ability: AppAbility) {
   return useMemo(
     () => [
       {
@@ -15,7 +15,7 @@ export default function useMerchantsColumns(ability) {
         key: "merchant_name",
         sorter: true,
         search: "text",
-        render: (text: any, record: any) => (
+        render: (text: any, record: MerchantType) => (
           <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
             {text}
           </Link>
@@ -48,7 +48,7 @@ export default function useMerchantsColumns(ability) {
         dataIndex: "gateways",
         key: "gateways",
         search: "gateways",
-        render: (text: any, record: any) => record.gateways.join(", "),
+        render: (text: any, record: MerchantType) => record.gateways.join(", "),
       },
       {
         title: "Username",
@@ -114,7 +114,8 @@ export default function useMerchantsColumns(ability) {
       ability.can("DELETE", "USERMERCHANT") && {
         title: "Delete",
         key: "delete",
-        render: (text: string, record: any) => (
+        align: "center",
+        render: (text: string, record: MerchantType) => (
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}

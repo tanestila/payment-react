@@ -15,7 +15,6 @@ type DataType = {
 };
 
 type TablePropsType = {
-  name: string;
   onSearch: Function;
   search: any;
   handleTableChange: any;
@@ -29,10 +28,10 @@ type TablePropsType = {
   error: any;
   searchQuery?: any;
   rowKey?: any;
+  status: string;
 };
 
 export default function TableFactory({
-  name,
   onSearch,
   search,
   handleTableChange,
@@ -58,6 +57,10 @@ export default function TableFactory({
       enabled: ability.can("READ", "GATEWAYS") && !!searchQuery.gateways,
     }
   );
+
+  console.log(isError);
+  console.log(status);
+  console.log(error);
 
   function handleSearch(
     electedKeys: string,
@@ -173,6 +176,7 @@ export default function TableFactory({
 
         <div className="secondary-buttons"></div>
       </div>
+      {/* Удалить стили если надо убрать скролл внизу таблицы  */}
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
         {isShowFrom && <SearchForm onSearch={onSearch} columns={columns} />}
 
@@ -182,6 +186,7 @@ export default function TableFactory({
           <span>Error: {error && error.message}</span>
         ) : (
           <Table
+            // scroll={{ x: "100%", y: "100%" }}
             dataSource={data.data || []}
             columns={columnsWithSearch}
             size="small"

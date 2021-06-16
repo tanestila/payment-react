@@ -1,8 +1,11 @@
 import { useMemo } from "react";
 import CustomModal from "../../Components/Common/Modal";
 import { Button } from "antd";
+import { AppAbility } from "../../Components/Common/Can";
+import Editor from "../../views/Users/Merchants/Editor";
 
-export default function useLoginColumns(ability) {
+//TODO: add login type
+export default function useLoginColumns(ability: AppAbility) {
   return useMemo(
     () => [
       {
@@ -64,7 +67,7 @@ export default function useLoginColumns(ability) {
         render: (cellInfo: any) => (
           <CustomModal
             header="Edit merchant"
-            // content={Editor}
+            content={Editor}
             contentProps={{ guid: cellInfo.merchant_guid }}
             button={<Button>Show</Button>}
             // dialogClassName="modal-creator"
@@ -78,7 +81,7 @@ export default function useLoginColumns(ability) {
         render: (cellInfo: any) => (
           <CustomModal
             header="Edit merchant"
-            // content={Editor}
+            content={Editor}
             contentProps={{ guid: cellInfo.merchant_guid }}
             button={
               <i

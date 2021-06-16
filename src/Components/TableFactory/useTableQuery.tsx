@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useDispatch } from "react-redux";
-import { setNewTable } from "../../redux/modules/table";
 
-export default function useTableQuery(entity: string, method: Function) {
+export default function useTableQuery(
+  entity: string,
+  method: Function,
+  itemsDefault?: number
+) {
   const dispatch = useDispatch();
 
   const [page, setPage] = useState(1);
-  const [items, setItems] = useState(100);
+  const [items, setItems] = useState(itemsDefault || 100);
   const [sortField, setSortField] = useState();
   const [sortOrder, setSortOrder] = useState();
   const [search, setSearch] = useState({});

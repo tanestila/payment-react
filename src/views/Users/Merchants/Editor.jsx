@@ -17,9 +17,11 @@ export default function Editor({ guid }) {
   const {
     data: merchant,
     status,
+    isFetching,
     error,
   } = useQuery(["merchant"], () => merchantsAPI.getMerchant(guid), {
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
   });
 
   const mutation = useMutation(merchantsAPI.addMerchant);
@@ -29,6 +31,7 @@ export default function Editor({ guid }) {
     () => currenciesAPI.getCurrencies(),
     {
       keepPreviousData: true,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -38,19 +41,19 @@ export default function Editor({ guid }) {
       : [];
   }, [currencies]);
 
-  if (status === "loading") return <>loading</>;
+  if (status === "loading" || isFetching) return <>loading</>;
   return (
     <Formik
       initialValues={{
         name: merchant.merchant_name,
         type: merchant.merchant_type,
-        monthly_fee: "",
-        monthly_fee_currency: null,
-        monthly_fee_date: moment(),
-        monthly_amount_limit: "",
-        custom_amount_limit: "",
-        custom_days_limit: "",
-        group: "",
+        monthly_fee: merchant.monthly_fee,
+        monthly_fee_currency: merchant.monthly_fee_currency,
+        monthly_fee_date: merchant.monthly_fee_date,
+        monthly_amount_limit: merchant.monthly_amount_limit,
+        custom_amount_limit: merchant.custom_amount_limit,
+        custom_days_limit: merchant.custom_days_limit,
+        group: merchant.group_name,
       }}
       validationSchema={Yup.object({
         email: Yup.string().email("Invalid email address").required("Required"),

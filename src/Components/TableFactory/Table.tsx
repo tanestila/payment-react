@@ -4,20 +4,20 @@ import "antd/dist/antd.css";
 import Loading from "../Common/Loading";
 
 type DataType = {
-  data: Array<any>,
-  count: string,
+  data: Array<any>;
+  count: string;
 };
 
 type TablePropsType = {
-  handleTableChange: any,
-  columns: any,
-  data: DataType,
-  items: number,
-  isFetching: boolean,
-  isLoading: boolean,
-  isError: boolean,
-  error: any,
-  isPaginated?: boolean,
+  handleTableChange: any;
+  columns: any;
+  data: DataType | [];
+  items: number;
+  isFetching: boolean;
+  isLoading: boolean;
+  isError: boolean;
+  error: any;
+  isPaginated?: boolean;
   // rowKey?: any,
 };
 
@@ -41,7 +41,7 @@ TablePropsType) {
         <span>Error: {error && error.message}</span>
       ) : (
         <Table
-          dataSource={isPaginated ? data.data || [] : data}
+          dataSource={isPaginated ? data.data : data}
           columns={columns}
           size="small"
           onChange={handleTableChange}

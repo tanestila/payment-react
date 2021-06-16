@@ -13,17 +13,15 @@ import { auditAPI } from "../../../services/queries/audit";
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
-  useAccountsColumns,
-  useTerminalsColumns,
   useShopsColumns,
   useMerchantHistoryColumns,
-  useMerchantsColumns,
   useGroupsMerchantsColumns,
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
+import { adminsAPI } from "../../../services/queries/management/users/admins";
 const { Text } = Typography;
 
-export default function GroupDetail() {
+export default function AdminDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
@@ -31,52 +29,9 @@ export default function GroupDetail() {
     data: group,
     status,
     error,
-  } = useQuery([`group-${history.id}`], () => groupsAPI.getGroup(history.id), {
+  } = useQuery([`admin-${history.id}`], () => adminsAPI.getAdmin(history.id), {
     keepPreviousData: true,
   });
-
-  const {
-    // status: loginsStatus,
-    isFetching: isFetchingLogins,
-    isLoading: isLoadingLogins,
-    isError: isErrorLogins,
-    error: loginsError,
-    data: logins,
-    items: loginsItems,
-    handleTableChange: handleLoginsTableChange,
-  } = useTableQuery(
-    "group-logins",
-    (params: any) => groupsAPI.getGroupLogins(history.id, { params }),
-    10
-  );
-
-  const {
-    // status: loginsStatus,
-    isFetching: isFetchingMerchants,
-    isLoading: isLoadingMerchants,
-    isError: isErrorMerchants,
-    error: merchantsError,
-    data: merchants,
-    items: merchantsItems,
-    handleTableChange: handleMerchantsTableChange,
-  } = useTableQuery(
-    "group-merchants",
-    (params: any) => groupsAPI.getGroupMerchants(history.id, { params }),
-    10
-  );
-
-  const {
-    // status: shopsStatus,
-    isFetching: isFetchingShops,
-    isLoading: isLoadingShops,
-    isError: isErrorShops,
-    error: shopsError,
-    data: shops,
-    items: shopsItems,
-    handleTableChange: handleShopsTableChange,
-  } = useTableQuery("group-shops", (params: any) =>
-    groupsAPI.getGroupShops(history.id, { params })
-  );
 
   const {
     // status: merchantHistoryStatus,
@@ -88,8 +43,8 @@ export default function GroupDetail() {
     items: merchantHistoryItems,
     handleTableChange: handleMerchantHistoryTableChange,
   } = useTableQuery(
-    "group-history",
-    (params: any) => auditAPI.getGroupsHistory({ guid: history.id, ...params }),
+    "admin-history",
+    (params: any) => auditAPI.getLoginsHistory({ guid: history.id, ...params }),
     10
   );
 
@@ -141,52 +96,6 @@ export default function GroupDetail() {
         </Descriptions>
         <Divider />
 
-        <Text strong>Merchants</Text>
-        <Table
-          columns={merchantsColumns}
-          handleTableChange={handleMerchantsTableChange}
-          isFetching={isFetchingMerchants}
-          data={merchants}
-          items={merchantsItems}
-          isLoading={isLoadingMerchants}
-          isError={isErrorMerchants}
-          error={merchantsError}
-        />
-        <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add login</Button>
-        </Row>
-
-        <Divider />
-
-        <Text strong>Logins</Text>
-        <Table
-          columns={loginsColumns}
-          handleTableChange={handleLoginsTableChange}
-          isFetching={isFetchingLogins}
-          data={logins}
-          items={loginsItems}
-          isLoading={isLoadingLogins}
-          isError={isErrorLogins}
-          error={loginsError}
-        />
-        <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add login</Button>
-        </Row>
-
-        <Divider />
-        <Text strong>Shops</Text>
-        <Table
-          columns={shopsColumns}
-          handleTableChange={handleShopsTableChange}
-          isFetching={isFetchingShops}
-          data={shops}
-          items={shopsItems}
-          isLoading={isLoadingShops}
-          isError={isErrorShops}
-          error={shopsError}
-        />
-
-        <Divider />
         <Text strong>Change history</Text>
         <Table
           columns={historyColumns}

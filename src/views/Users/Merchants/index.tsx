@@ -28,7 +28,6 @@ export default function Merchants() {
 
   return (
     <Table
-      name="merchants"
       columns={columns}
       handleTableChange={handleTableChange}
       onSearch={onSearch}

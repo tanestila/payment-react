@@ -10,8 +10,11 @@ import {
   Chargebacks,
   Statements,
   AdminDashboard,
+  AdminDetail,
+  MerchantDetail,
+  GroupDetail,
+  PartnerDetail,
 } from "../views";
-import MerchantDetail from "../views/Users/Merchants/Detail";
 import { StoryUI } from "../Components/StoryUI";
 
 export const adminRoutes = [
@@ -302,6 +305,34 @@ export const adminNonNav = [
     nonNav: true,
     name: "Merchant detailed",
     path: "/about/merchant/:id",
+    privilege: "READ_USERMERCHANT",
+    component: MerchantDetail,
+  },
+  {
+    nonNav: true,
+    name: "Group detailed",
+    path: "/about/group/:id",
+    privilege: "READ_USERMERCHANT",
+    component: GroupDetail,
+  },
+  {
+    nonNav: true,
+    name: "Partner detailed",
+    path: "/about/partner/:id",
+    privilege: "READ_USERMERCHANT",
+    component: PartnerDetail,
+  },
+  {
+    nonNav: true,
+    name: "Admin detailed",
+    path: "/about/admin/:id",
+    privilege: "READ_USERMERCHANT",
+    component: AdminDetail,
+  },
+  {
+    nonNav: true,
+    name: "Shop detailed",
+    path: "/about/shop/:id",
     privilege: "READ_USERMERCHANT",
     component: MerchantDetail,
   },

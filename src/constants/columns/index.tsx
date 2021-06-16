@@ -4,4 +4,8 @@ export { default as useTerminalsColumns } from "./terminals";
 export { default as useShopsColumns } from "./shops";
 export { default as useMerchantHistoryColumns } from "./merchantHistory";
 export { default as useMerchantsColumns } from "./merchants";
+export { default as useGroupsColumns } from "./groups";
+export { default as usePartnersColumns } from "./partners";
+export { default as useAdminsColumns } from "./admins";
 export { default as useCurrenciesColumns } from "./currencies";
+export { useGroupsMerchantsColumns } from "./groups";

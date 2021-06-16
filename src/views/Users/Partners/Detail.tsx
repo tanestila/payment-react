@@ -18,22 +18,39 @@ import {
   useShopsColumns,
   useMerchantHistoryColumns,
 } from "../../../constants/columns";
+import { groupsAPI } from "../../../services/queries/management/users/groups";
+import { partnersAPI } from "../../../services/queries/management/users/partners";
 const { Text } = Typography;
 
-export default function MerchantDetail() {
+export default function PartnerDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
   const {
-    data: merchant,
+    data: group,
     status,
     error,
   } = useQuery(
-    [`merchant-${history.id}`],
-    () => merchantsAPI.getMerchant(history.id),
+    [`partner-${history.id}`],
+    () => partnersAPI.getPartner(history.id),
     {
       keepPreviousData: true,
     }
+  );
+
+  const {
+    // status: loginsStatus,
+    isFetching: isFetchingGroups,
+    isLoading: isLoadingGroups,
+    isError: isErrorGroups,
+    error: groupsError,
+    data: groups,
+    items: groupsItems,
+    handleTableChange: handleGroupsTableChange,
+  } = useTableQuery(
+    "partner-groups",
+    (params: any) => partnersAPI.getPartnerGroups(history.id, { params }),
+    10
   );
 
   const {
@@ -45,36 +62,14 @@ export default function MerchantDetail() {
     data: logins,
     items: loginsItems,
     handleTableChange: handleLoginsTableChange,
-  } = useTableQuery("merchant-logins", () =>
-    merchantsAPI.getMerchantLogins(history.id, {})
+  } = useTableQuery(
+    "partner-logins",
+    (params: any) => partnersAPI.getPartnerLogins(history.id, { params }),
+    10
   );
 
   const {
-    // status: accountsStatus,
-    isFetching: isFetchingAccounts,
-    isLoading: isLoadingAccounts,
-    isError: isErrorAccounts,
-    error: accountsError,
-    data: accounts,
-    items: accountsItems,
-    handleTableChange: handleAccountsTableChange,
-  } = useTableQuery("accounts", () => accountsAPI.getAccounts(history.id, {}));
-
-  const {
-    // status: terminalsStatus,
-    isFetching: isFetchingTerminals,
-    isLoading: isLoadingTerminals,
-    isError: isErrorTerminals,
-    error: terminalsError,
-    data: terminals,
-    items: terminalsItems,
-    handleTableChange: handleTerminalsTableChange,
-  } = useTableQuery("terminals", () =>
-    terminalsAPI.getTerminals({ merchant_guid: history.id })
-  );
-
-  const {
-    // status: shopsStatus,
+    // status: loginsStatus,
     isFetching: isFetchingShops,
     isLoading: isLoadingShops,
     isError: isErrorShops,
@@ -82,8 +77,10 @@ export default function MerchantDetail() {
     data: shops,
     items: shopsItems,
     handleTableChange: handleShopsTableChange,
-  } = useTableQuery("shops", () =>
-    shopsAPI.getShops({ merchant_guid: history.id })
+  } = useTableQuery(
+    "partner-shops",
+    (params: any) => partnersAPI.getPartnerShops(history.id, { params }),
+    10
   );
 
   const {
@@ -95,15 +92,14 @@ export default function MerchantDetail() {
     data: merchantHistory,
     items: merchantHistoryItems,
     handleTableChange: handleMerchantHistoryTableChange,
-  } = useTableQuery("merchant-history", () =>
-    auditAPI.getMerchantsHistory({ guid: history.id })
+  } = useTableQuery(
+    "partner-history",
+    (params: any) =>
+      auditAPI.getPartnersHistory({ guid: history.id, ...params }),
+    10
   );
 
   const loginsColumns = useLoginColumns(ability);
-
-  const accountsColumns = useAccountsColumns(ability);
-
-  const terminalsColumns = useTerminalsColumns(ability);
 
   const shopsColumns = useShopsColumns(ability);
 
@@ -120,42 +116,40 @@ export default function MerchantDetail() {
 
   return (
     <>
-      <Card title={`Merchant detail ${merchant.merchant_name}`}>
+      <Card title={`Group detail ${group.partner_name}`}>
         <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
           <Descriptions.Item span={3} label="GUID">
-            {merchant.merchant_guid}
+            {group.partner_guid}
           </Descriptions.Item>
-          <Descriptions.Item label="Merchant type">
-            {merchant.merchant_type}
-          </Descriptions.Item>
-          <Descriptions.Item label="Merchant name">
-            {merchant.merchant_name}
-          </Descriptions.Item>
-          <Descriptions.Item label="Group">
-            {merchant.group_name}
-          </Descriptions.Item>
-          <Descriptions.Item label="Monthly limit">
-            {merchant.monthly_amount_limit}
-          </Descriptions.Item>
-          <Descriptions.Item label="Monthly fee date">
-            {merchant.monthly_fee_date}
-          </Descriptions.Item>
-          <Descriptions.Item label="Monthly fee">
-            {merchant.monthly_fee} {merchant.monthly_fee_currency}
+          <Descriptions.Item label="Group type">
+            {group.partner_type}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
-            {merchant.created_at}
+            {group.created_at}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
-            {merchant.created_by_username}
+            {group.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {merchant.updated_at}
+            {group.updated_at}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {merchant.updated_by_username}
+            {group.updated_by_username}
           </Descriptions.Item>
         </Descriptions>
+        <Divider />
+
+        <Text strong>Groups</Text>
+        <Table
+          columns={historyColumns}
+          handleTableChange={handleGroupsTableChange}
+          isFetching={isFetchingGroups}
+          data={groups}
+          items={groupsItems}
+          isLoading={isLoadingGroups}
+          isError={isErrorGroups}
+          error={groupsError}
+        />
         <Divider />
         <Text strong>Logins</Text>
         <Table
@@ -172,34 +166,6 @@ export default function MerchantDetail() {
           <Button style={{ margin: "10px auto" }}>Add login</Button>
         </Row>
 
-        <Divider />
-        <Text strong>Accounts</Text>
-        <Table
-          columns={accountsColumns}
-          handleTableChange={handleAccountsTableChange}
-          isFetching={isFetchingAccounts}
-          data={accounts}
-          items={accountsItems}
-          isLoading={isLoadingAccounts}
-          isError={isErrorAccounts}
-          error={accountsError}
-          isPaginated={false}
-        />
-        <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add accounts</Button>
-        </Row>
-        <Divider />
-        <Text strong>Terminals</Text>
-        <Table
-          columns={terminalsColumns}
-          handleTableChange={handleTerminalsTableChange}
-          isFetching={isFetchingTerminals}
-          data={terminals}
-          items={terminalsItems}
-          isLoading={isLoadingTerminals}
-          isError={isErrorTerminals}
-          error={terminalsError}
-        />
         <Divider />
         <Text strong>Shops</Text>
         <Table

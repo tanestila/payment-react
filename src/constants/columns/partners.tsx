@@ -1,49 +1,60 @@
 import { useMemo } from "react";
-import { DeleteModal } from "../../Components/Common/DeleteModal";
 import CustomModal from "../../Components/Common/Modal";
-import { Creator } from "../../views/Currencies/Creator";
+import { Link } from "react-router-dom";
+import { AppAbility } from "../../Components/Common/Can";
+import { PartnerType } from "../../types/partners";
 
-export default function useCurrenciesColumns(ability) {
+export default function usePartnersColumns(ability: AppAbility) {
   return useMemo(
     () => [
       {
-        title: "Code",
-        dataIndex: "code",
-        key: "code",
+        title: "Partner name",
+        dataIndex: "partner_name",
+        key: "partner_name",
+        sorter: true,
+        search: "text",
+        render: (text: string, record: PartnerType) => (
+          <Link className="link" to={`/about/partner/${record.partner_guid}`}>
+            {text}
+          </Link>
+        ),
+      },
+      {
+        title: "Partner type",
+        dataIndex: "partner_type",
+        key: "partner_type",
         sorter: true,
         search: "text",
       },
       {
-        title: "Name",
-        dataIndex: "name",
-        key: "name",
+        title: "Username",
+        dataIndex: "username",
+        key: "group_name",
         sorter: true,
         search: "text",
       },
       {
-        title: "Number",
-        dataIndex: "number",
-        key: "number",
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
         sorter: true,
         search: "text",
       },
       {
-        title: "Rate (EUR)",
-        dataIndex: "rate_to_eur",
-        key: "rate_to_eur",
-        sorter: true,
-        search: "text",
-      },
-      {
-        title: "Exchange markup value",
-        dataIndex: "exchange_markup_value",
-        key: "exchange_markup_value",
-      },
-      {
-        title: "Exchange markup type",
-        dataIndex: "isFlat",
-        key: "isFlat",
-        render: (text: any) => (text === true ? "Flat" : "Percent"),
+        title: "Status",
+        dataIndex: "enabled",
+        key: "enabled",
+        search: "bool",
+        align: "center",
+        render: (text: string, record: PartnerType) => (
+          <i
+            className={
+              record.enabled
+                ? "icon-success green icon"
+                : "icon-failed red icon"
+            }
+          />
+        ),
       },
       // {
       //   title: "Action",
@@ -59,10 +70,11 @@ export default function useCurrenciesColumns(ability) {
       ability.can("EXECUTE", "USERMERCHANT") && {
         title: "Edit",
         key: "edit",
+        align: "center",
         render: (text: string, record: PartnerType) => (
           <CustomModal
             header="Edit merchant"
-            content={Creator}
+            content={<></>}
             contentProps={{ guid: record.partner_guid }}
             button={
               <i
@@ -77,13 +89,8 @@ export default function useCurrenciesColumns(ability) {
       ability.can("DELETE", "USERMERCHANT") && {
         title: "Delete",
         key: "delete",
-        render: (text: string, record: PartnerType) => (
-          <i
-            className="far fa-trash-alt  icon red"
-            style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.guid)}
-          />
-        ),
+        align: "center",
+        render: () => <span>delete</span>,
       },
     ],
     [ability]
