@@ -21,6 +21,7 @@ import {
   useGroupsMerchantsColumns,
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
+import { formatDate } from "../../../helpers/formatDate";
 const { Text } = Typography;
 
 export default function GroupDetail() {
@@ -127,13 +128,13 @@ export default function GroupDetail() {
             {group.partner_name}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
-            {group.created_at}
+            {formatDate(group.created_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
             {group.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {group.updated_at}
+            {formatDate(group.updated_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
             {group.updated_by_username}

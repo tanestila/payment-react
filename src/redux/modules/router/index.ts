@@ -11,23 +11,17 @@ const initialState = {
 export function routerReducer(state = initialState, action: any) {
   switch (action.type) {
     case types.PUSH_HISTORY: {
-      // if (action.route.main) {
-      //   return {
-      //     ...state,
-      //     history: [action.route],
-      //   };
-      // } else {
-      //   // if (state.history.indexOf(action.route)) {
+      let history: Array<any> = [];
+      if (action.route.mainName)
+        history = [
+          { name: action.route.mainName, disabled: true },
+          action.route,
+        ];
+      else history = [action.route];
 
-      //   // }
-      //   return {
-      //     ...state,
-      //     // history: [...state.history, action.route],
-      //   };
-      // }
       return {
         ...state,
-        // history: [...state.history, action.route],
+        history: history,
       };
     }
 
@@ -36,9 +30,7 @@ export function routerReducer(state = initialState, action: any) {
   }
 }
 
-export const pushHistory = (route: any) => async (dispatch: Dispatch) => {
-  dispatch({
-    type: types.PUSH_HISTORY,
-    route,
-  });
-};
+export const pushHistory = (route) => ({
+  type: types.PUSH_HISTORY,
+  route,
+});

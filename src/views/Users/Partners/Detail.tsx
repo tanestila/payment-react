@@ -20,6 +20,7 @@ import {
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { formatDate } from "../../../helpers/formatDate";
 const { Text } = Typography;
 
 export default function PartnerDetail() {
@@ -27,7 +28,7 @@ export default function PartnerDetail() {
   let history = useParams<{ id: string }>();
 
   const {
-    data: group,
+    data: partner,
     status,
     error,
   } = useQuery(
@@ -116,25 +117,25 @@ export default function PartnerDetail() {
 
   return (
     <>
-      <Card title={`Group detail ${group.partner_name}`}>
+      <Card title={`Group detail ${partner.partner_name}`}>
         <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
           <Descriptions.Item span={3} label="GUID">
-            {group.partner_guid}
+            {partner.partner_guid}
           </Descriptions.Item>
           <Descriptions.Item label="Group type">
-            {group.partner_type}
+            {partner.partner_type}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
-            {group.created_at}
+            {formatDate(partner.created_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
-            {group.created_by_username}
+            {partner.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {group.updated_at}
+            {formatDate(partner.updated_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {group.updated_by_username}
+            {partner.updated_by_username}
           </Descriptions.Item>
         </Descriptions>
         <Divider />

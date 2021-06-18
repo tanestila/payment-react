@@ -25,13 +25,19 @@ function App() {
   const isLoggedIn = useSelector(
     (state: RootStateOrAny) => state.auth.isLoggedIn
   );
-  const {
-    isFirstTimeLogin,
-    isCredentialsExpired,
-    isCredentialsExpires,
-    isInitialized,
-    role,
-  } = useSelector((state: RootStateOrAny) => state.auth);
+  const isFirstTimeLogin = useSelector(
+    (state: RootStateOrAny) => state.auth.isFirstTimeLogin
+  );
+  const isCredentialsExpired = useSelector(
+    (state: RootStateOrAny) => state.auth.isCredentialsExpired
+  );
+  const isCredentialsExpires = useSelector(
+    (state: RootStateOrAny) => state.auth.isCredentialsExpires
+  );
+  const isInitialized = useSelector(
+    (state: RootStateOrAny) => state.auth.isInitialized
+  );
+  const role = useSelector((state: RootStateOrAny) => state.auth.role);
   const [routes, setRoutes] = useState<Array<any>>([]);
   // const isCredentialsExpired = useSelector(
   //   (state: RootStateOrAny) => state.auth.isCredentialsExpired

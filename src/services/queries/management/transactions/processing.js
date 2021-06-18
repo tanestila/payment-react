@@ -7,4 +7,10 @@ export const transactionsAPI = {
     });
     return data;
   },
+  getTransaction: async (guid) => {
+    let { data } = await managementService.get(
+      `transactions/processing/${guid}`
+    );
+    return data;
+  },
 };

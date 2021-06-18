@@ -8,6 +8,7 @@ import Loading from "../Common/Loading";
 import { useQuery } from "react-query";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { AbilityContext } from "../Common/Can";
+import { useSelector } from "react-redux";
 
 type DataType = {
   data: Array<any>;
@@ -16,11 +17,11 @@ type DataType = {
 
 type TablePropsType = {
   onSearch: Function;
-  search: any;
+  // search: any;
   handleTableChange: any;
   columns: any;
   data: DataType;
-  items: number;
+  // items: number;
   isFetching: boolean;
   modalComponent: any;
   isLoading: boolean;
@@ -33,11 +34,11 @@ type TablePropsType = {
 
 export default function TableFactory({
   onSearch,
-  search,
+  // search,
   handleTableChange,
   columns,
   data = { data: [], count: "0" },
-  items,
+  // items,
   isFetching,
   modalComponent,
   isLoading,
@@ -58,17 +59,21 @@ export default function TableFactory({
     }
   );
 
-  console.log(isError);
-  console.log(status);
-  console.log(error);
+  const { page, items, search } = useSelector(({ table }) => {
+    return {
+      page: table.page,
+      items: table.items,
+      search: table.search,
+    };
+  });
 
   function handleSearch(
-    electedKeys: string,
+    selectedKeys: string,
     dataIndex: string,
     confirm: Function
   ) {
     confirm();
-    onSearch({ ...search, [dataIndex]: electedKeys });
+    onSearch({ ...search, [dataIndex]: selectedKeys });
   }
 
   function handleReset(clearFilters: Function, dataIndex: string) {
@@ -147,22 +152,28 @@ export default function TableFactory({
     };
   };
 
-  const columnsWithSearch = columns.map((col: any) => {
-    if (!col.search) return col;
-    else {
-      switch (col.search) {
-        case "text":
-          return { ...col, ...getColumnSearchProps(col.dataIndex) };
-        case "bool":
-          return { ...col, ...getColumnBoolSearchProps() };
-        case "gateways":
-          return { ...col, ...getColumnGatewaysSearchProps() };
+  const columnsWithSearch = columns
+    .map((col: any) => {
+      if (!col.search) return col;
+      else {
+        switch (col.search) {
+          case "text":
+            return { ...col, ...getColumnSearchProps(col.dataIndex) };
+          case "bool":
+            return { ...col, ...getColumnBoolSearchProps() };
+          case "gateways":
+            return { ...col, ...getColumnGatewaysSearchProps() };
 
-        default:
-          return col;
+          default:
+            return col;
+        }
       }
-    }
-  });
+    })
+    .map((col: any) => {
+      if (search[col.dataIndex])
+        return { ...col, filteredValue: [search[col.dataIndex]] };
+      else return col;
+    });
 
   return (
     <div className="main-table">
@@ -179,7 +190,7 @@ export default function TableFactory({
       {/* Удалить стили если надо убрать скролл внизу таблицы  */}
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
         {isShowFrom && <SearchForm onSearch={onSearch} columns={columns} />}
-
+        {console.log(status)}
         {isLoading || status === "loading" ? (
           <Loading />
         ) : isError || status === "error" ? (
@@ -195,10 +206,12 @@ export default function TableFactory({
               total: parseInt(data.count, 10),
               position: ["bottomLeft"],
               pageSize: items,
+              current: page,
             }}
             bordered
             loading={isFetching}
             rowKey={(record) => (rowKey ? record[rowKey] : record.guid)}
+            sticky
           />
         )}
       </div>

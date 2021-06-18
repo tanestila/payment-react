@@ -15,13 +15,12 @@ export default function Partners() {
     isError,
     error,
     data,
-    items,
     search,
     isFetching,
     handleTableChange,
     onSearch,
     status,
-  } = useTableQuery("partners", partnersAPI.getPartners);
+  } = useTableQuery("partners", partnersAPI.getPartners, true);
 
   const columns = usePartnersColumns(ability);
 
@@ -33,7 +32,6 @@ export default function Partners() {
       search={search}
       isFetching={isFetching}
       data={data}
-      items={items}
       status={status}
       isLoading={isLoading}
       isError={isError}

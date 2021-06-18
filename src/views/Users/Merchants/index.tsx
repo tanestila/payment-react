@@ -22,7 +22,7 @@ export default function Merchants() {
     handleTableChange,
     onSearch,
     status,
-  } = useTableQuery("merchants", merchantsAPI.getMerchants);
+  } = useTableQuery("merchants", merchantsAPI.getMerchants, true);
 
   const columns = useMerchantsColumns(ability);
 
@@ -34,7 +34,6 @@ export default function Merchants() {
       search={search}
       isFetching={isFetching}
       data={data}
-      items={items}
       status={status}
       isLoading={isLoading}
       isError={isError}

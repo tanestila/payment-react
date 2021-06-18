@@ -18,6 +18,7 @@ import {
   useShopsColumns,
   useMerchantHistoryColumns,
 } from "../../../constants/columns";
+import { formatDate } from "../../../helpers/formatDate";
 const { Text } = Typography;
 
 export default function MerchantDetail() {
@@ -45,8 +46,10 @@ export default function MerchantDetail() {
     data: logins,
     items: loginsItems,
     handleTableChange: handleLoginsTableChange,
-  } = useTableQuery("merchant-logins", () =>
-    merchantsAPI.getMerchantLogins(history.id, {})
+  } = useTableQuery(
+    "merchant-logins",
+    () => merchantsAPI.getMerchantLogins(history.id, {}),
+    10
   );
 
   const {
@@ -58,7 +61,11 @@ export default function MerchantDetail() {
     data: accounts,
     items: accountsItems,
     handleTableChange: handleAccountsTableChange,
-  } = useTableQuery("accounts", () => accountsAPI.getAccounts(history.id, {}));
+  } = useTableQuery(
+    "accounts",
+    () => accountsAPI.getAccounts(history.id, {}),
+    10
+  );
 
   const {
     // status: terminalsStatus,
@@ -69,8 +76,10 @@ export default function MerchantDetail() {
     data: terminals,
     items: terminalsItems,
     handleTableChange: handleTerminalsTableChange,
-  } = useTableQuery("terminals", () =>
-    terminalsAPI.getTerminals({ merchant_guid: history.id })
+  } = useTableQuery(
+    "terminals",
+    () => terminalsAPI.getTerminals({ merchant_guid: history.id }),
+    10
   );
 
   const {
@@ -82,8 +91,10 @@ export default function MerchantDetail() {
     data: shops,
     items: shopsItems,
     handleTableChange: handleShopsTableChange,
-  } = useTableQuery("shops", () =>
-    shopsAPI.getShops({ merchant_guid: history.id })
+  } = useTableQuery(
+    "shops",
+    () => shopsAPI.getShops({ merchant_guid: history.id }),
+    10
   );
 
   const {
@@ -95,8 +106,10 @@ export default function MerchantDetail() {
     data: merchantHistory,
     items: merchantHistoryItems,
     handleTableChange: handleMerchantHistoryTableChange,
-  } = useTableQuery("merchant-history", () =>
-    auditAPI.getMerchantsHistory({ guid: history.id })
+  } = useTableQuery(
+    "merchant-history",
+    () => auditAPI.getMerchantsHistory({ guid: history.id }),
+    10
   );
 
   const loginsColumns = useLoginColumns(ability);
@@ -138,19 +151,19 @@ export default function MerchantDetail() {
             {merchant.monthly_amount_limit}
           </Descriptions.Item>
           <Descriptions.Item label="Monthly fee date">
-            {merchant.monthly_fee_date}
+            {formatDate(merchant.monthly_fee_date)}
           </Descriptions.Item>
           <Descriptions.Item label="Monthly fee">
             {merchant.monthly_fee} {merchant.monthly_fee_currency}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
-            {merchant.created_at}
+            {formatDate(merchant.created_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
             {merchant.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {merchant.updated_at}
+            {formatDate(merchant.updated_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
             {merchant.updated_by_username}

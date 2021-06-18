@@ -21,7 +21,7 @@ export default function Groups() {
     handleTableChange,
     onSearch,
     status,
-  } = useTableQuery("groups", groupsAPI.getGroups);
+  } = useTableQuery("groups", groupsAPI.getGroups, true);
 
   const columns = useGroupsColumns(ability);
 
@@ -33,7 +33,6 @@ export default function Groups() {
       search={search}
       isFetching={isFetching}
       data={data}
-      items={items}
       status={status}
       isLoading={isLoading}
       isError={isError}

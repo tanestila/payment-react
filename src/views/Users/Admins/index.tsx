@@ -15,13 +15,12 @@ export default function Admins() {
     isError,
     error,
     data,
-    items,
     search,
     isFetching,
     handleTableChange,
     onSearch,
     status,
-  } = useTableQuery("admins", adminsAPI.getAdmins);
+  } = useTableQuery("admins", adminsAPI.getAdmins, true);
 
   const columns = useAdminsColumns(ability);
 
@@ -33,7 +32,6 @@ export default function Admins() {
       search={search}
       isFetching={isFetching}
       data={data}
-      items={items}
       status={status}
       isLoading={isLoading}
       isError={isError}

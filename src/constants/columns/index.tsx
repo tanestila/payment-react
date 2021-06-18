@@ -9,3 +9,4 @@ export { default as usePartnersColumns } from "./partners";
 export { default as useAdminsColumns } from "./admins";
 export { default as useCurrenciesColumns } from "./currencies";
 export { useGroupsMerchantsColumns } from "./groups";
+export { default as useAdminHistoryColumns } from "./adminHistory";

@@ -14,6 +14,9 @@ import {
   MerchantDetail,
   GroupDetail,
   PartnerDetail,
+  Templates,
+  ShopDetail,
+  ProcessingDetail,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 
@@ -80,7 +83,7 @@ export const adminRoutes = [
         path: "/transactions/templates",
         name: "Templates",
         privilege: "READ_TRANSACTIONTEMPLATES",
-        component: Partners,
+        component: Templates,
       },
       {
         path: "/transactions/orders",
@@ -334,7 +337,14 @@ export const adminNonNav = [
     name: "Shop detailed",
     path: "/about/shop/:id",
     privilege: "READ_USERMERCHANT",
-    component: MerchantDetail,
+    component: ShopDetail,
+  },
+  {
+    nonNav: true,
+    name: "Processing detailed",
+    path: "/about/processing/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: ProcessingDetail,
   },
 ];
 

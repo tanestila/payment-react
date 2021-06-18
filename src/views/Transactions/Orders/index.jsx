@@ -6,26 +6,24 @@ import { Space } from "antd";
 import { cutGuid } from "../../../helpers/cutGuid";
 import { Copy } from "../../../Components/Common/CopyToClipboard";
 
-export default function AllTransactions() {
+export default function Orders() {
   const {
     isLoading,
     isError,
     error,
-    status,
     data,
     items,
     search,
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("transactions", transactionsAPI.getTransactions, true);
+  } = useTableQuery("transactions", transactionsAPI.getTransactions);
 
   const columns = [
     {
       title: "ID",
       dataIndex: "guid",
       key: "guid",
-      search: "text",
       render: (text: any, record: any) => (
         <>
           <Copy text={text} />
@@ -141,10 +139,7 @@ export default function AllTransactions() {
       search={search}
       isFetching={isFetching}
       data={data}
-      status={status}
-      isLoading={isLoading}
-      isError={isError}
-      error={error}
+      items={items}
     />
   );
 }

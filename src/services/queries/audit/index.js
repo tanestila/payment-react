@@ -25,4 +25,10 @@ export const auditAPI = {
     });
     return data;
   },
+  getShopsHistory: async (args) => {
+    let { data } = await auditService.get("shops", {
+      params: { ...args },
+    });
+    return data;
+  },
 };

@@ -8,7 +8,11 @@ import { Header } from "../Components/layoutComponents/Header";
 import { Sidebar } from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
 import { logout } from "../redux/modules/auth/actions";
-import { toggleSidebar } from "../redux/modules/sidebar";
+import {
+  hideSidebar,
+  showSidebar,
+  toggleSidebar,
+} from "../redux/modules/sidebar";
 import { pushHistory } from "../redux/modules/router";
 
 interface IChildRoute {
@@ -34,31 +38,36 @@ interface IRoute {
 function Admin({ dispatch, routes }) {
   const [color, setColor] = useState("blue");
   const location = useLocation();
-  const [history, setHistory] = useState([
-    { name: "Dashboard", path: "/dashboard" },
-  ]);
-
   const mainPanel = React.useRef(null);
   const isHide = useSelector(({ sidebar }: RootStateOrAny) => sidebar.isHide);
+  const history = useSelector(({ router }: RootStateOrAny) => router.history);
 
-  // useEffect(() => {
-  //   if (window.innerWidth < 993) dispatch(toggleSidebar());
-  // }, []);
+  const updateDimensions = () => {
+    if (window.innerWidth <= 991) {
+      dispatch(hideSidebar());
+    } else {
+      dispatch(showSidebar());
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", updateDimensions);
+    return window.removeEventListener("resize", updateDimensions);
+  }, []);
 
   useEffect(() => {
     if (routes.length) {
-      let route = routes.filter((route) => {
-        console.log(location.pathname.includes(route.path));
-        return !route.redirect && location.pathname.includes(route.path);
+      routes.forEach((r) => {
+        if (r.collapse)
+          r.views.forEach((c) => {
+            if (location.pathname.includes(c.path.replace(":id", "")))
+              dispatch(pushHistory({ ...c, mainName: r.name }));
+          });
+        else if (!r.redirect && location.pathname.includes(r.path))
+          dispatch(pushHistory(r));
       });
-      console.log(...route);
-      console.log(location.pathname);
-
-      if (route.length && route[0].name) {
-        setHistory([...history, ...route]);
-      }
     }
-  }, [location.pathname]);
+  }, [location.pathname, routes, dispatch]);
 
   const getRoutes = (routes: Array<IRoute>) => {
     return routes.map((prop, key) => {
