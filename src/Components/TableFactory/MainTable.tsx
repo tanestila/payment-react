@@ -59,11 +59,12 @@ export default function TableFactory({
     }
   );
 
-  const { page, items, search } = useSelector(({ table }) => {
+  const { page, items, search, sort } = useSelector(({ table }) => {
     return {
       page: table.page,
       items: table.items,
       search: table.search,
+      sort: table.sort,
     };
   });
 
@@ -169,10 +170,13 @@ export default function TableFactory({
         }
       }
     })
-    .map((col: any) => {
-      if (search[col.dataIndex])
-        return { ...col, filteredValue: [search[col.dataIndex]] };
-      else return col;
+    .map((c: any) => {
+      let column = { ...c };
+      if (search[c.dataIndex])
+        column = { ...column, filteredValue: [search[c.dataIndex]] };
+      if (sort.field === c.dataIndex)
+        column = { ...column, sortOrder: sort.order };
+      return column;
     });
 
   return (
@@ -189,7 +193,9 @@ export default function TableFactory({
       </div>
       {/* Удалить стили если надо убрать скролл внизу таблицы  */}
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
-        {isShowFrom && <SearchForm onSearch={onSearch} columns={columns} />}
+        {isShowFrom && (
+          <SearchForm onSearch={onSearch} columns={columns} search={search} />
+        )}
         {console.log(status)}
         {isLoading || status === "loading" ? (
           <Loading />
@@ -211,7 +217,6 @@ export default function TableFactory({
             bordered
             loading={isFetching}
             rowKey={(record) => (rowKey ? record[rowKey] : record.guid)}
-            sticky
           />
         )}
       </div>

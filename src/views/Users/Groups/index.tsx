@@ -15,8 +15,6 @@ export default function Groups() {
     isError,
     error,
     data,
-    items,
-    search,
     isFetching,
     handleTableChange,
     onSearch,
@@ -30,7 +28,6 @@ export default function Groups() {
       columns={columns}
       handleTableChange={handleTableChange}
       onSearch={onSearch}
-      search={search}
       isFetching={isFetching}
       data={data}
       status={status}

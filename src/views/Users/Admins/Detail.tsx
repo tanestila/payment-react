@@ -35,6 +35,7 @@ export default function AdminDetail() {
   } = useTableQuery(
     "admin-history",
     (params: any) => auditAPI.getLoginsHistory({ guid: history.id, ...params }),
+    false,
     10
   );
 

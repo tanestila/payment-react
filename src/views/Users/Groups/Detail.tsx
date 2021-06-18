@@ -4,20 +4,13 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { accountsAPI } from "../../../services/queries/management/accounts";
-import { shopsAPI } from "../../../services/queries/management/shops";
-import { terminalsAPI } from "../../../services/queries/management/transactions/steps";
-import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { auditAPI } from "../../../services/queries/audit";
 
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
-  useAccountsColumns,
-  useTerminalsColumns,
   useShopsColumns,
   useMerchantHistoryColumns,
-  useMerchantsColumns,
   useGroupsMerchantsColumns,
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
@@ -48,6 +41,7 @@ export default function GroupDetail() {
   } = useTableQuery(
     "group-logins",
     (params: any) => groupsAPI.getGroupLogins(history.id, { params }),
+    false,
     10
   );
 
@@ -63,6 +57,7 @@ export default function GroupDetail() {
   } = useTableQuery(
     "group-merchants",
     (params: any) => groupsAPI.getGroupMerchants(history.id, { params }),
+    false,
     10
   );
 
@@ -75,8 +70,10 @@ export default function GroupDetail() {
     data: shops,
     items: shopsItems,
     handleTableChange: handleShopsTableChange,
-  } = useTableQuery("group-shops", (params: any) =>
-    groupsAPI.getGroupShops(history.id, { params })
+  } = useTableQuery(
+    "group-shops",
+    (params: any) => groupsAPI.getGroupShops(history.id, { params }),
+    false
   );
 
   const {
@@ -91,6 +88,7 @@ export default function GroupDetail() {
   } = useTableQuery(
     "group-history",
     (params: any) => auditAPI.getGroupsHistory({ guid: history.id, ...params }),
+    false,
     10
   );
 

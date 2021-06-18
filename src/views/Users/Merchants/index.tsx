@@ -16,8 +16,6 @@ export default function Merchants() {
     isError,
     error,
     data,
-    items,
-    search,
     isFetching,
     handleTableChange,
     onSearch,
@@ -31,7 +29,6 @@ export default function Merchants() {
       columns={columns}
       handleTableChange={handleTableChange}
       onSearch={onSearch}
-      search={search}
       isFetching={isFetching}
       data={data}
       status={status}

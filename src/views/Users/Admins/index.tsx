@@ -15,7 +15,6 @@ export default function Admins() {
     isError,
     error,
     data,
-    search,
     isFetching,
     handleTableChange,
     onSearch,
@@ -29,7 +28,6 @@ export default function Admins() {
       columns={columns}
       handleTableChange={handleTableChange}
       onSearch={onSearch}
-      search={search}
       isFetching={isFetching}
       data={data}
       status={status}

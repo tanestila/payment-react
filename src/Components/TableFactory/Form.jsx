@@ -7,7 +7,7 @@ import { TextInput } from "../Common/SearchSelect/Form/TextInput";
 //   columns: Array<any>;
 // };
 
-export const SearchForm = ({ onSearch, columns }) => {
+export const SearchForm = ({ onSearch, columns, search }) => {
   const params = {};
   columns.forEach((c) => {
     params[c.dataIndex] = null;
@@ -15,7 +15,7 @@ export const SearchForm = ({ onSearch, columns }) => {
   return (
     <Card>
       <Formik
-        initialValues={{ ...params }}
+        initialValues={{ ...search }}
         validate={(values) => {}}
         onSubmit={(values, { setSubmitting }) => {
           let keys = Object.keys(values);

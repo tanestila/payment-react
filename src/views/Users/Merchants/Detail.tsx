@@ -49,6 +49,7 @@ export default function MerchantDetail() {
   } = useTableQuery(
     "merchant-logins",
     () => merchantsAPI.getMerchantLogins(history.id, {}),
+    false,
     10
   );
 
@@ -64,6 +65,7 @@ export default function MerchantDetail() {
   } = useTableQuery(
     "accounts",
     () => accountsAPI.getAccounts(history.id, {}),
+    false,
     10
   );
 
@@ -79,6 +81,7 @@ export default function MerchantDetail() {
   } = useTableQuery(
     "terminals",
     () => terminalsAPI.getTerminals({ merchant_guid: history.id }),
+    false,
     10
   );
 
@@ -94,6 +97,7 @@ export default function MerchantDetail() {
   } = useTableQuery(
     "shops",
     () => shopsAPI.getShops({ merchant_guid: history.id }),
+    false,
     10
   );
 
@@ -109,6 +113,7 @@ export default function MerchantDetail() {
   } = useTableQuery(
     "merchant-history",
     () => auditAPI.getMerchantsHistory({ guid: history.id }),
+    false,
     10
   );
 
