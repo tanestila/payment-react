@@ -3,6 +3,7 @@ import CustomModal from "../../Components/Common/Modal";
 import { Link } from "react-router-dom";
 import { AppAbility } from "../../Components/Common/Can";
 import { AdminType } from "../../types/admins";
+import { DeleteModal } from "../../Components/Common/DeleteModal";
 
 export default function useAdminsColumns(ability: AppAbility) {
   return useMemo(
@@ -54,7 +55,7 @@ export default function useAdminsColumns(ability: AppAbility) {
       //   ),
       // },
       ability.can("EXECUTE", "USERADMIN") && {
-        title: "Edit",
+        title: "",
         key: "edit",
         align: "center",
         render: (text: string, record: AdminType) => (
@@ -73,10 +74,16 @@ export default function useAdminsColumns(ability: AppAbility) {
         ),
       },
       ability.can("DELETE", "USERADMIN") && {
-        title: "Delete",
+        title: "",
         key: "delete",
         align: "center",
-        render: () => <span>delete</span>,
+        render: (text: string, record: AdminType) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.guid)}
+          />
+        ),
       },
     ],
     [ability]

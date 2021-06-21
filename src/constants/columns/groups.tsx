@@ -54,6 +54,7 @@ export default function useGroupsColumns(ability: AppAbility) {
         dataIndex: "enabled",
         key: "enabled",
         search: "bool",
+        align: "center",
         render: (text: any, record: any) => (
           <i
             className={
@@ -66,8 +67,9 @@ export default function useGroupsColumns(ability: AppAbility) {
       },
 
       ability.can("EXECUTE", "USERMERCHANT") && {
-        title: "Edit",
+        title: "",
         key: "edit",
+        align: "center",
         render: (text: string, record: GroupType) => (
           <CustomModal
             header="Edit merchant"
@@ -84,7 +86,7 @@ export default function useGroupsColumns(ability: AppAbility) {
         ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
-        title: "Delete",
+        title: "",
         key: "delete",
         align: "center",
         render: (text: string, record: GroupType) => (

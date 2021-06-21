@@ -46,6 +46,7 @@ export default function useMerchantsColumns(ability: AppAbility) {
       {
         title: "Gateways",
         dataIndex: "gateways",
+        width: 300,
         key: "gateways",
         search: "gateways",
         render: (text: any, record: MerchantType) => record.gateways.join(", "),
@@ -93,7 +94,7 @@ export default function useMerchantsColumns(ability: AppAbility) {
         ),
       },
       ability.can("EXECUTE", "USERMERCHANT") && {
-        title: "Edit",
+        title: "",
         key: "edit",
         align: "center",
         render: (cellInfo: MerchantType) => (
@@ -112,7 +113,7 @@ export default function useMerchantsColumns(ability: AppAbility) {
         ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
-        title: "Delete",
+        title: "",
         key: "delete",
         align: "center",
         render: (text: string, record: MerchantType) => (

@@ -3,6 +3,7 @@ import CustomModal from "../../Components/Common/Modal";
 import { Link } from "react-router-dom";
 import { AppAbility } from "../../Components/Common/Can";
 import { PartnerType } from "../../types/partners";
+import { DeleteModal } from "../../Components/Common/DeleteModal";
 
 export default function usePartnersColumns(ability: AppAbility) {
   return useMemo(
@@ -90,7 +91,13 @@ export default function usePartnersColumns(ability: AppAbility) {
         title: "Delete",
         key: "delete",
         align: "center",
-        render: () => <span>delete</span>,
+        render: (text: string, record: PartnerType) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.partner_guid)}
+          />
+        ),
       },
     ],
     [ability]

@@ -69,7 +69,8 @@ export default function useTableQuery(
             : true
           : undefined,
         ...search,
-      })
+      }),
+    { refetchOnWindowFocus: false }
   );
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {

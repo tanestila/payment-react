@@ -81,7 +81,7 @@ export default function useTerminalsColumns(ability) {
             header="Edit merchant"
             // content={Editor}
             contentProps={{ guid: cellInfo.merchant_guid }}
-            button={<Button>Show</Button>}
+            button={<Button className="btn-table">Show</Button>}
             // dialogClassName="modal-creator"
           />
         ),

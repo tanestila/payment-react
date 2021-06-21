@@ -1,4 +1,4 @@
-import { Card, Descriptions, Divider, Typography, Button, Row } from "antd";
+import { Card, Descriptions, Divider, Button, Row } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -9,7 +9,6 @@ import { shopsAPI } from "../../../services/queries/management/shops";
 import { terminalsAPI } from "../../../services/queries/management/transactions/steps";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { auditAPI } from "../../../services/queries/audit";
-
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
@@ -19,7 +18,8 @@ import {
   useMerchantHistoryColumns,
 } from "../../../constants/columns";
 import { formatDate } from "../../../helpers/formatDate";
-const { Text } = Typography;
+import CustomModal from "../../../Components/Common/Modal";
+import { LoginCreator } from "../Common/LoginCreator";
 
 export default function MerchantDetail() {
   const ability = useContext(AbilityContext);
@@ -150,7 +150,7 @@ export default function MerchantDetail() {
             {merchant.merchant_name}
           </Descriptions.Item>
           <Descriptions.Item label="Group">
-            {merchant.group_name}
+            {merchant.group_name || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Monthly limit">
             {merchant.monthly_amount_limit}
@@ -168,14 +168,14 @@ export default function MerchantDetail() {
             {merchant.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {formatDate(merchant.updated_at)}
+            {formatDate(merchant.updated_at) || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {merchant.updated_by_username}
+            {merchant.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
         <Divider />
-        <Text strong>Logins</Text>
+        <h5>Logins</h5>
         <Table
           columns={loginsColumns}
           handleTableChange={handleLoginsTableChange}
@@ -187,11 +187,18 @@ export default function MerchantDetail() {
           error={loginsError}
         />
         <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add login</Button>
+          {/* <Button style={{ margin: "10px auto" }}>Add login</Button> */}
+          <CustomModal
+            header="Create Login"
+            content={LoginCreator}
+            contentProps={{ guid: merchant.merchant_guid }}
+            button={<Button>Add login</Button>}
+            // dialogClassName="modal-creator"
+          />
         </Row>
 
         <Divider />
-        <Text strong>Accounts</Text>
+        <h5>Accounts</h5>
         <Table
           columns={accountsColumns}
           handleTableChange={handleAccountsTableChange}
@@ -204,10 +211,17 @@ export default function MerchantDetail() {
           isPaginated={false}
         />
         <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add accounts</Button>
+          {/* <Button style={{ margin: "10px auto" }}>Add accounts</Button> */}
+          <CustomModal
+            header="Create account"
+            content={LoginCreator}
+            contentProps={{ guid: merchant.merchant_guid }}
+            button={<Button>Add account</Button>}
+            // dialogClassName="modal-creator"
+          />
         </Row>
         <Divider />
-        <Text strong>Terminals</Text>
+        <h5>Terminals</h5>
         <Table
           columns={terminalsColumns}
           handleTableChange={handleTerminalsTableChange}
@@ -219,7 +233,7 @@ export default function MerchantDetail() {
           error={terminalsError}
         />
         <Divider />
-        <Text strong>Shops</Text>
+        <h5>Shops</h5>
         <Table
           columns={shopsColumns}
           handleTableChange={handleShopsTableChange}
@@ -232,7 +246,7 @@ export default function MerchantDetail() {
         />
 
         <Divider />
-        <Text strong>Change history</Text>
+        <h5>Change history</h5>
         <Table
           columns={historyColumns}
           handleTableChange={handleMerchantHistoryTableChange}

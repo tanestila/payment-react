@@ -1,19 +1,18 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, Route, Switch, Redirect } from "react-router-dom";
-import * as allRoutes from "../routes";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { AbilityContext } from "../Components/Common/Can";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { Footer } from "../Components/layoutComponents/Footer";
 import { Header } from "../Components/layoutComponents/Header";
 import { Sidebar } from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
 import { logout } from "../redux/modules/auth/actions";
 import {
+  collapseItemClick,
   hideSidebar,
   showSidebar,
-  toggleSidebar,
 } from "../redux/modules/sidebar";
 import { pushHistory } from "../redux/modules/router";
+import { AppDispatch } from "../redux/store";
 
 interface IChildRoute {
   path: string;
@@ -23,6 +22,8 @@ interface IChildRoute {
 }
 
 interface IRoute {
+  mainName?: string;
+  nonNav?: boolean;
   path?: string;
   redirect?: boolean;
   to?: string;
@@ -35,7 +36,12 @@ interface IRoute {
   views?: Array<IChildRoute>;
 }
 
-function Admin({ dispatch, routes }) {
+type AdminProps = {
+  dispatch: AppDispatch;
+  routes: Array<IRoute>;
+};
+
+function Admin({ dispatch, routes }: AdminProps) {
   const [color, setColor] = useState("blue");
   const location = useLocation();
   const mainPanel = React.useRef(null);
@@ -44,15 +50,15 @@ function Admin({ dispatch, routes }) {
 
   const updateDimensions = () => {
     if (window.innerWidth <= 991) {
-      dispatch(hideSidebar());
+      !isHide && dispatch(hideSidebar());
     } else {
-      dispatch(showSidebar());
+      isHide && dispatch(showSidebar());
     }
   };
 
   useEffect(() => {
-    window.addEventListener("resize", updateDimensions);
-    return window.removeEventListener("resize", updateDimensions);
+    window.addEventListener("resize", () => updateDimensions());
+    return window.removeEventListener("resize", () => updateDimensions());
   }, []);
 
   useEffect(() => {
@@ -60,14 +66,25 @@ function Admin({ dispatch, routes }) {
       routes.forEach((r) => {
         if (r.collapse)
           r.views.forEach((c) => {
-            if (location.pathname.includes(c.path.replace(":id", "")))
-              dispatch(pushHistory({ ...c, mainName: r.name }));
+            if (location.pathname.includes(c.path))
+              dispatch(pushHistory({ ...c, mainName: r.name, new: true }));
           });
-        else if (!r.redirect && location.pathname.includes(r.path))
+        else if (!r.redirect && !r.nonNav && location.pathname.includes(r.path))
+          dispatch(pushHistory(r));
+        else if (
+          r.nonNav &&
+          location.pathname.includes(r.path.replace(":id", ""))
+        )
           dispatch(pushHistory(r));
       });
     }
   }, [location.pathname, routes, dispatch]);
+
+  useEffect(() => {
+    document.documentElement.scrollTop = 0;
+    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    // if (mainPanel && mainPanel.current) mainPanel.current?.scrollTop = 0;
+  }, [location]);
 
   const getRoutes = (routes: Array<IRoute>) => {
     return routes.map((prop, key) => {
@@ -86,32 +103,38 @@ function Admin({ dispatch, routes }) {
         return (
           <Route path={prop.path!} component={prop.component!} key={key} />
         );
-      } else return <Redirect exact from={prop.path!} to={prop.to!} />;
+      } else
+        return (
+          <Redirect
+            exact
+            from={prop.path!}
+            to={prop.to!}
+            key={key + prop.name!}
+          />
+        );
     });
   };
-
-  // const updateDimensions = () => {
-  //   if (window.innerWidth <= 991) {
-  //     this.props.hideSidebar();
-  //   } else {
-  //     this.props.showSidebar();
-  //   }
-  // };
-
-  React.useEffect(() => {
-    document.documentElement.scrollTop = 0;
-    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
-    // if (mainPanel && mainPanel.current) mainPanel.current?.scrollTop = 0;
-  }, [location]);
 
   const handleLogoutClick = useCallback(() => {
     dispatch(logout());
   }, [dispatch]);
 
+  const setState = useCallback(
+    (path) => {
+      dispatch(collapseItemClick(path));
+    },
+    [dispatch]
+  );
+
   return (
     <>
       <div className="wrapper">
-        <Sidebar color={color} routes={routes} isHide={isHide} />
+        <Sidebar
+          color={color}
+          routes={routes}
+          isHide={isHide}
+          setState={setState}
+        />
         <div
           className={classNames("main-panel", {
             slideOut: isHide,

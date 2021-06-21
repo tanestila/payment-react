@@ -40,15 +40,21 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <Navbar expand="lg">
       <Container fluid>
-        <Navbar.Brand
-          href="#home"
-          onClick={(e: any) => e.preventDefault()}
-          className="mr-2"
-        ></Navbar.Brand>
-        <Nav className="mr-auto">
-          {headerHistory.map((h) => (
+        <Nav className="mr-auto header-history">
+          {headerHistory.map((h, i) => (
             <>
-              <NavLink to={h.name}>{h.name}</NavLink> {">"}
+              <Nav.Link disabled={h.disabled} className="m-0">
+                {h.disabled ? (
+                  <span key={`${i}${h.name}`}>{h.name}</span>
+                ) : (
+                  <NavLink to={h.path} key={`${i}${h.name}`}>
+                    {h.name}
+                  </NavLink>
+                )}
+              </Nav.Link>
+              {i !== headerHistory.length - 1 && (
+                <span style={{ paddingTop: "10px" }}>{">"}</span>
+              )}
             </>
           ))}
         </Nav>

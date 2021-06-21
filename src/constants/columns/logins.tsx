@@ -3,6 +3,7 @@ import CustomModal from "../../Components/Common/Modal";
 import { Button } from "antd";
 import { AppAbility } from "../../Components/Common/Can";
 import Editor from "../../views/Users/Merchants/Editor";
+import { DeleteModal } from "../../Components/Common/DeleteModal";
 
 //TODO: add login type
 export default function useLoginColumns(ability: AppAbility) {
@@ -69,7 +70,7 @@ export default function useLoginColumns(ability: AppAbility) {
             header="Edit merchant"
             content={Editor}
             contentProps={{ guid: cellInfo.merchant_guid }}
-            button={<Button>Show</Button>}
+            button={<Button className="btn-table">Show</Button>}
             // dialogClassName="modal-creator"
           />
         ),
@@ -93,12 +94,18 @@ export default function useLoginColumns(ability: AppAbility) {
           />
         ),
       },
-      // ability.can("DELETE", "USERMERCHANT") && {
-      //   title: "Delete",
-      //   key: "delete",
-      //   align: "center",
-      //   render: () => <span>delete</span>,
-      // },
+      ability.can("DELETE", "USERMERCHANT") && {
+        title: "Delete",
+        key: "delete",
+        align: "center",
+        render: (text, record) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.guid)}
+          />
+        ),
+      },
     ],
     [ability]
   );

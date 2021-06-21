@@ -10,7 +10,7 @@ type CollapseItemProp = {
   onClickItem: Function;
   state: string;
   isHide: boolean;
-  location: any;
+  location: string;
 };
 
 export const CollapseItem: React.FC<CollapseItemProp> = ({
@@ -22,8 +22,19 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
   location,
 }) => {
   const [dropdownOpen, setOpen] = useState(false);
-  const [activeChildComponent, setActive] = useState(false);
   const hideClass = isHide ? " hover-open " : " collapsed-menu ";
+
+  // useEffect(() => {
+  //   prop.views.forEach(route => {
+  //     if (route.activeNonNavRoutes)
+  //     route.activeNonNavRoutes.forEach(nonNavRote => {
+  //       if (location.includes(nonNavRote))
+  //       setNonNavActiveRoute()
+  //     })
+  //   })
+  //   if (prop.vieactiveNonNavRoutes)
+
+  // }, [input])
 
   const toggle = () => {
     if (isHide) setOpen(!dropdownOpen);
@@ -38,16 +49,21 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
     slideIn: !isHide,
   };
 
-  // useEffect(() => {}, [location, prop.views]);
-  // const urlsString = prop.views.reduce(( str: string, child: any) => str + child.path )
-
-  const activeRouteChild = () => {
-    let urlsArray: Array<string> = [];
-    prop.views.forEach((child: any) => {
-      urlsArray.push(child.path);
-    });
-    if (urlsArray.includes(location)) return "active";
-    else return dropdownOpen ? "active" : "";
+  const onToggleActive = () => {
+    if (prop.state === collapseItemState) return true;
+    else {
+      let urlsArray: Array<string> = [];
+      prop.views.forEach((child: any) => {
+        urlsArray.push(child.path);
+        if (child.activeNonNavRoutes)
+          urlsArray.push(...child.activeNonNavRoutes);
+      });
+      let flag = false;
+      urlsArray.forEach((url) => {
+        if (location.includes(url)) flag = true;
+      });
+      return flag;
+    }
   };
 
   return (
@@ -75,12 +91,9 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
         // isOpen={true}
       >
         <DropdownToggle
-          className={classNames(
-            "nav-link",
-            "d-flex",
-            sidebarClass,
-            activeRouteChild()
-          )}
+          className={classNames("nav-link", "d-flex", sidebarClass, {
+            active: onToggleActive(),
+          })}
         >
           <i className={classNames("menu-icon", prop.icon, sidebarClass)} />
           <span className={classNames("menu-title", sidebarClass)}>

@@ -9,6 +9,8 @@ import { useQuery } from "react-query";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { AbilityContext } from "../Common/Can";
 import { useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
+import { Export } from "./Export";
 
 type DataType = {
   data: Array<any>;
@@ -189,14 +191,16 @@ export default function TableFactory({
           <ButtonFilter handleClick={() => showForm(!isShowFrom)} />
         </div>
 
-        <div className="secondary-buttons"></div>
+        <div className="secondary-buttons">
+          <Export data={data.data || []} columns={columns} name={"name"} />
+        </div>
       </div>
       {/* Удалить стили если надо убрать скролл внизу таблицы  */}
       <div style={{ overflowX: "auto", width: "100%", minHeight: "300px" }}>
         {isShowFrom && (
           <SearchForm onSearch={onSearch} columns={columns} search={search} />
         )}
-        {console.log(status)}
+        {/* {console.log(status)} */}
         {isLoading || status === "loading" ? (
           <Loading />
         ) : isError || status === "error" ? (
@@ -216,7 +220,7 @@ export default function TableFactory({
             }}
             bordered
             loading={isFetching}
-            rowKey={(record) => (rowKey ? record[rowKey] : record.guid)}
+            rowKey={(record) => uuidv4()}
           />
         )}
       </div>

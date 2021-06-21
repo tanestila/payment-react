@@ -1,32 +1,36 @@
-import {
-  useHistory,
-  useLocation,
-  useParams,
-  useRouteMatch,
-} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Nav } from "react-bootstrap";
 import classNames from "classnames";
 import { Header } from "./Header";
 import { Item } from "./Item";
 import { CollapseItem } from "./CollapseItem";
-import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 type SidebarProps = {
   color: string;
   routes: Array<any>;
   isHide: boolean;
+  setState: Function;
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ color, routes, isHide }) => {
-  const [state, setState] = useState("");
+export const Sidebar: React.FC<SidebarProps> = ({
+  color,
+  routes,
+  isHide,
+  setState,
+}) => {
   const location = useLocation();
+  const collapseItemState = useSelector(
+    ({ sidebar }: RootState) => sidebar.collapseItemState
+  );
 
   const activeRoute = (routeName: string) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
 
   const onClickItem = (newState: string) => {
-    if (state === newState) setState("");
+    if (collapseItemState === newState) setState("");
     else setState(newState);
   };
 
@@ -48,11 +52,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ color, routes, isHide }) => {
                   <CollapseItem
                     isHide={isHide}
                     prop={prop}
-                    state={state}
+                    state={collapseItemState}
                     onClickItem={onClickItem}
                     activeRoute={activeRoute}
                     key={key + prop.name}
-                    location={location}
+                    location={location.pathname}
                   />
                 );
               else if (!prop.redirect)

@@ -140,7 +140,7 @@ export default function GroupDetail() {
         </Descriptions>
         <Divider />
 
-        <Text strong>Merchants</Text>
+        <h5>Merchants</h5>
         <Table
           columns={merchantsColumns}
           handleTableChange={handleMerchantsTableChange}
@@ -157,7 +157,7 @@ export default function GroupDetail() {
 
         <Divider />
 
-        <Text strong>Logins</Text>
+        <h5>Logins</h5>
         <Table
           columns={loginsColumns}
           handleTableChange={handleLoginsTableChange}
@@ -173,7 +173,7 @@ export default function GroupDetail() {
         </Row>
 
         <Divider />
-        <Text strong>Shops</Text>
+        <h5>Shops</h5>
         <Table
           columns={shopsColumns}
           handleTableChange={handleShopsTableChange}
@@ -186,7 +186,7 @@ export default function GroupDetail() {
         />
 
         <Divider />
-        <Text strong>Change history</Text>
+        <h5>Change history</h5>
         <Table
           columns={historyColumns}
           handleTableChange={handleMerchantHistoryTableChange}

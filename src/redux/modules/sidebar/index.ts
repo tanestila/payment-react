@@ -8,7 +8,6 @@ const types = {
 const initialState = {
   isHide: false,
   collapseItemState: "",
-  activeItemPath: "",
 };
 
 export function sidebarReducer(state = initialState, action: any) {

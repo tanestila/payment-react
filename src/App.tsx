@@ -1,12 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import {
-  BrowserRouter,
-  Redirect,
-  Route,
-  Switch,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { ExpiredPassword } from "./Components/Login/ExpiredPassword";
 import Login from "./Components/Login/Login";
 import Admin from "./layouts/Admin";
@@ -16,12 +10,10 @@ import { ForgotPassword } from "./Components/Login/ForgotPassword";
 import Loading from "./Components/Common/Loading";
 import * as allRoutes from "./routes";
 import { AbilityContext } from "./Components/Common/Can";
-import { pushHistory } from "./redux/modules/router";
 
 function App() {
   const dispatch = useDispatch();
   const ability = useContext(AbilityContext);
-
   const isLoggedIn = useSelector(
     (state: RootStateOrAny) => state.auth.isLoggedIn
   );
@@ -39,15 +31,6 @@ function App() {
   );
   const role = useSelector((state: RootStateOrAny) => state.auth.role);
   const [routes, setRoutes] = useState<Array<any>>([]);
-  // const isCredentialsExpired = useSelector(
-  //   (state: RootStateOrAny) => state.auth.isCredentialsExpired
-  // );
-  // const isCredentialsExpires = useSelector(
-  //   (state: RootStateOrAny) => state.auth.isCredentialsExpires
-  // );
-  // const isInitialized = useSelector(
-  //   (state: RootStateOrAny) => state.auth.isInitialized
-  // );
 
   useEffect(() => {
     dispatch(initApp());

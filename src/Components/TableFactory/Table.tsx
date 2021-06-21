@@ -42,7 +42,7 @@ TablePropsType) {
       ) : (
         <Table
           dataSource={isPaginated ? data.data : data}
-          columns={columns}
+          columns={columns.map((col) => ({ ...col, sorter: false }))}
           size="small"
           onChange={handleTableChange}
           pagination={

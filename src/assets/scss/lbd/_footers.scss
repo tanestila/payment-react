@@ -1,4 +1,5 @@
 .footer {
+  border-top: 1px solid rgb(230, 230, 230);
   background-color: $white-color;
   line-height: $line-height;
   height: 57px;
@@ -41,7 +42,7 @@
   .copyright {
     color: #878a99;
     // padding: 10px 15px;
-    // margin: 19px 29px 19px 0px;
+    margin-right: 29px;
     line-height: 18px;
     font-size: 13px;
   }

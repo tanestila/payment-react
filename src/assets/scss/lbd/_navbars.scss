@@ -223,6 +223,9 @@
       border-right: 4px solid transparent;
       border-left: 4px solid transparent;
     }
+    &.header-history {
+      flex-direction: row;
+    }
   }
 
   .btn {

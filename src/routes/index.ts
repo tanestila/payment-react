@@ -37,24 +37,28 @@ export const adminRoutes = [
       {
         path: "/users/merchants",
         name: "Merchants",
+        activeNonNavRoutes: ["/about/merchant"],
         privilege: "READ_USERMERCHANT",
         component: Merchants,
       },
       {
         path: "/users/groups",
         name: "Groups",
+        activeNonNavRoutes: ["/about/group"],
         privilege: "READ_USERGROUP",
         component: Groups,
       },
       {
         path: "/users/partners",
         name: "Partners",
+        activeNonNavRoutes: ["/about/partner"],
         privilege: "READ_USERPARTNER",
         component: Partners,
       },
       {
         path: "/users/admins",
         name: "Admins",
+        activeNonNavRoutes: ["/about/admin"],
         privilege: "READ_USERADMIN",
         component: Admins,
       },
@@ -306,6 +310,7 @@ export const adminRoutes = [
 export const adminNonNav = [
   {
     nonNav: true,
+    mainName: "Users",
     name: "Merchant detailed",
     path: "/about/merchant/:id",
     privilege: "READ_USERMERCHANT",
@@ -313,6 +318,7 @@ export const adminNonNav = [
   },
   {
     nonNav: true,
+    mainName: "Users",
     name: "Group detailed",
     path: "/about/group/:id",
     privilege: "READ_USERMERCHANT",
@@ -320,6 +326,7 @@ export const adminNonNav = [
   },
   {
     nonNav: true,
+    mainName: "Users",
     name: "Partner detailed",
     path: "/about/partner/:id",
     privilege: "READ_USERMERCHANT",
@@ -327,6 +334,7 @@ export const adminNonNav = [
   },
   {
     nonNav: true,
+    mainName: "Users",
     name: "Admin detailed",
     path: "/about/admin/:id",
     privilege: "READ_USERMERCHANT",
@@ -334,6 +342,7 @@ export const adminNonNav = [
   },
   {
     nonNav: true,
+    mainName: "Shops",
     name: "Shop detailed",
     path: "/about/shop/:id",
     privilege: "READ_USERMERCHANT",
@@ -341,6 +350,7 @@ export const adminNonNav = [
   },
   {
     nonNav: true,
+    mainName: "Transactions",
     name: "Processing detailed",
     path: "/about/processing/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
