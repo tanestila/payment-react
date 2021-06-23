@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import CustomModal from "../../Components/Common/Modal";
-import Editor from "../../views/Users/Merchants/Editor";
+import Editor from "../../views/Users/Groups/Editor";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
 import { GroupType } from "../../types/groups";

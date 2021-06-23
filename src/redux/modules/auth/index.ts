@@ -78,6 +78,23 @@ export function authReducer(state: AuthStateType = initialState, action: any) {
         otpAuth: false,
       };
 
+    case types.FLUSH_TOKEN:
+      return {
+        ...state,
+        status: "",
+        error: action.error,
+        isInitialized: true,
+        isLoggedIn: false,
+        accessToken: "",
+        refreshToken: "",
+        loading: false,
+        otpAuth: false,
+        isCredentialsExpired: false,
+        isCredentialsExpires: false,
+        isFirstTimeLogin: false,
+        loginGuid: "",
+      };
+
     case types.OTP_AUTH:
       return {
         ...state,

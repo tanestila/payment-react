@@ -7,4 +7,5 @@ export const types = {
   LOGOUT: "auth/LOGOUT",
   OTP_AUTH: "auth/OTP_AUTH",
   SET_TOKENS: "auth/SET_TOKENS",
+  FLUSH_TOKEN: "auth/FLUSH_TOKEN",
 };

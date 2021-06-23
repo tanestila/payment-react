@@ -1,27 +1,25 @@
-import Table from "../../Components/TableFactory/MainTable";
-import useTableQuery from "../../Components/TableFactory/useTableQuery";
+import Table from "../../../Components/TableFactory/MainTable";
+import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
-import { AbilityContext } from "../../Components/Common/Can";
+import { AbilityContext } from "../../../Components/Common/Can";
 import { Creator } from "./Creator";
-import Modal from "../../Components/Common/Modal";
-import { currenciesAPI } from "../../services/queries/management/currencies";
-import { PartnerType } from "../../types/partners";
-import { DeleteModal } from "../../Components/Common/DeleteModal";
-import { useCurrenciesColumns } from "../../constants/columns";
+import Modal from "../../../Components/Common/Modal";
+import { gatewaysAPI } from "../../../services/queries/management/gateways";
+import { useCurrenciesColumns } from "../../../constants/columns";
+import { ratesAPI } from "../../../services/queries/management/rates";
 
-export default function Currencies() {
+export default function RatesTemplates() {
   const ability = useContext(AbilityContext);
   const {
     isLoading,
     isError,
     error,
     data,
-    items,
-    search,
+    status,
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("currencies", currenciesAPI.getCurrencies);
+  } = useTableQuery("rate-templates", ratesAPI.getRatesTemplates, true);
 
   const columns = useCurrenciesColumns(ability);
 
@@ -30,13 +28,12 @@ export default function Currencies() {
       columns={columns}
       handleTableChange={handleTableChange}
       onSearch={onSearch}
-      search={search}
       isFetching={isFetching}
       data={data}
-      items={items}
       isLoading={isLoading}
       isError={isError}
       error={error}
+      status={status}
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}

@@ -5,7 +5,7 @@ import { Footer } from "../Components/layoutComponents/Footer";
 import { Header } from "../Components/layoutComponents/Header";
 import { Sidebar } from "../Components/layoutComponents/Sidebar";
 import classNames from "classnames";
-import { logout } from "../redux/modules/auth/actions";
+import { flushTokenInStore, logout } from "../redux/modules/auth/actions";
 import {
   collapseItemClick,
   hideSidebar,
@@ -119,6 +119,10 @@ function Admin({ dispatch, routes }: AdminProps) {
     dispatch(logout());
   }, [dispatch]);
 
+  const onTimeOut = useCallback(() => {
+    dispatch(flushTokenInStore("Token expired"));
+  }, [dispatch]);
+
   const setState = useCallback(
     (path) => {
       dispatch(collapseItemClick(path));
@@ -145,6 +149,7 @@ function Admin({ dispatch, routes }: AdminProps) {
           <Header
             handleLogoutClick={handleLogoutClick}
             headerHistory={history}
+            onTimeOut={onTimeOut}
           />
           <div className="content">
             <Switch>{getRoutes(routes)}</Switch>

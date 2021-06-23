@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { AppAbility } from "../../Components/Common/Can";
 import { AdminType } from "../../types/admins";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
+import Editor from "../../views/Users/Admins/Editor";
 
 export default function useAdminsColumns(ability: AppAbility) {
   return useMemo(
@@ -61,7 +62,7 @@ export default function useAdminsColumns(ability: AppAbility) {
         render: (text: string, record: AdminType) => (
           <CustomModal
             header="Edit merchant"
-            content={<></>}
+            content={Editor}
             contentProps={{ guid: record.guid }}
             button={
               <i

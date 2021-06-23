@@ -1,9 +1,9 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
-import { Field } from "../../Components/Common/Formik/Field";
+import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation } from "react-query";
-import { currenciesAPI } from "../../services/queries/management/currencies";
+import { currenciesAPI } from "../../../services/queries/management/currencies";
 
 export const Creator = ({ handleClose }) => {
   const mutation = useMutation(currenciesAPI.addCurrency);

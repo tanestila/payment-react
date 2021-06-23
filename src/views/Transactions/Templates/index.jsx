@@ -1,4 +1,4 @@
-import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
+import { templatesAPI } from "../../../services/queries/management/transactions/templates";
 import { Link } from "react-router-dom";
 import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
@@ -17,7 +17,7 @@ export default function Templates() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("transactions", transactionsAPI.getTransactions);
+  } = useTableQuery("templates", templatesAPI.getTemplates);
 
   const columns = [
     {

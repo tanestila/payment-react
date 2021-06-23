@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AppAbility } from "../../Components/Common/Can";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
 import CustomModal from "../../Components/Common/Modal";
-import { Creator } from "../../views/Currencies/Creator";
+import { Creator } from "../../views/System/Currencies/Creator";
 
 export default function useCurrenciesColumns(ability: AppAbility) {
   return useMemo(

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import jwt from "jsonwebtoken";
 
-export const Timer = () => {
+export const Timer = ({ onTimeOut }) => {
   const token = useSelector(({ auth }) => {
     return jwt.decode(auth.accessToken);
   });
@@ -10,9 +10,9 @@ export const Timer = () => {
   const calculateTimeLeft = () => {
     if (token && token.exp) {
       let exp = new Date((token.exp - Math.round(+new Date() / 1000)) * 1000);
-      // if ((exp.getMinutes() === 0) & (exp.getSeconds() === 0)) {
-      //   // flushTokens();
-      // }
+      if ((exp.getMinutes() === 0) & (exp.getSeconds() === 0)) {
+        onTimeOut();
+      }
       if (exp.getMinutes() < 5 && token.exp) {
         // token = getAuthData();
       }

@@ -6,28 +6,37 @@ import { Col, Row } from "react-bootstrap";
 export default function Creator() {
   return (
     <Formik
-      initialValues={{ firstName: "", lastName: "", email: "" }}
+      initialValues={{
+        email: "",
+        first_name: "",
+        last_name: "",
+        company_name: "",
+        company_address: "",
+        name: "",
+        type: "",
+        phone: "",
+        role: null,
+        language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
+        enabled: true,
+        send_mail: true,
+        password: "",
+        partner: "",
+      }}
       validationSchema={Yup.object({
         email: Yup.string().email("Invalid email address").required("Required"),
-        firstName: Yup.string()
+        first_name: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
-        lastName: Yup.string()
+        last_name: Yup.string()
           .max(20, "Must be 20 characters or less")
           .required("Required"),
-        companyName: Yup.string().required("Required"),
-        companyAddress: Yup.string().required("Required"),
+        company_name: Yup.string().required("Required"),
+        company_address: Yup.string().required("Required"),
         name: Yup.string().required("Required"),
         type: Yup.string().required("Required"),
-        monthlyFee: Yup.number().required("Required"),
-        monthlyFeeCurrency: Yup.string().required("Required"),
-        monthlyFeeDate: Yup.string().required("Required"),
-        monthlyAmountLimit: Yup.number().required("Required"),
         phone: Yup.string().required().min(5).required("Required"),
-        role: Yup.string().required("Required"),
-        language: Yup.string().required("Required"),
-        customAmountLimit: Yup.string().max(15).required("Required"),
-        customDaysLimit: Yup.number().max(1000).required("Required"),
+        role: Yup.object().typeError("Required").required("Required"),
+        language: Yup.object().required("Required"),
       })}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {

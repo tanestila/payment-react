@@ -5,15 +5,18 @@ import apiFile from "../../../public/api.pdf";
 import { MouseEventHandler } from "react";
 // import routes from "routes.js";
 import { Timer } from "./Timer";
+import { Breadcrumb } from "antd";
 
 type HeaderProps = {
   handleLogoutClick: MouseEventHandler<HTMLAnchorElement>;
   headerHistory: Array<any>;
+  onTimeOut: Function;
 };
 
 export const Header: React.FC<HeaderProps> = ({
   handleLogoutClick,
   headerHistory,
+  onTimeOut,
 }) => {
   const history = useHistory();
 
@@ -28,20 +31,11 @@ export const Header: React.FC<HeaderProps> = ({
   //   };
   //   document.body.appendChild(node);
   // };
-
-  // const getBrandText = () => {
-  //   for (let i = 0; i < routes.length; i++) {
-  //     if (location.pathname.indexOf(routes[i].layout + routes[i].path) !== -1) {
-  //       return routes[i].name;
-  //     }
-  //   }
-  //   return "Brand";
-  // };
   return (
     <Navbar expand="lg">
       <Container fluid>
         <Nav className="mr-auto header-history">
-          {headerHistory.map((h, i) => (
+          {/* {headerHistory.map((h, i) => (
             <>
               <Nav.Link disabled={h.disabled} className="m-0">
                 {h.disabled ? (
@@ -56,17 +50,22 @@ export const Header: React.FC<HeaderProps> = ({
                 <span style={{ paddingTop: "10px" }}>{">"}</span>
               )}
             </>
-          ))}
+          ))} */}
+
+          <Breadcrumb separator=">">
+            {headerHistory.map((h, i) => (
+              <Breadcrumb.Item>
+                {h.disabled ? (
+                  <span key={`${i}${h.name}`}>{h.name}</span>
+                ) : (
+                  <NavLink to={h.path} key={`${i}${h.name}`}>
+                    {h.name}
+                  </NavLink>
+                )}
+              </Breadcrumb.Item>
+            ))}
+          </Breadcrumb>
         </Nav>
-        {/* <div className="d-flex justify-content-center align-items-center ml-2 ml-lg-0">
-          <Navbar.Brand
-            href="#home"
-            onClick={(e: any) => e.preventDefault()}
-            className="mr-2"
-          >
-             {getBrandText()}
-          </Navbar.Brand>
-        </div> */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         {/* <span className="navbar-toggler-bar burger-lines"></span>
           <span className="navbar-toggler-bar burger-lines"></span>
@@ -77,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Nav.Item>
               <Nav.Link disabled className="m-0">
                 <span style={{ paddingTop: "3px" }}>
-                  Your session will expire in <Timer />
+                  Your session will expire in <Timer onTimeOut={onTimeOut} />
                 </span>
               </Nav.Link>
             </Nav.Item>

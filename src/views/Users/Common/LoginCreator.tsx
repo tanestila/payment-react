@@ -21,19 +21,6 @@ export const LoginCreator = ({ handleClose }) => {
       keepPreviousData: true,
     }
   );
-  const { data: currencies } = useQuery(
-    ["currencies"],
-    () => currenciesAPI.getCurrencies(),
-    {
-      keepPreviousData: true,
-    }
-  );
-
-  const modifiedData = useMemo(() => {
-    return currencies
-      ? currencies.data.map((cur) => ({ ...cur, name: cur.code }))
-      : [];
-  }, [currencies]);
 
   return (
     <Formik
@@ -43,25 +30,16 @@ export const LoginCreator = ({ handleClose }) => {
         last_name: "",
         company_name: "",
         company_address: "",
-        name: "",
-        type: "",
-        monthly_fee: "",
-        monthly_fee_currency: null,
-        monthly_fee_date: moment(),
-        monthly_amount_limit: "",
         phone: "",
         role: null,
         language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
-        custom_amount_limit: "",
-        custom_days_limit: "",
         enabled: true,
         send_mail: true,
         password: "",
-        group: "",
+        auth_type: "",
       }}
       validationSchema={Yup.object({
         email: Yup.string().email("Invalid email address").required("Required"),
-
         first_name: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
@@ -70,36 +48,14 @@ export const LoginCreator = ({ handleClose }) => {
           .required("Required"),
         company_name: Yup.string().required("Required"),
         company_address: Yup.string().required("Required"),
-        name: Yup.string().required("Required"),
-        type: Yup.string().required("Required"),
-        monthly_fee: Yup.number()
-          .typeError("You must specify a number")
-          .required("Required"),
-        monthly_fee_currency: Yup.object()
-          .typeError("Required")
-          .required("Required"),
-        monthly_fee_date: Yup.string().required("Required"),
-        monthly_amount_limit: Yup.number()
-          .typeError("You must specify a number")
-          .required("Required"),
         phone: Yup.string().required().min(5).required("Required"),
         role: Yup.object().typeError("Required").required("Required"),
         language: Yup.object().required("Required"),
-        custom_amount_limit: Yup.string()
-          .typeError("You must specify a number")
-          .max(15)
-          .required("Required"),
-        custom_days_limit: Yup.number()
-          .typeError("You must specify a number")
-          .max(1000)
-          .required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         alert(JSON.stringify(values, null, 2));
         try {
           let data = {
-            merchant_name: values.name,
-            merchant_type: values.type,
             email: values.email,
             phone: values.phone,
             first_name: values.first_name,
@@ -111,14 +67,6 @@ export const LoginCreator = ({ handleClose }) => {
             send_mail: values.send_mail ? 1 : 0,
             language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
-            monthly_fee_currency: values.monthly_fee_currency?.["name"],
-            monthly_fee: +values.monthly_fee * 100,
-            monthly_fee_date: values.monthly_fee_date,
-            monthly_amount_limit: (
-              +values.monthly_amount_limit * 100
-            ).toString(),
-            custom_amount_limit: (+values.custom_amount_limit * 100).toString(),
-            custom_days_limit: values.custom_days_limit,
           };
           const todo = await mutation.mutateAsync(data);
           console.log(todo);
@@ -135,9 +83,8 @@ export const LoginCreator = ({ handleClose }) => {
     >
       {({ values, isSubmitting }) => (
         <Form className="modal-form">
-          add login
           <Row>
-            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
+            <Col xl={12} lg={12} md={12} sm={12} xs={12}>
               <Field name="email" type="email" label="Email*" />
               <Field name="first_name" type="text" label="First Name*" />
               <Field name="last_name" type="text" label="Last Name*" />
@@ -148,46 +95,13 @@ export const LoginCreator = ({ handleClose }) => {
                 type="text"
                 label="Company address*"
               />
-              <Field name="name" type="text" label="Merchant name*" />
-              <Field name="type" type="text" label="Merchant type*" />
               <Field
                 name="role"
                 label="Role*"
                 inputType="select"
                 options={roles?.data}
               />
-            </Col>
-            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-              <Field
-                name="custom_days_limit"
-                type="number"
-                label="Merchant period limit* (days)"
-              />
-              <Field
-                name="custom_amount_limit"
-                type="number"
-                label="Merchant amount limit*"
-              />
-              <Field
-                name="monthly_amount_limit"
-                type="number"
-                label="Monthly amount limit*"
-              />
 
-              <Field name="monthly_fee" type="text" label="Monthly fee*" />
-              <Field
-                name="monthly_fee_currency"
-                inputType="select"
-                options={modifiedData}
-                label="Monthly fee currency*"
-              />
-              <Field
-                name="monthly_fee_date"
-                type="text"
-                label="Monthly fee date*"
-                inputType="date-single"
-                tip="From this date begins the payment of monthly fee."
-              />
               <Field name="enabled" inputType="checkbox" label="Enable" />
               <Field
                 name="send_mail"
@@ -207,7 +121,6 @@ export const LoginCreator = ({ handleClose }) => {
                   { name: "RU", guid: "ru" },
                 ]}
               />
-              <Field name="group" type="text" label="Group" />
             </Col>
           </Row>
           {isSubmitting ? (

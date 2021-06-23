@@ -3,9 +3,9 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { Space } from "antd";
 import { cutGuid } from "../../../helpers/cutGuid";
-import { chargebacksAPI } from "../../../services/queries/management/transactions/chargebacks";
+import { mismatchAPI } from "../../../services/queries/management/transactions/mismatch";
 
-export default function MismatchTransaction() {
+export default function MismatchTransactions() {
   const {
     isLoading,
     isError,
@@ -16,7 +16,10 @@ export default function MismatchTransaction() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("mismatch_transaction", chargebacksAPI.getChargebacks);
+  } = useTableQuery(
+    "mismatch_transaction",
+    mismatchAPI.getMismatchTransactions
+  );
 
   const columns = [
     {

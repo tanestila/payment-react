@@ -3,6 +3,7 @@ import { AppAbility } from "../../Components/Common/Can";
 import CustomModal from "../../Components/Common/Modal";
 import { Link } from "react-router-dom";
 import { ShopType } from "../../types/shops";
+import Editor from "../../views/Shops/Editor";
 
 export default function useShopsColumns(ability: AppAbility) {
   return useMemo(
@@ -72,7 +73,7 @@ export default function useShopsColumns(ability: AppAbility) {
         render: (text: string, record: ShopType) => (
           <CustomModal
             header="Edit merchant"
-            content={<></>}
+            content={Editor}
             contentProps={{ guid: record.guid }}
             button={
               <i

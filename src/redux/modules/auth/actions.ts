@@ -67,6 +67,8 @@ export const initApp = () => async (dispatch: Dispatch) => {
   try {
     let auth = getTokens();
     if (auth?.accessToken) {
+      jwt.verify(auth.accessToken, publicKey);
+      jwt.verify(auth.refreshToken, publicKey);
       dispatch({
         type: types.SET_TOKENS,
         accessToken: auth.accessToken,
@@ -227,3 +229,16 @@ export const logout = () => async (dispatch: Dispatch) => {
     });
   }
 };
+
+export const flushTokenInStore =
+  (error?: string) => async (dispatch: Dispatch) => {
+    try {
+      localStorage.clear();
+      dispatch({
+        type: types.FLUSH_TOKEN,
+        error,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };

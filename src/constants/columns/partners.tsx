@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { AppAbility } from "../../Components/Common/Can";
 import { PartnerType } from "../../types/partners";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
+import Editor from "../../views/Users/Partners/Editor";
 
 export default function usePartnersColumns(ability: AppAbility) {
   return useMemo(
@@ -75,7 +76,7 @@ export default function usePartnersColumns(ability: AppAbility) {
         render: (text: string, record: PartnerType) => (
           <CustomModal
             header="Edit merchant"
-            content={<></>}
+            content={Editor}
             contentProps={{ guid: record.partner_guid }}
             button={
               <i
