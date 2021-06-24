@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import CustomModal from "../../Components/Common/Modal";
+import CustomModal from "../../../Components/Common/Modal";
 import { Button } from "antd";
-import { AppAbility } from "../../Components/Common/Can";
-import Editor from "../../views/Users/Merchants/Editor";
-import { DeleteModal } from "../../Components/Common/DeleteModal";
+import { AppAbility } from "../../../Components/Common/Can";
+import Editor from "../../../views/Users/Merchants/Editor";
+import { DeleteModal } from "../../../Components/Common/DeleteModal";
 
 //TODO: add login type
 export default function useLoginColumns(ability: AppAbility) {

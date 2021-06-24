@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import CustomModal from "../../Components/Common/Modal";
+import CustomModal from "../../../Components/Common/Modal";
 import { Link } from "react-router-dom";
-import { AppAbility } from "../../Components/Common/Can";
-import { AdminType } from "../../types/admins";
-import { cutGuid } from "../../helpers/cutGuid";
-import { Copy } from "../../Components/Common/CopyToClipboard";
+import { AppAbility } from "../../../Components/Common/Can";
+import { AdminType } from "../../../types/admins";
+import { cutGuid } from "../../../helpers/cutGuid";
+import { Copy } from "../../../Components/Common/CopyToClipboard";
 
 export default function useAllTransactionsColumns(ability: AppAbility) {
   return useMemo(
@@ -16,7 +16,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         search: "text",
         render: (text: any, record: any) => (
           <>
-            <Copy textuseAllTransactionsColumns={text} />
+            <Copy text={text} />
             <Link className="link" to={`/about/processing/${text}`}>
               {cutGuid(text)}
             </Link>

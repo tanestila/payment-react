@@ -1,30 +1,37 @@
 import { useMemo } from "react";
-import CustomModal from "../../Components/Common/Modal";
-import Editor from "../../views/Users/Groups/Editor";
+import CustomModal from "../../../Components/Common/Modal";
+import Editor from "../../../views/Users/Merchants/Editor";
+import { MerchantType } from "../../../types/merchants";
 import { Link } from "react-router-dom";
-import { DeleteModal } from "../../Components/Common/DeleteModal";
-import { GroupType } from "../../types/groups";
-import { AppAbility } from "../../Components/Common/Can";
+import { DeleteModal } from "../../../Components/Common/DeleteModal";
+import { AppAbility } from "../../../Components/Common/Can";
 
-export default function useGroupsColumns(ability: AppAbility) {
+export default function useMerchantsColumns(ability: AppAbility) {
   return useMemo(
     () => [
       {
-        title: "Group name",
-        dataIndex: "group_name",
-        key: "group_name",
+        title: "Merchant name",
+        dataIndex: "merchant_name",
+        key: "merchant_name",
         sorter: true,
         search: "text",
-        render: (text: string, record: GroupType) => (
-          <Link className="link" to={`/about/group/${record.group_guid}`}>
+        render: (text: any, record: MerchantType) => (
+          <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
             {text}
           </Link>
         ),
       },
       {
-        title: "Group type",
-        dataIndex: "group_type",
-        key: "group_type",
+        title: "Merchant type",
+        dataIndex: "merchant_type",
+        key: "merchant_type",
+        sorter: true,
+        search: "text",
+      },
+      {
+        title: "Group",
+        dataIndex: "group_name",
+        key: "group_name",
         sorter: true,
         search: "text",
       },
@@ -34,6 +41,15 @@ export default function useGroupsColumns(ability: AppAbility) {
         key: "partner_name",
         sorter: true,
         search: "text",
+      },
+
+      {
+        title: "Gateways",
+        dataIndex: "gateways",
+        width: 300,
+        key: "gateways",
+        search: "gateways",
+        render: (text: any, record: MerchantType) => record.gateways.join(", "),
       },
       {
         title: "Username",
@@ -49,11 +65,23 @@ export default function useGroupsColumns(ability: AppAbility) {
         sorter: true,
         search: "text",
       },
+      // {
+      //   title: "Action",
+      //   key: "action",
+
+      //   render: (text: any, record: any) => (
+      //     <Space size="middle">
+      //       <a>Invite {record.name}</a>
+      //       <a>Delete</a>
+      //     </Space>
+      //   ),
+      // },
       {
         title: "Status",
         dataIndex: "enabled",
         key: "enabled",
         search: "bool",
+        width: 70,
         align: "center",
         render: (text: any, record: any) => (
           <i
@@ -65,16 +93,15 @@ export default function useGroupsColumns(ability: AppAbility) {
           />
         ),
       },
-
       ability.can("EXECUTE", "USERMERCHANT") && {
         title: "",
         key: "edit",
         align: "center",
-        render: (text: string, record: GroupType) => (
+        render: (cellInfo: MerchantType) => (
           <CustomModal
             header="Edit merchant"
             content={Editor}
-            contentProps={{ guid: record.group_guid }}
+            contentProps={{ guid: cellInfo.merchant_guid }}
             button={
               <i
                 className="icon-edit icon gray"
@@ -89,40 +116,13 @@ export default function useGroupsColumns(ability: AppAbility) {
         title: "",
         key: "delete",
         align: "center",
-        render: (text: string, record: GroupType) => (
+        render: (text: string, record: MerchantType) => (
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.group_guid)}
+            onClick={() => DeleteModal(() => {}, record.merchant_guid)}
           />
         ),
-      },
-    ],
-    [ability]
-  );
-}
-
-export function useGroupsMerchantsColumns(ability: AppAbility) {
-  return useMemo(
-    () => [
-      {
-        title: "merchant name",
-        dataIndex: "merchant_name",
-        key: "merchant_name",
-        sorter: true,
-        search: "text",
-        render: (text: string, record: any) => (
-          <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
-            {text}
-          </Link>
-        ),
-      },
-      {
-        title: "merchant type",
-        dataIndex: "merchant_type",
-        key: "merchant_type",
-        sorter: true,
-        search: "text",
       },
     ],
     [ability]

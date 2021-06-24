@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import CustomModal from "../../Components/Common/Modal";
+import CustomModal from "../../../Components/Common/Modal";
 import { Link } from "react-router-dom";
-import { AppAbility } from "../../Components/Common/Can";
-import { PartnerType } from "../../types/partners";
-import { DeleteModal } from "../../Components/Common/DeleteModal";
-import Editor from "../../views/Users/Partners/Editor";
+import { AppAbility } from "../../../Components/Common/Can";
+import { PartnerType } from "../../../types/partners";
+import { DeleteModal } from "../../../Components/Common/DeleteModal";
+import Editor from "../../../views/Users/Partners/Editor";
 
 export default function usePartnersColumns(ability: AppAbility) {
   return useMemo(

@@ -5,7 +5,8 @@ import { AbilityContext } from "../../../Components/Common/Can";
 import { Creator } from "./Creator";
 import Modal from "../../../Components/Common/Modal";
 import { gatewaysAPI } from "../../../services/queries/management/gateways";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useGatewaysColumns } from "../../../constants/columns";
+import { Button } from "antd";
 
 export default function Gateways() {
   const ability = useContext(AbilityContext);
@@ -20,7 +21,7 @@ export default function Gateways() {
     onSearch,
   } = useTableQuery("gateways", gatewaysAPI.getGateways, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useGatewaysColumns(ability);
 
   return (
     <Table
@@ -36,12 +37,7 @@ export default function Gateways() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          // allowed={true}
-          button={
-            <button className="btn btn-fill btn-primary">
-              Create currency
-            </button>
-          }
+          button={<Button type="primary">Create currency</Button>}
           content={Creator}
           header="Create currency"
           dialogClassName="modal-creator"

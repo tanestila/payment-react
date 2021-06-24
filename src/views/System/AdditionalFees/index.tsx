@@ -4,9 +4,9 @@ import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
 import { Creator } from "./Creator";
 import Modal from "../../../Components/Common/Modal";
-import { gatewaysAPI } from "../../../services/queries/management/gateways";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useAdditionalFees } from "../../../constants/columns";
 import { additionalFeesAPI } from "../../../services/queries/management/rates/additionalFees";
+import { Button } from "antd";
 
 export default function AdditionalFees() {
   const ability = useContext(AbilityContext);
@@ -25,7 +25,7 @@ export default function AdditionalFees() {
     true
   );
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useAdditionalFees(ability);
 
   return (
     <Table
@@ -41,12 +41,7 @@ export default function AdditionalFees() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          // allowed={true}
-          button={
-            <button className="btn btn-fill btn-primary">
-              Create currency
-            </button>
-          }
+          button={<Button type="primary">Create currency</Button>}
           content={Creator}
           header="Create currency"
           dialogClassName="modal-creator"

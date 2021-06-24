@@ -25,7 +25,7 @@ type TablePropsType = {
   data: DataType;
   // items: number;
   isFetching: boolean;
-  modalComponent: any;
+  modalComponent?: any;
   isLoading: boolean;
   isError: boolean;
   error: any;

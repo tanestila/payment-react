@@ -8,6 +8,7 @@ import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { PartnerType } from "../../../types/partners";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import { useCurrenciesColumns } from "../../../constants/columns";
+import { Button } from "antd";
 
 export default function Currencies() {
   const ability = useContext(AbilityContext);
@@ -41,11 +42,7 @@ export default function Currencies() {
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
           // allowed={true}
-          button={
-            <button className="btn btn-fill btn-primary">
-              Create currency
-            </button>
-          }
+          button={<Button type="primary">Create currency</Button>}
           content={Creator}
           header="Create currency"
           dialogClassName="modal-creator"

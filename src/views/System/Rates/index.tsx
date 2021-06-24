@@ -5,7 +5,8 @@ import { AbilityContext } from "../../../Components/Common/Can";
 import { Creator } from "./Creator";
 import Modal from "../../../Components/Common/Modal";
 import { ratesAPI } from "../../../services/queries/management/rates";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useRatesColumns } from "../../../constants/columns";
+import { Button } from "antd";
 
 export default function Rate() {
   const ability = useContext(AbilityContext);
@@ -20,7 +21,7 @@ export default function Rate() {
     onSearch,
   } = useTableQuery("rates", ratesAPI.getRates, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useRatesColumns(ability);
 
   return (
     <Table
@@ -36,12 +37,7 @@ export default function Rate() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          // allowed={true}
-          button={
-            <button className="btn btn-fill btn-primary">
-              Create currency
-            </button>
-          }
+          button={<Button type="primary">Create currency</Button>}
           content={Creator}
           header="Create currency"
           dialogClassName="modal-creator"
