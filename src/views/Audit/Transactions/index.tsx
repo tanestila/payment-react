@@ -11,7 +11,7 @@ const servicesNames = [
   { name: "Transaction processing", component: <TransactionProcessingAudit /> },
 ];
 
-export default function ServicesLogs() {
+export default function TransactionAudit() {
   const ability = useContext(AbilityContext);
   const [selectedIndex, setSelectedIndex] = useState(0);
 

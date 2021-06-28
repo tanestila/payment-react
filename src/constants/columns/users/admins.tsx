@@ -56,12 +56,11 @@ export default function useAdminsColumns(ability: AppAbility) {
       //   ),
       // },
       ability.can("EXECUTE", "USERADMIN") && {
-        title: "",
         key: "edit",
         align: "center",
         render: (text: string, record: AdminType) => (
           <CustomModal
-            header="Edit merchant"
+            header="Edit admin"
             content={Editor}
             contentProps={{ guid: record.guid }}
             button={
@@ -75,7 +74,6 @@ export default function useAdminsColumns(ability: AppAbility) {
         ),
       },
       ability.can("DELETE", "USERADMIN") && {
-        title: "",
         key: "delete",
         align: "center",
         render: (text: string, record: AdminType) => (

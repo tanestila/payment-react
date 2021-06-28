@@ -3,7 +3,7 @@ import useTableQuery from "../../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../../Components/Common/Can";
 import { logsAPI } from "../../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../../constants/columns";
+import { useServicesLogsColumns } from "../../../../constants/columns";
 
 export default function DectaRecotServiceLogs() {
   const ability = useContext(AbilityContext);
@@ -22,7 +22,7 @@ export default function DectaRecotServiceLogs() {
     true
   );
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useServicesLogsColumns(ability);
 
   return (
     <Table

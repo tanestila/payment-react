@@ -1,10 +1,6 @@
 import { templatesAPI } from "../../../services/queries/management/transactions/templates";
-import { Link } from "react-router-dom";
 import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { Space } from "antd";
-import { cutGuid } from "../../../helpers/cutGuid";
-import { Copy } from "../../../Components/Common/CopyToClipboard";
 import { useTransactionTemplatesColumns } from "../../../constants/columns";
 
 export default function Templates() {

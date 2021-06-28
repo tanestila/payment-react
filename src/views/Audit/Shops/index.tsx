@@ -2,8 +2,7 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { logsAPI } from "../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useShopsAuditColumns } from "../../../constants/columns";
 import { auditAPI } from "../../../services/queries/audit";
 
 export default function ShopsAudit() {
@@ -19,7 +18,7 @@ export default function ShopsAudit() {
     onSearch,
   } = useTableQuery("shops-audit", auditAPI.getShopsHistory, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useShopsAuditColumns(ability);
 
   return (
     <Table

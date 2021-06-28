@@ -10,7 +10,7 @@ import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
   useShopsColumns,
-  useMerchantHistoryColumns,
+  useMerchantAuditColumns,
   useGroupsMerchantsColumns,
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
@@ -96,7 +96,7 @@ export default function GroupDetail() {
 
   const loginsColumns = useLoginColumns(ability);
 
-  const historyColumns = useMerchantHistoryColumns(ability);
+  const historyColumns = useMerchantAuditColumns(ability);
 
   const shopsColumns = useShopsColumns(ability);
 

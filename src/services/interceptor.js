@@ -1,11 +1,13 @@
+import axios from "axios";
 import jwt from "jsonwebtoken";
+import { config } from "../config";
 import { publicKey } from "../config/publicKey";
-
-export const flushToken = (error?: string) => {
-  localStorage.clear();
-  localStorage.setItem("error", error || "");
-  window.location.reload();
-};
+import { getTokens } from "../helpers/getTokens";
+import {
+  flushTokenInStore,
+  updateTokenInStore,
+} from "../redux/modules/auth/actions";
+import store from "../redux/store";
 
 export const tokenRefreshInterceptor = (error) => {
   console.log(error.response);
@@ -13,34 +15,47 @@ export const tokenRefreshInterceptor = (error) => {
     if (error.response.status === 401) {
       console.log("Catch error in tokenRefreshInterceptor");
       console.log(error.response.status);
-      flushToken("Unauthorized");
+      store.dispatch(flushTokenInStore("Unauthorized"));
     }
   }
   return Promise.reject(error);
 };
 
-export const successResponseInterceptor = async (originResponse) => {
-  if (localStorage.getItem("isLoggedIn")) {
-    //   const token = getAuthData();
-    //   const exp = new Date((token.exp - Math.round(+new Date() / 1000)) * 1000);
-    //   if (exp.getMinutes() < 5)
-    //     //delete async await from Promise
-    //     return new Promise(resolve => {
-    //       if (!isAlreadyFetchingAccessToken) {
-    //         isAlreadyFetchingAccessToken = true;
-    //         try {
-    //           const response = issueToken();
-    //           isAlreadyFetchingAccessToken = false;
-    //           setTokens(response.data.accessToken, response.data.refreshToken);
-    //           return resolve(originResponse);
-    //         } catch (err) {
-    //           console.log("Catch error in successResponseInterceptor");
-    //           console.log(err);
-    //           flushTokens("Token expired");
-    //         }
-    //       } else return resolve(originResponse);
-    //     });
+const issueToken = () => {
+  const refreshToken = getTokens().refreshToken;
+  return axios.post(`${config.node.host}/api/v1/auth/token`, {
+    refreshToken,
+  });
+};
+
+let isAlreadyFetchingAccessToken = false;
+export const updateTokens = async () => {
+  if (localStorage.getItem("auth")) {
+    const token = jwt.decode(getTokens().accessToken, publicKey, {
+      algorithm: "RS256",
+    });
+    const exp = new Date((token.exp - Math.round(+new Date() / 1000)) * 1000);
+    if (exp.getMinutes() < 5)
+      if (!isAlreadyFetchingAccessToken) {
+        isAlreadyFetchingAccessToken = true;
+        try {
+          const { data } = await issueToken();
+          console.log(data);
+          store.dispatch(
+            updateTokenInStore(data.accessToken, data.refreshToken)
+          );
+          isAlreadyFetchingAccessToken = false;
+        } catch (err) {
+          console.log("Catch error in successResponseInterceptor");
+          console.log(err);
+          store.dispatch(flushTokenInStore("Token update error"));
+        }
+      }
   }
+};
+
+export const successResponseInterceptor = async (originResponse) => {
+  await updateTokens();
   return originResponse;
 };
 

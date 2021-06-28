@@ -58,6 +58,7 @@ export default function TableFactory({
     {
       keepPreviousData: true,
       enabled: ability.can("READ", "GATEWAYS") && !!searchQuery.gateways,
+      refetchOnWindowFocus: false,
     }
   );
 

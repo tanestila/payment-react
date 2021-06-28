@@ -69,13 +69,12 @@ export default function usePartnersColumns(ability: AppAbility) {
       //     </Space>
       //   ),
       // },
-      ability.can("EXECUTE", "USERMERCHANT") && {
-        title: "Edit",
+      ability.can("EXECUTE", "USERPARTNER") && {
         key: "edit",
         align: "center",
         render: (text: string, record: PartnerType) => (
           <CustomModal
-            header="Edit merchant"
+            header="Edit partner"
             content={Editor}
             contentProps={{ guid: record.partner_guid }}
             button={
@@ -88,8 +87,7 @@ export default function usePartnersColumns(ability: AppAbility) {
           />
         ),
       },
-      ability.can("DELETE", "USERMERCHANT") && {
-        title: "Delete",
+      ability.can("DELETE", "USERPARTNER") && {
         key: "delete",
         align: "center",
         render: (text: string, record: PartnerType) => (

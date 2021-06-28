@@ -36,10 +36,10 @@ export default function Groups() {
       error={error}
       modalComponent={
         <Modal
-          allowed={ability.can("EXECUTE", "USERMERCHANT")}
+          allowed={ability.can("EXECUTE", "USERGROUP")}
           button={<Button type="primary">Create group</Button>}
           content={Creator}
-          header="Create merchant"
+          header="Create group"
           dialogClassName="modal-creator"
         />
       }

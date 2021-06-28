@@ -6,7 +6,7 @@ import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { auditAPI } from "../../../services/queries/audit";
 import Table from "../../../Components/TableFactory/Table";
-import { useAdminHistoryColumns } from "../../../constants/columns";
+import { useLoginsAuditColumns } from "../../../constants/columns";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { formatDate } from "../../../helpers/formatDate";
 const { Text } = Typography;
@@ -39,7 +39,7 @@ export default function AdminDetail() {
     10
   );
 
-  const historyColumns = useAdminHistoryColumns(ability);
+  const historyColumns = useLoginsAuditColumns(ability);
 
   if (status === "loading") {
     return <span>Loading...</span>;
@@ -52,7 +52,7 @@ export default function AdminDetail() {
 
   return (
     <>
-      <Card title={`Group detail ${admin.group_name}`}>
+      <Card title={`Admin detail ${admin.group_name}`}>
         <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
           <Descriptions.Item span={3} label="GUID">
             {admin.group_guid}

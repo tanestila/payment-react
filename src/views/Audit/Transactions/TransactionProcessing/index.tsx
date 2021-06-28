@@ -2,7 +2,7 @@ import Table from "../../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../../Components/Common/Can";
-import { useCurrenciesColumns } from "../../../../constants/columns";
+import { useTransactionProcessingAuditColumns } from "../../../../constants/columns";
 import { auditAPI } from "../../../../services/queries/audit";
 
 export default function TransactionProcessingAudit() {
@@ -22,7 +22,7 @@ export default function TransactionProcessingAudit() {
     true
   );
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useTransactionProcessingAuditColumns(ability);
 
   return (
     <Table

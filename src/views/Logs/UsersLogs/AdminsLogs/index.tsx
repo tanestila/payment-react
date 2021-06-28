@@ -3,7 +3,7 @@ import useTableQuery from "../../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../../Components/Common/Can";
 import { logsAPI } from "../../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../../constants/columns";
+import { useAdminsLogsColumns } from "../../../../constants/columns";
 
 export default function AdminsLogs() {
   const ability = useContext(AbilityContext);
@@ -18,7 +18,7 @@ export default function AdminsLogs() {
     onSearch,
   } = useTableQuery("admins-logs", logsAPI.getAdminsLogs, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useAdminsLogsColumns(ability);
 
   return (
     <Table

@@ -15,7 +15,7 @@ import {
   useAccountsColumns,
   useTerminalsColumns,
   useShopsColumns,
-  useMerchantHistoryColumns,
+  useMerchantAuditColumns,
 } from "../../../constants/columns";
 import { formatDate } from "../../../helpers/formatDate";
 import CustomModal from "../../../Components/Common/Modal";
@@ -47,7 +47,7 @@ export default function MerchantDetail() {
     items: loginsItems,
     handleTableChange: handleLoginsTableChange,
   } = useTableQuery(
-    "merchant-logins",
+    `merchant-logins-${history.id}`,
     () => merchantsAPI.getMerchantLogins(history.id, {}),
     false,
     10
@@ -63,7 +63,7 @@ export default function MerchantDetail() {
     items: accountsItems,
     handleTableChange: handleAccountsTableChange,
   } = useTableQuery(
-    "accounts",
+    `accounts-${history.id}`,
     () => accountsAPI.getAccounts(history.id, {}),
     false,
     10
@@ -79,7 +79,7 @@ export default function MerchantDetail() {
     items: terminalsItems,
     handleTableChange: handleTerminalsTableChange,
   } = useTableQuery(
-    "terminals",
+    `terminals-${history.id}`,
     () => terminalsAPI.getTerminals({ merchant_guid: history.id }),
     false,
     10
@@ -95,7 +95,7 @@ export default function MerchantDetail() {
     items: shopsItems,
     handleTableChange: handleShopsTableChange,
   } = useTableQuery(
-    "shops",
+    `shops-${history.id}`,
     () => shopsAPI.getShops({ merchant_guid: history.id }),
     false,
     10
@@ -111,7 +111,7 @@ export default function MerchantDetail() {
     items: merchantHistoryItems,
     handleTableChange: handleMerchantHistoryTableChange,
   } = useTableQuery(
-    "merchant-history",
+    `merchant-history-${history.id}`,
     () => auditAPI.getMerchantsHistory({ guid: history.id }),
     false,
     10
@@ -125,7 +125,7 @@ export default function MerchantDetail() {
 
   const shopsColumns = useShopsColumns(ability);
 
-  const historyColumns = useMerchantHistoryColumns(ability);
+  const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
     return <span>Loading...</span>;

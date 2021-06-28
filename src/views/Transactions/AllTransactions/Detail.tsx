@@ -3,21 +3,12 @@ import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { accountsAPI } from "../../../services/queries/management/accounts";
-import { shopsAPI } from "../../../services/queries/management/shops";
-import { terminalsAPI } from "../../../services/queries/management/transactions/steps";
-import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
-import { auditAPI } from "../../../services/queries/audit";
-
-import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
   useShopsColumns,
-  useMerchantHistoryColumns,
+  useMerchantAuditColumns,
   useGroupsMerchantsColumns,
 } from "../../../constants/columns";
-import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 const { Text } = Typography;
 
@@ -56,7 +47,7 @@ export default function ProcessingDetail() {
 
   const loginsColumns = useLoginColumns(ability);
 
-  const historyColumns = useMerchantHistoryColumns(ability);
+  const historyColumns = useMerchantAuditColumns(ability);
 
   const shopsColumns = useShopsColumns(ability);
 

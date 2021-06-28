@@ -66,13 +66,13 @@ export default function useGroupsColumns(ability: AppAbility) {
         ),
       },
 
-      ability.can("EXECUTE", "USERMERCHANT") && {
+      ability.can("EXECUTE", "USERGROUP") && {
         title: "",
         key: "edit",
         align: "center",
         render: (text: string, record: GroupType) => (
           <CustomModal
-            header="Edit merchant"
+            header="Edit group"
             content={Editor}
             contentProps={{ guid: record.group_guid }}
             button={
@@ -85,7 +85,7 @@ export default function useGroupsColumns(ability: AppAbility) {
           />
         ),
       },
-      ability.can("DELETE", "USERMERCHANT") && {
+      ability.can("DELETE", "USERGROUP") && {
         title: "",
         key: "delete",
         align: "center",

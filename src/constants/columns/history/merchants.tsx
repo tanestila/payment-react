@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-export default function useAdminHistoryColumns(ability) {
+export default function useMerchantAuditColumns(ability) {
   return useMemo(
     () => [
       {

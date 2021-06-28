@@ -8,7 +8,7 @@ import { shopsAPI } from "../../services/queries/management/shops";
 import { auditAPI } from "../../services/queries/audit";
 
 import Table from "../../Components/TableFactory/Table";
-import { useMerchantHistoryColumns } from "../../constants/columns";
+import { useMerchantAuditColumns } from "../../constants/columns";
 import { formatDate } from "../../helpers/formatDate";
 const { Text } = Typography;
 
@@ -39,7 +39,7 @@ export default function ShopDetail() {
     10
   );
 
-  const historyColumns = useMerchantHistoryColumns(ability);
+  const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
     return <span>Loading...</span>;

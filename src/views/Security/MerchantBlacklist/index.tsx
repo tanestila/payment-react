@@ -2,8 +2,7 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { logsAPI } from "../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useBacklistMerchantColumns } from "../../../constants/columns";
 import { MerchantBlackListAPI } from "../../../services/queries/management/blacklist/merchant";
 
 export default function MerchantBlacklist() {
@@ -23,7 +22,7 @@ export default function MerchantBlacklist() {
     true
   );
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useBacklistMerchantColumns(ability);
 
   return (
     <Table

@@ -1,22 +1,23 @@
 import axios from "axios";
 import store from "../redux/store";
-import {
-  successResponseInterceptor,
-  tokenRefreshInterceptor,
-} from "./interceptor";
+// import {
+//   successResponseInterceptor,
+//   tokenRefreshInterceptor,
+// } from "./interceptor";
 import { config } from "../config";
 
-const authApiUrl = `${config.node.host}/api/v1/auth`;
+export const authApiUrl = `${config.node.host}/api/v1/auth`;
 
 const instance = axios.create({ baseURL: authApiUrl });
 instance.defaults.headers.common["Authorization"] = store.getState().auth
   .accessToken
   ? `Bearer ${store.getState().auth.accessToken}`
   : undefined;
-instance.interceptors.response.use(
-  successResponseInterceptor,
-  tokenRefreshInterceptor
-);
+instance.interceptors.response
+  .use
+  // successResponseInterceptor,
+  // tokenRefreshInterceptor
+  ();
 
 let currentAuth;
 store.subscribe(() => {

@@ -70,7 +70,10 @@ export default function useTableQuery(
           : undefined,
         ...search,
       }),
-    { refetchOnWindowFocus: false }
+    {
+      refetchOnWindowFocus: false,
+      // refetchOnMount: false
+    }
   );
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {

@@ -1,11 +1,6 @@
-import { Card, Button, Row } from "antd";
+import { Card, Button } from "antd";
 import { Formik, Form } from "formik";
 import { TextInput } from "../Common/SearchSelect/Form/TextInput";
-
-// type SearchFormProps = {
-//   onSearch: Function;
-//   columns: Array<any>;
-// };
 
 export const SearchForm = ({ onSearch, columns, search }) => {
   const params = {};
@@ -37,8 +32,6 @@ export const SearchForm = ({ onSearch, columns, search }) => {
               );
             else return null;
           })}
-          {/* <label htmlFor="firstName">merchant_name</label>
-        <Field type="text" name="merchant_name" /> */}
 
           <Button type="submit">Search</Button>
         </Form>

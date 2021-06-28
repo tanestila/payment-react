@@ -6,7 +6,7 @@ import { AbilityContext } from "../../../Components/Common/Can";
 import {
   useLoginColumns,
   useShopsColumns,
-  useMerchantHistoryColumns,
+  useMerchantAuditColumns,
   useGroupsMerchantsColumns,
 } from "../../../constants/columns";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
@@ -47,7 +47,7 @@ export default function TemplatesDetail() {
 
   const loginsColumns = useLoginColumns(ability);
 
-  const historyColumns = useMerchantHistoryColumns(ability);
+  const historyColumns = useMerchantAuditColumns(ability);
 
   const shopsColumns = useShopsColumns(ability);
 

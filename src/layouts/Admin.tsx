@@ -13,6 +13,8 @@ import {
 } from "../redux/modules/sidebar";
 import { pushHistory } from "../redux/modules/router";
 import { AppDispatch } from "../redux/store";
+import { updateTokens } from "../services/interceptor";
+import { useDebounceFn } from "ahooks";
 
 interface IChildRoute {
   path: string;
@@ -130,9 +132,17 @@ function Admin({ dispatch, routes }: AdminProps) {
     [dispatch]
   );
 
+  const onMouseMove = async () => {
+    await updateTokens();
+  };
+
+  const { run } = useDebounceFn(onMouseMove, {
+    wait: 500,
+  });
+
   return (
     <>
-      <div className="wrapper">
+      <div className="wrapper" onMouseMove={run}>
         <Sidebar
           color={color}
           routes={routes}

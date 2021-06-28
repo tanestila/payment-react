@@ -242,3 +242,25 @@ export const flushTokenInStore =
       console.log(error);
     }
   };
+
+export const updateTokenInStore =
+  (accessToken: string, refreshToken: string) => async (dispatch: Dispatch) => {
+    try {
+      jwt.verify(accessToken, publicKey);
+      jwt.verify(refreshToken, publicKey);
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          accessToken,
+          refreshToken,
+        })
+      );
+      dispatch({
+        type: types.SET_TOKENS,
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };

@@ -38,6 +38,8 @@ export { default as ServicesAudit } from "./Audit/Services";
 export { default as ShopsAudit } from "./Audit/Shops";
 export { default as TerminalsAudit } from "./Audit/Terminals";
 export { default as TransactionAudit } from "./Audit/Transactions";
+export { default as UsersAudit } from "./Audit/Users";
 export { default as BlacklistRules } from "./Security/BlacklistRules";
 export { default as GlobalBlacklist } from "./Security/GlobalBlacklist";
 export { default as MerchantBlacklist } from "./Security/MerchantBlacklist";
+export { default as RolesAndPrivileges } from "./Security/RolesAdPrivileges";

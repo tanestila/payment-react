@@ -6,9 +6,6 @@ import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
-import moment from "moment";
-import { useMemo } from "react";
-import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
 
 export const LoginCreator = ({ handleClose }) => {

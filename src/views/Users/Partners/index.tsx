@@ -40,7 +40,7 @@ export default function Partners() {
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
           button={<Button type="primary">Create partner</Button>}
           content={Creator}
-          header="Create merchant"
+          header="Create partner"
           dialogClassName="modal-creator"
         />
       }

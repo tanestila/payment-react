@@ -2,8 +2,7 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { logsAPI } from "../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useGatewaysAuditColumns } from "../../../constants/columns";
 import { auditAPI } from "../../../services/queries/audit";
 
 export default function GatewaysAudit() {
@@ -19,7 +18,7 @@ export default function GatewaysAudit() {
     onSearch,
   } = useTableQuery("gateways-audit", auditAPI.getGatewaysHistory, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useGatewaysAuditColumns(ability);
 
   return (
     <Table

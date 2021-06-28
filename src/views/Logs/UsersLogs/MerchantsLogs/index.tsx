@@ -3,7 +3,7 @@ import useTableQuery from "../../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../../Components/Common/Can";
 import { logsAPI } from "../../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../../constants/columns";
+import { useMerchantsLogsColumns } from "../../../../constants/columns";
 
 export default function MerchantsLogs() {
   const ability = useContext(AbilityContext);
@@ -18,7 +18,7 @@ export default function MerchantsLogs() {
     onSearch,
   } = useTableQuery("merchants-logs", logsAPI.getMerchantsLogs, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useMerchantsLogsColumns(ability);
 
   return (
     <Table

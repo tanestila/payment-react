@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
+// import { Modal, Button } from "antd";
 
 type CustomModalProps = {
   button: React.ReactNode;
@@ -30,19 +31,21 @@ export default function CustomModal({
         <Modal.Header style={{ borderBottom: "1px #dddddd solid" }} closeButton>
           <Modal.Title style={{ margin: "20px 0 15px" }}>{header}</Modal.Title>
         </Modal.Header>
-        {/* <Modal.Body>{content}</Modal.Body> */}
+
         <Modal.Body>
           <Content handleClose={handleClose} {...contentProps} />
         </Modal.Body>
-        {/* <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer> */}
       </Modal>
+      {/*
+      <Modal
+        title="Modal 1000px width"
+        centered
+        visible={show}
+        onOk={handleShow}
+        onCancel={handleClose}
+      >
+        <Content handleClose={handleClose} {...contentProps} />
+      </Modal> */}
     </>
   );
 }

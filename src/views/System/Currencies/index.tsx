@@ -5,8 +5,6 @@ import { AbilityContext } from "../../../Components/Common/Can";
 import { Creator } from "./Creator";
 import Modal from "../../../Components/Common/Modal";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
-import { PartnerType } from "../../../types/partners";
-import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import { useCurrenciesColumns } from "../../../constants/columns";
 import { Button } from "antd";
 

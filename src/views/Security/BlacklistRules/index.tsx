@@ -3,7 +3,7 @@ import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
 import { blackListRulesAPI } from "../../../services/queries/management/blacklist/rules";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useBacklistRulesColumns } from "../../../constants/columns";
 
 export default function BlacklistRules() {
   const ability = useContext(AbilityContext);
@@ -18,7 +18,7 @@ export default function BlacklistRules() {
     onSearch,
   } = useTableQuery("blacklist-rules", blackListRulesAPI.getRules, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useBacklistRulesColumns(ability);
 
   return (
     <Table

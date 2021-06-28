@@ -1,40 +1,36 @@
-import Table from "../../../Components/TableFactory/MainTable";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { logsAPI } from "../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { Dropdown, Button, Menu } from "antd";
+import Roles from "./Roles";
+import Privileges from "./Privileges";
 
-export default function ChargebackServiceLogs() {
+const securityNames = [
+  { name: "Roles", component: <Roles /> },
+  { name: "Privileges", component: <Privileges /> },
+];
+
+export default function RolesAndPrivileges() {
   const ability = useContext(AbilityContext);
-  const {
-    isLoading,
-    isError,
-    error,
-    status,
-    data,
-    isFetching,
-    handleTableChange,
-    onSearch,
-  } = useTableQuery(
-    "chargeback-service-logs",
-    logsAPI.getСhargebackServiceLogs,
-    true
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const handleMenuClick = (e) => {
+    setSelectedIndex(e.key);
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      {securityNames.map((service, index) => (
+        <Menu.Item key={index}>{service.name}</Menu.Item>
+      ))}
+    </Menu>
   );
 
-  const columns = useCurrenciesColumns(ability);
-
   return (
-    <Table
-      columns={columns}
-      handleTableChange={handleTableChange}
-      onSearch={onSearch}
-      isFetching={isFetching}
-      data={data}
-      isLoading={isLoading}
-      isError={isError}
-      error={error}
-      status={status}
-    />
+    <>
+      <Dropdown overlay={menu} placement="bottomLeft">
+        <Button>{securityNames[selectedIndex].name}</Button>
+      </Dropdown>
+      {securityNames[selectedIndex].component}
+    </>
   );
 }

@@ -37,7 +37,7 @@ export default function usePartnersLogsColumns(ability) {
         title: "url",
         dataIndex: "URL",
         key: "URL",
-        render: (text: any) => text.slice(7),
+        // render: (text: any) => text.slice(7),
       },
       {
         title: "Headers",

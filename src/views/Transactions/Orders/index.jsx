@@ -1,4 +1,4 @@
-import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
+import { ordersAPI } from "../../../services/queries/report/orders";
 import { Link } from "react-router-dom";
 import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
@@ -17,7 +17,7 @@ export default function Orders() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("transactions", transactionsAPI.getTransactions);
+  } = useTableQuery("orders", ordersAPI.getOrders);
 
   const columns = [
     {

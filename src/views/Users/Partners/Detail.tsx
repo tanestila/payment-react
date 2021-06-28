@@ -10,7 +10,7 @@ import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
   useShopsColumns,
-  useMerchantHistoryColumns,
+  useMerchantAuditColumns,
 } from "../../../constants/columns";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { formatDate } from "../../../helpers/formatDate";
@@ -101,7 +101,7 @@ export default function PartnerDetail() {
 
   const shopsColumns = useShopsColumns(ability);
 
-  const historyColumns = useMerchantHistoryColumns(ability);
+  const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
     return <span>Loading...</span>;
@@ -114,12 +114,12 @@ export default function PartnerDetail() {
 
   return (
     <>
-      <Card title={`Group detail ${partner.partner_name}`}>
+      <Card title={`Partner detail ${partner.partner_name}`}>
         <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
           <Descriptions.Item span={3} label="GUID">
             {partner.partner_guid}
           </Descriptions.Item>
-          <Descriptions.Item label="Group type">
+          <Descriptions.Item label="Partner type">
             {partner.partner_type}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">

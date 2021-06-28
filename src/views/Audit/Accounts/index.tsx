@@ -3,7 +3,7 @@ import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
 import { auditAPI } from "../../../services/queries/audit";
-import { useCurrenciesColumns } from "../../../constants/columns";
+import { useAccountsAuditColumns } from "../../../constants/columns";
 
 export default function AccountsAudit() {
   const ability = useContext(AbilityContext);
@@ -18,7 +18,7 @@ export default function AccountsAudit() {
     onSearch,
   } = useTableQuery("accounts-audit", auditAPI.getAccountsHistory, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useAccountsAuditColumns(ability);
 
   return (
     <Table

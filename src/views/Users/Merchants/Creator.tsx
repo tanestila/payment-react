@@ -1,23 +1,30 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-
 import { Col, Row } from "react-bootstrap";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import moment from "moment";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
-import { usersAPI } from "../../../services/queries/management/users/users";
+import { groupsAPI } from "../../../services/queries/management/users/groups";
+import { SuccessModal } from "../../../Components/Common/SuccessModal";
+import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
+import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 
 export default function Creator({ handleClose }) {
-  const [prevEmail, setPrevEmail] = useState("");
-  const [isEmailExistEmail, setIsEmailExistEmail] = useState(false);
-  const [error, setError] = useState(false);
+  const queryClient = useQueryClient();
 
-  const mutation = useMutation(merchantsAPI.addMerchant);
+  const mutation = useMutation(merchantsAPI.addMerchant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("merchants");
+    },
+  });
+
+  const { run: checkEmail } = useCheckEmailExist();
+  const { run: checkPhone } = useCheckPhoneExist();
 
   const { data: roles } = useQuery(
     ["roles"],
@@ -34,11 +41,27 @@ export default function Creator({ handleClose }) {
     }
   );
 
-  const modifiedData = useMemo(() => {
+  const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups(), {
+    keepPreviousData: true,
+  });
+
+  const modifiedCurrenciesData = useMemo(() => {
     return currencies
       ? currencies.data.map((cur) => ({ ...cur, name: cur.code }))
       : [];
   }, [currencies]);
+
+  const modifiedGroupsData = useMemo(() => {
+    return groups
+      ? groups.data.map((group) => ({
+          ...group,
+          name: group.group_name,
+          guid: group.group_guid,
+        }))
+      : [];
+  }, [groups]);
+
+  SuccessModal("Merchant created");
 
   return (
     <Formik
@@ -74,16 +97,10 @@ export default function Creator({ handleClose }) {
               value?.length > 8 &&
               value?.indexOf(".") !== -1 &&
               value?.indexOf("@") !== -1
-            )
-              try {
-                const { data: checkResponse } = await usersAPI.checkExists({
-                  email: value,
-                });
-                if (checkResponse) return !checkResponse.email_exists;
-                else return false;
-              } catch (error) {
-                return false;
-              }
+            ) {
+              const res = await checkEmail(value);
+              return res;
+            }
             return true;
           }),
         first_name: Yup.string()
@@ -106,7 +123,17 @@ export default function Creator({ handleClose }) {
         monthly_amount_limit: Yup.number()
           .typeError("You must specify a number")
           .required("Required"),
-        phone: Yup.string().required().min(5).required("Required"),
+        phone: Yup.string()
+          .required()
+          .min(5)
+          .required("Required")
+          .test("phoneExist", "Phone exists", async (value) => {
+            if (value && value?.length > 5) {
+              const res = await checkPhone(value);
+              return res;
+            }
+            return true;
+          }),
         role: Yup.object().typeError("Required").required("Required"),
         language: Yup.object().required("Required"),
         custom_amount_limit: Yup.string()
@@ -136,6 +163,7 @@ export default function Creator({ handleClose }) {
             language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
             monthly_fee_currency: values.monthly_fee_currency?.["name"],
+            group_guid: values.group?.["group_guid"],
             monthly_fee: +values.monthly_fee * 100,
             monthly_fee_date: values.monthly_fee_date,
             monthly_amount_limit: (
@@ -145,14 +173,10 @@ export default function Creator({ handleClose }) {
             custom_days_limit: values.custom_days_limit,
           };
           const todo = await mutation.mutateAsync(data);
-          console.log(todo);
-          alert("done");
+          SuccessModal("Merchant created");
           handleClose();
         } catch (error) {
           console.log(error);
-          alert(error);
-        } finally {
-          console.log("done");
         }
         setSubmitting(false);
       }}
@@ -201,7 +225,7 @@ export default function Creator({ handleClose }) {
               <Field
                 name="monthly_fee_currency"
                 inputType="select"
-                options={modifiedData}
+                options={modifiedCurrenciesData}
                 label="Monthly fee currency*"
               />
               <Field
@@ -230,13 +254,18 @@ export default function Creator({ handleClose }) {
                   { name: "RU", guid: "ru" },
                 ]}
               />
-              <Field name="group" type="text" label="Group" />
+              <Field
+                name="group"
+                inputType="select"
+                options={modifiedGroupsData}
+                label="Group"
+              />
             </Col>
           </Row>
           {isSubmitting ? (
             "lodaing"
           ) : (
-            <Button htmlType="submit" type="primary">
+            <Button htmlType="submit" type="primary" style={{ float: "right" }}>
               Submit
             </Button>
           )}

@@ -24,18 +24,6 @@ export const CollapseItem: React.FC<CollapseItemProp> = ({
   const [dropdownOpen, setOpen] = useState(false);
   const hideClass = isHide ? " hover-open " : " collapsed-menu ";
 
-  // useEffect(() => {
-  //   prop.views.forEach(route => {
-  //     if (route.activeNonNavRoutes)
-  //     route.activeNonNavRoutes.forEach(nonNavRote => {
-  //       if (location.includes(nonNavRote))
-  //       setNonNavActiveRoute()
-  //     })
-  //   })
-  //   if (prop.vieactiveNonNavRoutes)
-
-  // }, [input])
-
   const toggle = () => {
     if (isHide) setOpen(!dropdownOpen);
   };

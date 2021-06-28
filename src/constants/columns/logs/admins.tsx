@@ -34,9 +34,9 @@ export default function useAdminsLogsColumns(ability) {
       },
       {
         title: "url",
-        dataIndex: "URL",
-        key: "URL",
-        render: (text: any) => text.slice(7),
+        dataIndex: "url",
+        key: "url",
+        // render: (text: any) => text.slice(7),
       },
       {
         title: "Headers",

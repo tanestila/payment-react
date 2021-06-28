@@ -3,7 +3,7 @@ import useTableQuery from "../../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../../Components/Common/Can";
 import { logsAPI } from "../../../../services/queries/log/index";
-import { useCurrenciesColumns } from "../../../../constants/columns";
+import { useGroupsLogsColumns } from "../../../../constants/columns";
 
 export default function GroupsLogs() {
   const ability = useContext(AbilityContext);
@@ -18,7 +18,7 @@ export default function GroupsLogs() {
     onSearch,
   } = useTableQuery("groups-logs", logsAPI.getGroupsLogs, true);
 
-  const columns = useCurrenciesColumns(ability);
+  const columns = useGroupsLogsColumns(ability);
 
   return (
     <Table

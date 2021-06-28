@@ -39,6 +39,8 @@ import {
   BlacklistRules,
   GlobalBlacklist,
   MerchantBlacklist,
+  UsersAudit,
+  RolesAndPrivileges,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 
@@ -279,7 +281,7 @@ export const adminRoutes = [
         path: "/audit/user_table",
         name: "Users",
         privilege: "LOG_GATEWAYS",
-        component: Currencies,
+        component: UsersAudit,
       },
       {
         path: "/audit/shop_table",
@@ -348,7 +350,7 @@ export const adminRoutes = [
         path: "/roles-privileges",
         name: "Roles / Privileges",
         alias: "READ_ROLES",
-        component: Currencies,
+        component: RolesAndPrivileges,
       },
     ],
   },

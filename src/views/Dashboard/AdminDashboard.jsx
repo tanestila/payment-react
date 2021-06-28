@@ -2,7 +2,8 @@ import { Card } from "antd";
 
 import { Col, Row } from "react-bootstrap";
 import { Bar } from "react-chartjs-2";
-
+import { useQuery } from "react-query";
+import { MerchantsLimits } from "./components/MerchantsLimits";
 const data = {
   labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
   datasets: [
@@ -65,6 +66,8 @@ export default function AdminDashboard() {
         </Row>
         <Bar data={data} options={options} />
       </Card>
+
+      <MerchantsLimits />
     </div>
   );
 }

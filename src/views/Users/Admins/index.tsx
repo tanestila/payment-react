@@ -36,10 +36,10 @@ export default function Admins() {
       error={error}
       modalComponent={
         <Modal
-          allowed={ability.can("EXECUTE", "USERMERCHANT")}
+          allowed={ability.can("EXECUTE", "USERADMIN")}
           button={<Button type="primary">Create admin</Button>}
           content={Creator}
-          header="Create merchant"
+          header="Create admin"
           dialogClassName="modal-creator"
         />
       }

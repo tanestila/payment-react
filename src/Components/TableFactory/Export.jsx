@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
