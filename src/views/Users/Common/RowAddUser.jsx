@@ -10,76 +10,74 @@ import { Field } from "../../../Components/Common/Formik/Field";
 import { useWhyDidYouUpdate } from "ahooks";
 export const RowAddUser = ({ type, guid }) => {
   const [isShow, setIsShow] = useState(true);
-  // const queryClient = useQueryClient();
-  // const addMerchantMutation = useMutation(merchantsAPI.addMerchant, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("group-merchants");
-  //   },
-  // });
+  const queryClient = useQueryClient();
+  const addMerchantMutation = useMutation(merchantsAPI.addMerchant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("group-merchants");
+    },
+  });
 
-  // const addGroupMutation = useMutation(groupsAPI.addGroup, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("partner-groups");
-  //   },
-  // });
+  const addGroupMutation = useMutation(groupsAPI.addGroup, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("partner-groups");
+    },
+  });
 
   const onClick = () => {
     setIsShow(!isShow);
   };
 
-  const { data } = useQuery(["merchants"], () => merchantsAPI.getMerchants);
+  const { data: merchants, isLoading: merchantsIsLoading } = useQuery(
+    ["merchants"],
+    () => merchantsAPI.getMerchants(),
+    { enabled: type === "group" }
+  );
 
-  // const {
-  //   data: groups,
-  //   status: groupsStatus,
-  //   isLoading: groupsIsLoading,
-  //   error: groupsError,
-  // } = useQuery(["groups"], groupsAPI.getGroups());
-
-  // const modifiedMerchantsData = useMemo(() => {
-  //   return merchants
-  //     ? merchants.data
-  //         .map((merchant) => ({
-  //           ...merchant,
-  //           name: merchant.group_name,
-  //           guid: merchant.group_guid,
-  //         }))
-  //         .filter((merchant) => merchant.group_guid === null)
-  //     : [];
-  // }, [merchants]);
-
-  // const modifiedGroupsData = useMemo(() => {
-  //   return groups
-  //     ? groups.data
-  //         .map((group) => ({
-  //           ...group,
-  //           name: group.group_name,
-  //           guid: group.group_guid,
-  //         }))
-  //         .filter((group) => group.partner_guid === null)
-  //     : [];
-  // }, [groups]);
-
-  useWhyDidYouUpdate("useWhyDidYouUpdateComponent", {
-    type,
-    guid,
-    // modifiedMerchantsData,
-    // modifiedGroupsData,
-    // groups,
-    // merchants,
+  const {
+    data: groups,
+    status: groupsStatus,
+    isLoading: groupsIsLoading,
+    error: groupsError,
+  } = useQuery(["groups"], () => groupsAPI.getGroups(), {
+    enabled: type === "partner",
   });
+
+  const modifiedMerchantsData = useMemo(() => {
+    console.log(merchants);
+    return merchants
+      ? merchants.data
+          .map((merchant) => ({
+            ...merchant,
+            name: merchant.group_name,
+            guid: merchant.group_guid,
+          }))
+          .filter((merchant) => merchant.group_guid === null)
+      : [];
+  }, [merchants]);
+
+  const modifiedGroupsData = useMemo(() => {
+    return groups
+      ? groups.data
+          .map((group) => ({
+            ...group,
+            name: group.group_name,
+            guid: group.group_guid,
+          }))
+          .filter((group) => group.partner_guid === null)
+      : [];
+  }, [groups]);
 
   return (
     <div>
       <Row justify="center">
-        <span onClick={onClick}>
+        <Button onClick={onClick}>
           Add {type === "group" ? "Merchant" : "Group"}
-        </span>
+        </Button>
       </Row>
 
-      {true ? (
+      {isShow ? (
         <>
-          {isShow ? (
+          {merchantsIsLoading ? (
             <Loading />
           ) : (
             <div>
@@ -102,7 +100,7 @@ export const RowAddUser = ({ type, guid }) => {
                           group_guid: guid,
                           reason: values.reason,
                         };
-                        // await addMerchantMutation.mutateAsync(data);
+                        await addMerchantMutation.mutateAsync(data);
                         break;
                       case "partner":
                         data = {
@@ -110,7 +108,7 @@ export const RowAddUser = ({ type, guid }) => {
                           partner_guid: guid,
                           reason: values.reason,
                         };
-                        // await addGroupMutation.mutateAsync(data);
+                        await addGroupMutation.mutateAsync(data);
                         break;
                       default:
                         break;
@@ -129,16 +127,16 @@ export const RowAddUser = ({ type, guid }) => {
                   <Form className="modal-form">
                     {error && error}
 
-                    {/* <Field
+                    <Field
                       name="user"
-                      type="select"
+                      inputType="select"
                       options={
                         type === "group"
                           ? modifiedMerchantsData
                           : modifiedGroupsData
                       }
-                      label={type === "group" ? "Merchant" : "Group"}
-                    /> */}
+                      label={type === "group" ? "Merchant*" : "Group"}
+                    />
                     <Field name="reason" type="text" label="Reason*" />
 
                     {isSubmitting ? (
