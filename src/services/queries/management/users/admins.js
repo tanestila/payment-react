@@ -11,4 +11,8 @@ export const adminsAPI = {
     let { data } = await managementService.get(`users/admins/${guid}`);
     return data;
   },
+  addAdmin: async (body) => {
+    let { data } = await managementService.post("users/admins", body);
+    return data;
+  },
 };

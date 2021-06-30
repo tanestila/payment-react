@@ -1,18 +1,26 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import { Button } from "antd";
-import { SuccessModal } from "../../../Components/Common/SuccessModal";
-import { ErrorModal } from "../../../Components/Common/ErrorModal";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { SuccessModal, ErrorModal } from "../../../Components/Common";
 
-export const LoginCreator = ({ handleClose, guid, type }) => {
+type LoginCreatorProps = {
+  handleClose: Function;
+  guid: string;
+  type: string;
+};
+
+export const LoginCreator: React.FC<LoginCreatorProps> = ({
+  handleClose,
+  guid,
+  type,
+}) => {
   const queryClient = useQueryClient();
 
   const merchantMutation = useMutation(merchantsAPI.addMerchantLogin, {
@@ -20,19 +28,16 @@ export const LoginCreator = ({ handleClose, guid, type }) => {
       queryClient.invalidateQueries("merchant-logins");
     },
   });
-
   const groupMutation = useMutation(groupsAPI.addGroupLogin, {
     onSuccess: () => {
       queryClient.invalidateQueries("group-logins");
     },
   });
-
   const partnerMutation = useMutation(partnersAPI.addPartnerLogin, {
     onSuccess: () => {
       queryClient.invalidateQueries("partner-logins");
     },
   });
-
   const { data: roles } = useQuery(["roles"], () =>
     rolesAPI.getRoles({ type })
   );

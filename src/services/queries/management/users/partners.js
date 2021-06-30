@@ -36,4 +36,8 @@ export const partnersAPI = {
     );
     return data;
   },
+  addPartner: async (body) => {
+    let { data } = await managementService.post("users/partners", body);
+    return data;
+  },
 };

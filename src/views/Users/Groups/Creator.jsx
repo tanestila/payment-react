@@ -9,13 +9,15 @@ import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { useMemo } from "react";
+import { Button } from "antd";
+import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
 
-export default function Creator() {
+export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(groupsAPI.addMerchant, {
+  const mutation = useMutation(groupsAPI.addGroup, {
     onSuccess: () => {
-      queryClient.invalidateQueries("merchants");
+      queryClient.invalidateQueries("groups");
     },
   });
 
@@ -25,7 +27,6 @@ export default function Creator() {
   const { data: roles } = useQuery(["roles"], () =>
     rolesAPI.getRoles({ type: "group" })
   );
-
   const { data: partners } = useQuery(["partners"], () =>
     partnersAPI.getPartners()
   );
@@ -60,7 +61,21 @@ export default function Creator() {
         partner: "",
       }}
       validationSchema={Yup.object({
-        email: Yup.string().email("Invalid email address").required("Required"),
+        email: Yup.string()
+          .email("Invalid email address")
+          .required("Required")
+          .test("emailExist", "Email exists", async (value) => {
+            if (
+              value &&
+              value?.length > 8 &&
+              value?.indexOf(".") !== -1 &&
+              value?.indexOf("@") !== -1
+            ) {
+              const res = await checkEmail(value);
+              return !!res;
+            }
+            return true;
+          }),
         first_name: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
@@ -74,54 +89,116 @@ export default function Creator() {
         monthly_amount_limit: Yup.number()
           .typeError("You must specify a number")
           .required("Required"),
-        phone: Yup.string().required().min(5).required("Required"),
+        phone: Yup.string()
+          .required()
+          .min(5)
+          .required("Required")
+          .test("phoneExist", "Phone exists", async (value) => {
+            if (value && value?.length > 5) {
+              const res = await checkPhone(value);
+              return !!res;
+            }
+            return true;
+          }),
         role: Yup.object().typeError("Required").required("Required"),
         language: Yup.object().required("Required"),
       })}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          let data = {
+            group_name: values.name,
+            group_type: values.type,
+            email: values.email,
+            phone: values.phone,
+            first_name: values.first_name,
+            last_name: values.last_name,
+            company_name: values.company_name,
+            company_address: values.company_address,
+            role_guid: values.role?.["guid"],
+            password: values.send_mail ? undefined : values.password,
+            send_mail: values.send_mail ? 1 : 0,
+            language: values.language.guid,
+            enabled: values.enabled === true ? 1 : 0,
+            partner_guid: values.partner?.["partner_guid"],
+            monthly_amount_limit: (
+              +values.monthly_amount_limit * 100
+            ).toString(),
+          };
+          await mutation.mutateAsync(data);
+          SuccessModal("Group was created");
+          handleClose();
+        } catch (error) {
+          ErrorModal("Error");
+          console.log(error);
+        }
+        setSubmitting(false);
       }}
     >
-      <Form>
-        <Row>
-          <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-            <Field name="email" type="email" label="Email*" />
-            <Field name="first_name" type="text" label="First Name*" />
-            <Field name="last_name" type="text" label="Last Name*" />
-            <Field name="phone" inputType="phone" label="Phone*" />
-            <Field name="company_name" type="text" label="Company name*" />
-            <Field
-              name="company_address"
-              type="text"
-              label="Company address*"
-            />
-            <Field
-              name="role"
-              label="Role*"
-              inputType="select"
-              options={roles?.data}
-            />
-            <Field name="name" type="text" label="Group name" />
-            <Field name="type" type="text" label="Group type" />
-          </Col>
-          <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-            <Field
-              name="monthly_amount_limit"
-              type="text"
-              label="Monthly amount limit"
-            />
-            <Field name="enabled" type="checkbox" label="Enable" />
-            <Field name="send_mail" type="checkbox" label="Send mail" />
-            <Field name="language" type="text" label="Language" />
-            <Field name="partner" type="text" label="Partner" />
-          </Col>
-        </Row>
-
-        <button type="submit">Submit</button>
-      </Form>
+      {({ values, isSubmitting }) => (
+        <Form>
+          <Row>
+            <Col xl={6} lg={12} md={12} sm={12} xs={12}>
+              <Field name="email" type="email" label="Email*" />
+              <Field name="first_name" type="text" label="First Name*" />
+              <Field name="last_name" type="text" label="Last Name*" />
+              <Field name="phone" inputType="phone" label="Phone*" />
+              <Field name="company_name" type="text" label="Company name*" />
+              <Field
+                name="company_address"
+                type="text"
+                label="Company address*"
+              />
+              <Field
+                name="role"
+                label="Role*"
+                inputType="select"
+                options={roles?.data}
+              />
+              <Field name="name" type="text" label="Group name" />
+              <Field name="type" type="text" label="Group type" />
+            </Col>
+            <Col xl={6} lg={12} md={12} sm={12} xs={12}>
+              <Field
+                name="monthly_amount_limit"
+                type="text"
+                label="Monthly amount limit"
+              />
+              <Field name="enabled" type="checkbox" label="Enable" />
+              <Field
+                name="send_mail"
+                inputType="checkbox"
+                label="Send mail"
+                tip="We will send your generated username and password to your email."
+              />
+              {!values.send_mail ? (
+                <Field name="password" type="text" label="Password" />
+              ) : null}
+              <Field
+                name="language"
+                label="Language*"
+                inputType="select"
+                options={[
+                  { name: "ENG", guid: "en" },
+                  { name: "RU", guid: "ru" },
+                ]}
+              />
+              <Field
+                name="partner"
+                inputType="select"
+                options={modifiedPartnersData}
+                label="Partner"
+              />
+            </Col>
+          </Row>
+          {isSubmitting ? (
+            <Loading />
+          ) : (
+            <Button htmlType="submit" type="primary" className="f-right">
+              Submit
+            </Button>
+          )}
+        </Form>
+      )}
     </Formik>
   );
 }

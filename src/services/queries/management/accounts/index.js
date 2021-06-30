@@ -7,4 +7,11 @@ export const accountsAPI = {
     });
     return data;
   },
+  addAccount: async ({ guid, body }) => {
+    let { data } = await managementService.post(
+      `merchants/${guid}/accounts`,
+      body
+    );
+    return data;
+  },
 };

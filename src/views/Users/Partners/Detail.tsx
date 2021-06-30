@@ -1,11 +1,10 @@
-import { Card, Descriptions, Divider, Typography, Button, Row } from "antd";
+import { Card, Descriptions, Divider, Button, Row, Alert } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { auditAPI } from "../../../services/queries/audit";
-
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
@@ -14,7 +13,10 @@ import {
 } from "../../../constants/columns";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { formatDate } from "../../../helpers/formatDate";
-const { Text } = Typography;
+import { Loading } from "../../../Components/Common";
+import CustomModal from "../../../Components/Common/Modal";
+import { LoginCreator } from "../Common/LoginCreator";
+import { RowAddUser } from "../Common/RowAddUser";
 
 export default function PartnerDetail() {
   const ability = useContext(AbilityContext);
@@ -24,16 +26,11 @@ export default function PartnerDetail() {
     data: partner,
     status,
     error,
-  } = useQuery(
-    [`partner-${history.id}`],
-    () => partnersAPI.getPartner(history.id),
-    {
-      keepPreviousData: true,
-    }
+  } = useQuery(["partner", history.id], () =>
+    partnersAPI.getPartner(history.id)
   );
 
   const {
-    // status: loginsStatus,
     isFetching: isFetchingGroups,
     isLoading: isLoadingGroups,
     isError: isErrorGroups,
@@ -45,11 +42,11 @@ export default function PartnerDetail() {
     "partner-groups",
     (params: any) => partnersAPI.getPartnerGroups(history.id, { params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: loginsStatus,
     isFetching: isFetchingLogins,
     isLoading: isLoadingLogins,
     isError: isErrorLogins,
@@ -61,11 +58,11 @@ export default function PartnerDetail() {
     "partner-logins",
     (params: any) => partnersAPI.getPartnerLogins(history.id, { params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: loginsStatus,
     isFetching: isFetchingShops,
     isLoading: isLoadingShops,
     isError: isErrorShops,
@@ -77,11 +74,11 @@ export default function PartnerDetail() {
     "partner-shops",
     (params: any) => partnersAPI.getPartnerShops(history.id, { params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: merchantHistoryStatus,
     isFetching: isFetchingMerchantHistory,
     isLoading: isLoadingMerchantHistory,
     isError: isErrorMerchantHistory,
@@ -94,28 +91,38 @@ export default function PartnerDetail() {
     (params: any) =>
       auditAPI.getPartnersHistory({ guid: history.id, ...params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
-  const loginsColumns = useLoginColumns(ability);
-
+  const loginsColumns = useLoginColumns(ability, "partner", history.id);
   const shopsColumns = useShopsColumns(ability);
-
   const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
 
   return (
     <>
       <Card title={`Partner detail ${partner.partner_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
           <Descriptions.Item span={3} label="GUID">
             {partner.partner_guid}
           </Descriptions.Item>
@@ -129,15 +136,14 @@ export default function PartnerDetail() {
             {partner.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {formatDate(partner.updated_at)}
+            {formatDate(partner.updated_at) || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {partner.updated_by_username}
+            {partner.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
         <Divider />
-
-        <Text strong>Groups</Text>
+        <h5>Groups</h5>
         <Table
           columns={historyColumns}
           handleTableChange={handleGroupsTableChange}
@@ -148,8 +154,9 @@ export default function PartnerDetail() {
           isError={isErrorGroups}
           error={groupsError}
         />
+        <RowAddUser type="partner" guid={partner.partner_guid} />
         <Divider />
-        <Text strong>Logins</Text>
+        <h5>Logins</h5>
         <Table
           columns={loginsColumns}
           handleTableChange={handleLoginsTableChange}
@@ -161,11 +168,16 @@ export default function PartnerDetail() {
           error={loginsError}
         />
         <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add login</Button>
+          <CustomModal
+            header="Create login"
+            content={LoginCreator}
+            contentProps={{ guid: partner.partner_guid, type: "partner" }}
+            button={<Button>Add login</Button>}
+            // dialogClassName="modal-creator"
+          />
         </Row>
-
         <Divider />
-        <Text strong>Shops</Text>
+        <h5>Shops</h5>
         <Table
           columns={shopsColumns}
           handleTableChange={handleShopsTableChange}
@@ -176,9 +188,8 @@ export default function PartnerDetail() {
           isError={isErrorShops}
           error={shopsError}
         />
-
         <Divider />
-        <Text strong>Change history</Text>
+        <h5>Change history</h5>
         <Table
           columns={historyColumns}
           handleTableChange={handleMerchantHistoryTableChange}

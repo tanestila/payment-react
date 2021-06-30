@@ -1,4 +1,4 @@
-import { Card, Descriptions, Divider, Typography } from "antd";
+import { Alert, Card, Descriptions, Divider } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -9,7 +9,7 @@ import Table from "../../../Components/TableFactory/Table";
 import { useLoginsAuditColumns } from "../../../constants/columns";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { formatDate } from "../../../helpers/formatDate";
-const { Text } = Typography;
+import { Loading } from "../../../Components/Common";
 
 export default function AdminDetail() {
   const ability = useContext(AbilityContext);
@@ -19,12 +19,9 @@ export default function AdminDetail() {
     data: admin,
     status,
     error,
-  } = useQuery([`admin-${history.id}`], () => adminsAPI.getAdmin(history.id), {
-    keepPreviousData: true,
-  });
+  } = useQuery(["admin", history.id], () => adminsAPI.getAdmin(history.id));
 
   const {
-    // status: adminHistoryStatus,
     isFetching: isFetchingAdminHistory,
     isLoading: isLoadingAdminHistory,
     isError: isErrorAdminHistory,
@@ -36,18 +33,26 @@ export default function AdminDetail() {
     "admin-history",
     (params: any) => auditAPI.getLoginsHistory({ guid: history.id, ...params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const historyColumns = useLoginsAuditColumns(ability);
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
 
   return (
@@ -80,8 +85,8 @@ export default function AdminDetail() {
           </Descriptions.Item>
         </Descriptions>
         <Divider />
-
-        <Text strong>Change history</Text>
+        Roles
+        <h5>Change history</h5>
         <Table
           columns={historyColumns}
           handleTableChange={handleAdminHistoryTableChange}

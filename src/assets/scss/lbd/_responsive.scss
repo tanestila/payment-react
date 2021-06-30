@@ -59,7 +59,6 @@
 /*          Changes for small display      */
 
 @media (max-width: 991px) {
-
   // .sidebar{
   //     right: 0 !important;
   //     left: auto;
@@ -456,10 +455,7 @@
   }
 }
 
-
-
 // Sidebar
-
 
 .sidebar.slideOut {
   width: 75px;
@@ -467,3 +463,10 @@
   overflow: visible;
 }
 
+.f-right {
+  float: right;
+}
+
+.f-left {
+  float: left;
+}

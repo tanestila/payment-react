@@ -1,11 +1,18 @@
-import { Card, Descriptions, Divider, Typography, Button, Row } from "antd";
+import {
+  Card,
+  Descriptions,
+  Divider,
+  Button,
+  Row,
+  Progress,
+  Alert,
+} from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { auditAPI } from "../../../services/queries/audit";
-
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
@@ -15,7 +22,10 @@ import {
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { formatDate } from "../../../helpers/formatDate";
-const { Text } = Typography;
+import { Loading } from "../../../Components/Common";
+import CustomModal from "../../../Components/Common/Modal";
+import { LoginCreator } from "../Common/LoginCreator";
+import { RowAddUser } from "../Common/RowAddUser";
 
 export default function GroupDetail() {
   const ability = useContext(AbilityContext);
@@ -25,12 +35,9 @@ export default function GroupDetail() {
     data: group,
     status,
     error,
-  } = useQuery([`group-${history.id}`], () => groupsAPI.getGroup(history.id), {
-    keepPreviousData: true,
-  });
+  } = useQuery(["group", history.id], () => groupsAPI.getGroup(history.id));
 
   const {
-    // status: loginsStatus,
     isFetching: isFetchingLogins,
     isLoading: isLoadingLogins,
     isError: isErrorLogins,
@@ -42,11 +49,11 @@ export default function GroupDetail() {
     "group-logins",
     (params: any) => groupsAPI.getGroupLogins(history.id, { params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: loginsStatus,
     isFetching: isFetchingMerchants,
     isLoading: isLoadingMerchants,
     isError: isErrorMerchants,
@@ -58,11 +65,11 @@ export default function GroupDetail() {
     "group-merchants",
     (params: any) => groupsAPI.getGroupMerchants(history.id, { params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: shopsStatus,
     isFetching: isFetchingShops,
     isLoading: isLoadingShops,
     isError: isErrorShops,
@@ -73,11 +80,12 @@ export default function GroupDetail() {
   } = useTableQuery(
     "group-shops",
     (params: any) => groupsAPI.getGroupShops(history.id, { params }),
-    false
+    false,
+    10,
+    [history.id]
   );
 
   const {
-    // status: merchantHistoryStatus,
     isFetching: isFetchingMerchantHistory,
     isLoading: isLoadingMerchantHistory,
     isError: isErrorMerchantHistory,
@@ -89,30 +97,39 @@ export default function GroupDetail() {
     "group-history",
     (params: any) => auditAPI.getGroupsHistory({ guid: history.id, ...params }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const merchantsColumns = useGroupsMerchantsColumns(ability);
-
-  const loginsColumns = useLoginColumns(ability);
-
+  const loginsColumns = useLoginColumns(ability, "group", history.id);
   const historyColumns = useMerchantAuditColumns(ability);
-
   const shopsColumns = useShopsColumns(ability);
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
 
   return (
     <>
       <Card title={`Group detail ${group.group_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
           <Descriptions.Item span={3} label="GUID">
             {group.group_guid}
           </Descriptions.Item>
@@ -123,7 +140,10 @@ export default function GroupDetail() {
             {group.group_name}
           </Descriptions.Item>
           <Descriptions.Item label="Partner">
-            {group.partner_name}
+            {group.partner_name || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Monthly limit">
+            {group.monthly_amount_limit}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
             {formatDate(group.created_at)}
@@ -132,14 +152,35 @@ export default function GroupDetail() {
             {group.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {formatDate(group.updated_at)}
+            {formatDate(group.updated_at) || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {group.updated_by_username}
+            {group.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
-        <Divider />
+        <Descriptions
+          column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
+          <Descriptions.Item label="Used amount limit">
+            <Row>
+              {group.used_amount}
+              {` (${group.used_percent}%)`}
+            </Row>
+            {group.used_percent !== "Disabled" && (
+              <Row>
+                <Progress percent={group.used_percent} size="small" />
+              </Row>
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Available amount limit">
+            {group.unused_amount}
+            {` (${group.unused_percent}%)`}
+          </Descriptions.Item>
+        </Descriptions>
 
+        <Divider />
         <h5>Merchants</h5>
         <Table
           columns={merchantsColumns}
@@ -152,11 +193,9 @@ export default function GroupDetail() {
           error={merchantsError}
         />
         <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add login</Button>
+          <RowAddUser type="group" guid={group.group_guid} />
         </Row>
-
         <Divider />
-
         <h5>Logins</h5>
         <Table
           columns={loginsColumns}
@@ -169,7 +208,13 @@ export default function GroupDetail() {
           error={loginsError}
         />
         <Row justify="center">
-          <Button style={{ margin: "10px auto" }}>Add login</Button>
+          <CustomModal
+            header="Create login"
+            content={LoginCreator}
+            contentProps={{ guid: group.group_guid, type: "group" }}
+            button={<Button>Add account</Button>}
+            // dialogClassName="modal-creator"
+          />
         </Row>
 
         <Divider />

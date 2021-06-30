@@ -12,7 +12,7 @@ import store from "../redux/store";
 export const tokenRefreshInterceptor = (error) => {
   console.log(error.response);
   if (error.response) {
-    if (error.response.status === 401) {
+    if (error.response.status === 401 || error.response.status === 403) {
       console.log("Catch error in tokenRefreshInterceptor");
       console.log(error.response.status);
       store.dispatch(flushTokenInStore("Unauthorized"));

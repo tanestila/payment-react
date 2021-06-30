@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
 
-export const ErrorModal = (title: string, text?: string) => {
+const ErrorModal = (title: string, text?: string) => {
   Swal.fire({
     title: title,
     text: text || "",
@@ -8,3 +8,4 @@ export const ErrorModal = (title: string, text?: string) => {
     timer: 2000,
   });
 };
+export default ErrorModal;

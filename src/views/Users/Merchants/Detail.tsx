@@ -1,4 +1,12 @@
-import { Card, Descriptions, Divider, Button, Row, Progress } from "antd";
+import {
+  Card,
+  Descriptions,
+  Divider,
+  Button,
+  Row,
+  Progress,
+  Alert,
+} from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -20,6 +28,7 @@ import {
 import { formatDate } from "../../../helpers/formatDate";
 import CustomModal from "../../../Components/Common/Modal";
 import { LoginCreator } from "../Common/LoginCreator";
+import Loading from "../../../Components/Common/Loading";
 
 export default function MerchantDetail() {
   const ability = useContext(AbilityContext);
@@ -29,12 +38,8 @@ export default function MerchantDetail() {
     data: merchant,
     status,
     error,
-  } = useQuery(
-    [`merchant`, history.id],
-    () => merchantsAPI.getMerchant(history.id),
-    {
-      keepPreviousData: true,
-    }
+  } = useQuery([`merchant`, history.id], () =>
+    merchantsAPI.getMerchant(history.id)
   );
 
   const {
@@ -118,22 +123,25 @@ export default function MerchantDetail() {
   );
 
   const loginsColumns = useLoginColumns(ability, "merchant", history.id);
-
   const accountsColumns = useAccountsColumns(ability);
-
   const terminalsColumns = useTerminalsColumns(ability);
-
   const shopsColumns = useShopsColumns(ability);
-
   const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
 
   return (
@@ -160,14 +168,9 @@ export default function MerchantDetail() {
             {merchant.monthly_amount_limit}
           </Descriptions.Item>
           <Descriptions.Item label="Custom limit">
-            {merchant.custom_days_limit > 0 ? (
-              <span>
-                {merchant.custom_amount_limit} per {merchant.custom_days_limit}{" "}
-                days
-              </span>
-            ) : (
-              "Disabled"
-            )}
+            {merchant.custom_days_limit > 0
+              ? `${merchant.custom_amount_limit} per ${merchant.custom_days_limit} days`
+              : "Disabled"}
           </Descriptions.Item>
           <Descriptions.Item label="Monthly fee date">
             {formatDate(merchant.monthly_fee_date)}
@@ -175,7 +178,6 @@ export default function MerchantDetail() {
           <Descriptions.Item label="Monthly fee">
             {merchant.monthly_fee} {merchant.monthly_fee_currency}
           </Descriptions.Item>
-
           <Descriptions.Item label="Created at">
             {formatDate(merchant.created_at)}
           </Descriptions.Item>
@@ -189,7 +191,6 @@ export default function MerchantDetail() {
             {merchant.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
-
         <Descriptions
           column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
           bordered
@@ -198,29 +199,33 @@ export default function MerchantDetail() {
           <Descriptions.Item label="Used amount limit">
             <Row>
               {merchant.used_amount}
-              {" (" + merchant.used_percent + "%)"}
+              {` (${merchant.used_percent}%)`}
             </Row>
-            <Row>
-              <Progress percent={merchant.used_percent} size="small" />
-            </Row>
+            {merchant.used_percent !== "Disabled" && (
+              <Row>
+                <Progress percent={merchant.used_percent} size="small" />
+              </Row>
+            )}
           </Descriptions.Item>
           <Descriptions.Item label="Available amount limit">
             {merchant.unused_amount}
-            {" (" + merchant.unused_percent + "%)"}
+            {` (${merchant.unused_percent}%)`}
           </Descriptions.Item>
 
           <Descriptions.Item label="Used custom amount limit">
             <Row>
               {merchant.used_custom_amount}
-              {" (" + merchant.used_custom_percent + "%)"}
+              {` (${merchant.used_custom_percent}%)`}
             </Row>
-            <Row>
-              <Progress percent={merchant.used_custom_percent} size="small" />
-            </Row>
+            {merchant.used_custom_percent !== "Disabled" && (
+              <Row>
+                <Progress percent={merchant.used_custom_percent} size="small" />
+              </Row>
+            )}
           </Descriptions.Item>
           <Descriptions.Item label="Available custom amount limit">
             {merchant.unused_custom_amount}
-            {" (" + merchant.unused_custom_percent + "%)"}
+            {` (${merchant.unused_custom_percent}%)`}
           </Descriptions.Item>
         </Descriptions>
 
@@ -262,7 +267,7 @@ export default function MerchantDetail() {
           <CustomModal
             header="Create account"
             content={LoginCreator}
-            contentProps={{ guid: merchant.merchant_guid }}
+            contentProps={{ guid: merchant.merchant_guid, type: "merchant" }}
             button={<Button>Add account</Button>}
             // dialogClassName="modal-creator"
           />

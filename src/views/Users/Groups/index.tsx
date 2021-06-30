@@ -34,6 +34,7 @@ export default function Groups() {
       isLoading={isLoading}
       isError={isError}
       error={error}
+      rowKey={"login_guid"}
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERGROUP")}

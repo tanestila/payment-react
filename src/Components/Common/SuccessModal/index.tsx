@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
 
-export const SuccessModal = (title: string, text?: string) => {
+const SuccessModal = (title: string, text?: string) => {
   Swal.fire({
     title: title,
     text: text,
@@ -8,3 +8,5 @@ export const SuccessModal = (title: string, text?: string) => {
     timer: 2000,
   });
 };
+
+export default SuccessModal;

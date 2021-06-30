@@ -37,7 +37,7 @@ export default function Partners() {
       rowKey={"login_guid"}
       modalComponent={
         <Modal
-          allowed={ability.can("EXECUTE", "USERMERCHANT")}
+          allowed={ability.can("EXECUTE", "USERPARTNER")}
           button={<Button type="primary">Create partner</Button>}
           content={Creator}
           header="Create partner"

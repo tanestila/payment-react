@@ -1,4 +1,3 @@
-import { useQuery } from "react-query";
 import { auditAPI } from "../../../services/queries/audit";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import Table from "../../../Components/TableFactory/Table";
@@ -6,11 +5,9 @@ import { useLoginsAuditColumns } from "../../../constants/columns";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
 
-export const LoginAudit = ({ guid }) => {
+export const LoginAudit = ({ guid }: { guid: string }) => {
   const ability = useContext(AbilityContext);
-
   const {
-    // status: loginsStatus,
     isFetching,
     isLoading,
     isError,

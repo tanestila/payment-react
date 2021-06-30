@@ -37,7 +37,6 @@ export default function Shops() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          // allowed={true}
           button={<Button type="primary">Create Shop</Button>}
           content={Creator}
           header="Create merchant"

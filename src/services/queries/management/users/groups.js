@@ -33,4 +33,8 @@ export const groupsAPI = {
     let { data } = await managementService.post(`groups/${guid}/logins`, body);
     return data;
   },
+  addGroup: async (body) => {
+    let { data } = await managementService.post(`users/groups`, body);
+    return data;
+  },
 };

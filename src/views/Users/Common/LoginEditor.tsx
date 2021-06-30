@@ -6,15 +6,26 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import { Button } from "antd";
-import { SuccessModal } from "../../../Components/Common/SuccessModal";
-import { ErrorModal } from "../../../Components/Common/ErrorModal";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { useMemo } from "react";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
+import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 
-export const LoginEditor = ({ handleClose, guid, type, login }) => {
+type LoginEditorProps = {
+  handleClose: Function;
+  guid: string;
+  type: string;
+  login: any;
+};
+
+export const LoginEditor: React.FC<LoginEditorProps> = ({
+  handleClose,
+  guid,
+  type,
+  login,
+}) => {
   const queryClient = useQueryClient();
 
   const { run: checkEmail } = useCheckEmailExist();
@@ -44,7 +55,7 @@ export const LoginEditor = ({ handleClose, guid, type, login }) => {
 
   const modifiedRolesData = useMemo(() => {
     return roles
-      ? roles.data.map((role) => ({
+      ? roles.data.map((role: any) => ({
           ...role,
           value: role.guid,
           label: role.name,
@@ -55,7 +66,7 @@ export const LoginEditor = ({ handleClose, guid, type, login }) => {
   return (
     <>
       {isLoading ? (
-        <>loading</>
+        <Loading />
       ) : (
         <Formik
           initialValues={{
@@ -66,7 +77,7 @@ export const LoginEditor = ({ handleClose, guid, type, login }) => {
             company_address: login.company_address,
             phone: login.phone,
             role: modifiedRolesData.filter(
-              (role) => role.guid === login.role.guid
+              (role: any) => role.guid === login.role.guid
             )[0],
             language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
             enabled: login.enabled,

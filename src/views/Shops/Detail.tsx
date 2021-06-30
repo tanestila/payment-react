@@ -1,4 +1,4 @@
-import { Card, Descriptions, Divider, Typography } from "antd";
+import { Card, Descriptions, Divider } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -10,7 +10,6 @@ import { auditAPI } from "../../services/queries/audit";
 import Table from "../../Components/TableFactory/Table";
 import { useMerchantAuditColumns } from "../../constants/columns";
 import { formatDate } from "../../helpers/formatDate";
-const { Text } = Typography;
 
 export default function ShopDetail() {
   const ability = useContext(AbilityContext);
@@ -20,23 +19,22 @@ export default function ShopDetail() {
     data: shop,
     status,
     error,
-  } = useQuery([`shop-${history.id}`], () => shopsAPI.getShop(history.id), {
-    keepPreviousData: true,
-  });
+  } = useQuery(["shop", history.id], () => shopsAPI.getShop(history.id));
 
   const {
-    // status: merchantHistoryStatus,
-    isFetching: isFetchingMerchantHistory,
-    isLoading: isLoadingMerchantHistory,
-    isError: isErrorMerchantHistory,
+    isFetching: isFetchingShopHistory,
+    isLoading: isLoadingShopHistory,
+    isError: isErrorShopHistory,
     error: merchantHistoryError,
     data: merchantHistory,
     items: merchantHistoryItems,
-    handleTableChange: handleMerchantHistoryTableChange,
+    handleTableChange: handleShopHistoryTableChange,
   } = useTableQuery(
     "shop-history",
     (params: any) => auditAPI.getShopsHistory({ guid: history.id, ...params }),
-    10
+    false,
+    10,
+    [history.id]
   );
 
   const historyColumns = useMerchantAuditColumns(ability);
@@ -81,15 +79,15 @@ export default function ShopDetail() {
         </Descriptions>
         <Divider />
 
-        <Text strong>Change history</Text>
+        <h5>Change history</h5>
         <Table
           columns={historyColumns}
-          handleTableChange={handleMerchantHistoryTableChange}
-          isFetching={isFetchingMerchantHistory}
+          handleTableChange={handleShopHistoryTableChange}
+          isFetching={isFetchingShopHistory}
           data={merchantHistory}
           items={merchantHistoryItems}
-          isLoading={isLoadingMerchantHistory}
-          isError={isErrorMerchantHistory}
+          isLoading={isLoadingShopHistory}
+          isError={isErrorShopHistory}
           error={merchantHistoryError}
         />
       </Card>

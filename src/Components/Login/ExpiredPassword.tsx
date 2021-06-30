@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
+import { flushTokenInStore } from "../../redux/modules/auth/actions";
 import { updateUserAccount } from "../../redux/modules/userprofile/actions";
 
 export const ExpiredPassword = () => {
@@ -11,12 +12,9 @@ export const ExpiredPassword = () => {
   const {
     loginGuid,
     isFirstTimeLogin,
-    // isCredentialsExpired,
+    isCredentialsExpired,
     isCredentialsExpires,
   } = useSelector((state: RootStateOrAny) => state.auth);
-
-  const [isCredentialsExpired, setCredentialsExpireAfter] =
-    useLocalStorageState("isCredentialsExpired", "false");
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -33,7 +31,7 @@ export const ExpiredPassword = () => {
   }
 
   function handleClickCloseAfter() {
-    setCredentialsExpireAfter("false");
+    dispatch(flushTokenInStore());
     history.push("/");
   }
 

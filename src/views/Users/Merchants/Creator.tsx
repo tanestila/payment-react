@@ -10,10 +10,9 @@ import { useMemo } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
-import { SuccessModal } from "../../../Components/Common/SuccessModal";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
-import { ErrorModal } from "../../../Components/Common/ErrorModal";
+import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
@@ -33,7 +32,6 @@ export default function Creator({ handleClose }) {
   const { data: currencies } = useQuery(["currencies"], () =>
     currenciesAPI.getCurrencies()
   );
-
   const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups());
 
   const modifiedCurrenciesData = useMemo(() => {
@@ -161,7 +159,7 @@ export default function Creator({ handleClose }) {
             custom_days_limit: values.custom_days_limit,
           };
           await mutation.mutateAsync(data);
-          SuccessModal("Merchant created");
+          SuccessModal("Merchant was created");
           handleClose();
         } catch (error) {
           ErrorModal("Error");
@@ -252,9 +250,9 @@ export default function Creator({ handleClose }) {
             </Col>
           </Row>
           {isSubmitting ? (
-            "lodaing"
+            <Loading />
           ) : (
-            <Button htmlType="submit" type="primary" style={{ float: "right" }}>
+            <Button htmlType="submit" type="primary" className="f-right">
               Submit
             </Button>
           )}

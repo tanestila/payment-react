@@ -58,17 +58,6 @@ export default function usePartnersColumns(ability: AppAbility) {
           />
         ),
       },
-      // {
-      //   title: "Action",
-      //   key: "action",
-
-      //   render: (text: any, record: any) => (
-      //     <Space size="middle">
-      //       <a>Invite {record.name}</a>
-      //       <a>Delete</a>
-      //     </Space>
-      //   ),
-      // },
       ability.can("EXECUTE", "USERPARTNER") && {
         key: "edit",
         align: "center",

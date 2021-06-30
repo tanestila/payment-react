@@ -8,8 +8,9 @@ import { useMemo } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
+import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 
-export default function Editor({ guid }) {
+export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
   const {
     data: merchant,
@@ -27,7 +28,6 @@ export default function Editor({ guid }) {
   const { data: currencies } = useQuery(["currencies"], () =>
     currenciesAPI.getCurrencies()
   );
-
   const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups());
 
   const modifiedCurrenciesData = useMemo(() => {
@@ -40,7 +40,6 @@ export default function Editor({ guid }) {
         }))
       : [];
   }, [currencies]);
-
   const modifiedGroupsData = useMemo(() => {
     return groups
       ? groups.data.map((group) => ({
@@ -56,7 +55,7 @@ export default function Editor({ guid }) {
   return (
     <>
       {status === "loading" || isFetching ? (
-        <>loading</>
+        <Loading />
       ) : (
         <Formik
           initialValues={{
@@ -111,6 +110,7 @@ export default function Editor({ guid }) {
             alert(JSON.stringify(values, null, 2));
             try {
               let data = {
+                guid,
                 merchant_name: values.name,
                 merchant_type: values.type,
                 email: values.email,
@@ -134,17 +134,17 @@ export default function Editor({ guid }) {
                 ).toString(),
                 custom_days_limit: values.custom_days_limit,
               };
-              const todo = await merchantMutation.mutateAsync(data);
-              console.log(todo);
+              await merchantMutation.mutateAsync(data);
+              SuccessModal("Merchant was updated");
+              handleClose();
             } catch (error) {
+              ErrorModal("Error");
               console.log(error);
-            } finally {
-              console.log("done");
             }
             setSubmitting(false);
           }}
         >
-          {({ values, isSubmitting, meta }) => (
+          {({ isSubmitting }) => (
             <Form className="modal-form">
               {error && error}
               <Row>
@@ -191,7 +191,7 @@ export default function Editor({ guid }) {
                 </Col>
               </Row>
               {isSubmitting ? (
-                "lodaing"
+                <Loading />
               ) : (
                 <Button type="primary" style={{ float: "right" }}>
                   Submit
