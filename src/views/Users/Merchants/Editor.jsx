@@ -2,45 +2,56 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
+import { groupsAPI } from "../../../services/queries/management/users/groups";
 
 export default function Editor({ guid }) {
-  // const [error, setError] = useState(false);
-
+  const queryClient = useQueryClient();
   const {
     data: merchant,
     status,
     isFetching,
     error,
-  } = useQuery(["merchant"], () => merchantsAPI.getMerchant(guid), {
-    keepPreviousData: true,
-    refetchOnWindowFocus: false,
+  } = useQuery(["merchant", guid], () => merchantsAPI.getMerchant(guid));
+
+  const merchantMutation = useMutation(merchantsAPI.addMerchant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("merchants");
+    },
   });
 
-  useEffect(() => {
-    console.log("rere");
-  }, []);
-
-  const mutation = useMutation(merchantsAPI.addMerchant);
-
-  const { data: currencies } = useQuery(
-    ["currencies"],
-    () => currenciesAPI.getCurrencies(),
-    {
-      keepPreviousData: true,
-      refetchOnWindowFocus: false,
-    }
+  const { data: currencies } = useQuery(["currencies"], () =>
+    currenciesAPI.getCurrencies()
   );
 
-  const modifiedData = useMemo(() => {
+  const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups());
+
+  const modifiedCurrenciesData = useMemo(() => {
     return currencies
-      ? currencies.data.map((cur) => ({ ...cur, name: cur.code }))
+      ? currencies.data.map((cur) => ({
+          ...cur,
+          name: cur.code,
+          label: cur.code,
+          value: cur.guid,
+        }))
       : [];
   }, [currencies]);
+
+  const modifiedGroupsData = useMemo(() => {
+    return groups
+      ? groups.data.map((group) => ({
+          ...group,
+          name: group.group_name,
+          guid: group.group_guid,
+          label: group.group_name,
+          value: group.group_guid,
+        }))
+      : [];
+  }, [groups]);
 
   return (
     <>
@@ -52,40 +63,18 @@ export default function Editor({ guid }) {
             name: merchant.merchant_name,
             type: merchant.merchant_type,
             monthly_fee: merchant.monthly_fee,
-            monthly_fee_currency: merchant.monthly_fee_currency,
+            monthly_fee_currency: modifiedCurrenciesData.filter(
+              (cur) => merchant.monthly_fee_currency === cur.code
+            )[0],
             monthly_fee_date: merchant.monthly_fee_date,
             monthly_amount_limit: merchant.monthly_amount_limit,
             custom_amount_limit: merchant.custom_amount_limit,
             custom_days_limit: merchant.custom_days_limit,
-            group: merchant.group_name,
+            group: modifiedGroupsData.filter(
+              (group) => merchant.group_guid === group.group_guid
+            )[0],
           }}
           validationSchema={Yup.object({
-            email: Yup.string()
-              .email("Invalid email address")
-              .required("Required"),
-            // .test("email", "Email exists", async (value) => {
-            //   if (
-            //     value &&
-            //     value?.length > 8 &&
-            //     value?.indexOf(".") !== -1 &&
-            //     value?.indexOf("@") !== -1 &&
-            //     prevEmail !== value
-            //   ) {
-            //     try {
-            //       setPrevEmail(value);
-
-            //       const { data: checkResponse } = await usersAPI.checkExists({
-            //         email: value,
-            //       });
-            //       setIsEmailExistEmail(checkResponse.email_exists);
-            //       console.log(!checkResponse.email_exists);
-
-            //       return !checkResponse.email_exists;
-            //     } catch (error) {
-            //       return isEmailExistEmail;
-            //     }
-            //   }
-            // }),
             first_name: Yup.string()
               .max(15, "Must be 15 characters or less")
               .required("Required"),
@@ -130,7 +119,6 @@ export default function Editor({ guid }) {
                 last_name: values.last_name,
                 company_name: values.company_name,
                 company_address: values.company_address,
-                role_guid: values.role?.["guid"],
                 password: values.send_mail ? undefined : values.password,
                 send_mail: values.send_mail ? 1 : 0,
                 language: values.language,
@@ -146,7 +134,7 @@ export default function Editor({ guid }) {
                 ).toString(),
                 custom_days_limit: values.custom_days_limit,
               };
-              const todo = await mutation.mutateAsync(data);
+              const todo = await merchantMutation.mutateAsync(data);
               console.log(todo);
             } catch (error) {
               console.log(error);
@@ -158,6 +146,7 @@ export default function Editor({ guid }) {
         >
           {({ values, isSubmitting, meta }) => (
             <Form className="modal-form">
+              {error && error}
               <Row>
                 <Col>
                   <Field name="name" type="text" label="Merchant name*" />
@@ -183,7 +172,7 @@ export default function Editor({ guid }) {
                   <Field
                     name="monthly_fee_currency"
                     inputType="select"
-                    options={modifiedData}
+                    options={modifiedCurrenciesData}
                     label="Monthly fee currency*"
                   />
                   <Field
@@ -193,10 +182,21 @@ export default function Editor({ guid }) {
                     inputType="date-single"
                     tip="From this date begins the payment of monthly fee."
                   />
-                  <Field name="group" type="text" label="Group" />
+                  <Field
+                    name="group"
+                    inputType="select"
+                    options={modifiedGroupsData}
+                    label="Group"
+                  />
                 </Col>
               </Row>
-              {isSubmitting ? "lodaing" : <Button>Submit</Button>}
+              {isSubmitting ? (
+                "lodaing"
+              ) : (
+                <Button type="primary" style={{ float: "right" }}>
+                  Submit
+                </Button>
+              )}
             </Form>
           )}
         </Formik>

@@ -29,4 +29,11 @@ export const partnersAPI = {
     });
     return data;
   },
+  addPartnerLogin: async ({ guid, body }) => {
+    let { data } = await managementService.post(
+      `partners/${guid}/logins`,
+      body
+    );
+    return data;
+  },
 };

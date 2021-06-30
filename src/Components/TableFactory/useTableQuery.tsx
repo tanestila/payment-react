@@ -13,7 +13,8 @@ export default function useTableQuery(
   entity: string,
   method: Function,
   isMain: boolean,
-  itemsDefault?: number
+  itemsDefault?: number,
+  entityArgs: Array<string> = []
 ) {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
@@ -57,7 +58,7 @@ export default function useTableQuery(
     // isPreviousData,
   } = useQuery(
     // <IResponse<MerchantType>, Error>
-    [entity, page, items, sortField, sortOrder, search],
+    [entity, ...entityArgs, page, items, sortField, sortOrder, search],
     () =>
       method({
         page,

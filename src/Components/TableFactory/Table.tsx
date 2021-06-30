@@ -41,6 +41,7 @@ TablePropsType) {
         <span>Error: {error && error.message}</span>
       ) : (
         <Table
+          style={{ overflow: "auto" }}
           dataSource={isPaginated ? data.data : data}
           columns={columns.map((col) => ({ ...col, sorter: false }))}
           size="small"

@@ -29,4 +29,8 @@ export const groupsAPI = {
     });
     return data;
   },
+  addGroupLogin: async ({ guid, body }) => {
+    let { data } = await managementService.post(`groups/${guid}/logins`, body);
+    return data;
+  },
 };

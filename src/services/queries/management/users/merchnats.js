@@ -21,4 +21,11 @@ export const merchantsAPI = {
     let { data } = await managementService.post("users/merchants", body);
     return data;
   },
+  addMerchantLogin: async ({ guid, body }) => {
+    let { data } = await managementService.post(
+      `merchants/${guid}/logins`,
+      body
+    );
+    return data;
+  },
 };

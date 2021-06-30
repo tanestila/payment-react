@@ -13,6 +13,7 @@ import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { SuccessModal } from "../../../Components/Common/SuccessModal";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
+import { ErrorModal } from "../../../Components/Common/ErrorModal";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
@@ -26,24 +27,14 @@ export default function Creator({ handleClose }) {
   const { run: checkEmail } = useCheckEmailExist();
   const { run: checkPhone } = useCheckPhoneExist();
 
-  const { data: roles } = useQuery(
-    ["roles"],
-    () => rolesAPI.getRoles({ type: "merchant" }),
-    {
-      keepPreviousData: true,
-    }
+  const { data: roles } = useQuery(["roles"], () =>
+    rolesAPI.getRoles({ type: "merchant" })
   );
-  const { data: currencies } = useQuery(
-    ["currencies"],
-    () => currenciesAPI.getCurrencies(),
-    {
-      keepPreviousData: true,
-    }
+  const { data: currencies } = useQuery(["currencies"], () =>
+    currenciesAPI.getCurrencies()
   );
 
-  const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups(), {
-    keepPreviousData: true,
-  });
+  const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups());
 
   const modifiedCurrenciesData = useMemo(() => {
     return currencies
@@ -60,8 +51,6 @@ export default function Creator({ handleClose }) {
         }))
       : [];
   }, [groups]);
-
-  SuccessModal("Merchant created");
 
   return (
     <Formik
@@ -85,7 +74,7 @@ export default function Creator({ handleClose }) {
         enabled: true,
         send_mail: true,
         password: "",
-        group: "",
+        group: null,
       }}
       validationSchema={Yup.object({
         email: Yup.string()
@@ -99,7 +88,7 @@ export default function Creator({ handleClose }) {
               value?.indexOf("@") !== -1
             ) {
               const res = await checkEmail(value);
-              return res;
+              return !!res;
             }
             return true;
           }),
@@ -130,7 +119,7 @@ export default function Creator({ handleClose }) {
           .test("phoneExist", "Phone exists", async (value) => {
             if (value && value?.length > 5) {
               const res = await checkPhone(value);
-              return res;
+              return !!res;
             }
             return true;
           }),
@@ -146,7 +135,6 @@ export default function Creator({ handleClose }) {
           .required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
-        alert(JSON.stringify(values, null, 2));
         try {
           let data = {
             merchant_name: values.name,
@@ -172,10 +160,11 @@ export default function Creator({ handleClose }) {
             custom_amount_limit: (+values.custom_amount_limit * 100).toString(),
             custom_days_limit: values.custom_days_limit,
           };
-          const todo = await mutation.mutateAsync(data);
+          await mutation.mutateAsync(data);
           SuccessModal("Merchant created");
           handleClose();
         } catch (error) {
+          ErrorModal("Error");
           console.log(error);
         }
         setSubmitting(false);

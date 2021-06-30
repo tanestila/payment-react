@@ -12,7 +12,7 @@ import { ErrorModal } from "../../../Components/Common/ErrorModal";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 
-export const LoginCreator = ({ handleClose, guid, type }) => {
+export const AccountCreator = ({ handleClose, guid, type }) => {
   const queryClient = useQueryClient();
 
   const merchantMutation = useMutation(merchantsAPI.addMerchantLogin, {

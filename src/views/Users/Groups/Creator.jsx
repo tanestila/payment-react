@@ -2,17 +2,43 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { rolesAPI } from "../../../services/queries/management/roles";
+import { groupsAPI } from "../../../services/queries/management/users/groups";
+import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
+import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
+import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { useMemo } from "react";
 
 export default function Creator() {
-  const { data: roles } = useQuery(
-    ["roles"],
-    () => rolesAPI.getRoles({ type: "group" }),
-    {
-      keepPreviousData: true,
-    }
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation(groupsAPI.addMerchant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("merchants");
+    },
+  });
+
+  const { run: checkEmail } = useCheckEmailExist();
+  const { run: checkPhone } = useCheckPhoneExist();
+
+  const { data: roles } = useQuery(["roles"], () =>
+    rolesAPI.getRoles({ type: "group" })
   );
+
+  const { data: partners } = useQuery(["partners"], () =>
+    partnersAPI.getPartners()
+  );
+
+  const modifiedPartnersData = useMemo(() => {
+    return partners
+      ? partners.data.map((group) => ({
+          ...group,
+          name: group.group_name,
+          guid: group.group_guid,
+        }))
+      : [];
+  }, [partners]);
 
   return (
     <Formik

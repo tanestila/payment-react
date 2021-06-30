@@ -19,10 +19,11 @@ export const LoginAudit = ({ guid }) => {
     items,
     handleTableChange,
   } = useTableQuery(
-    `login-audit-${guid}`,
+    `login-audit`,
     () => auditAPI.getLoginsHistory({ guid }),
     false,
-    10
+    10,
+    [guid]
   );
   const loginsColumns = useLoginsAuditColumns(ability);
   return (

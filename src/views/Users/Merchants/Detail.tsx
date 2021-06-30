@@ -1,4 +1,4 @@
-import { Card, Descriptions, Divider, Button, Row } from "antd";
+import { Card, Descriptions, Divider, Button, Row, Progress } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -30,7 +30,7 @@ export default function MerchantDetail() {
     status,
     error,
   } = useQuery(
-    [`merchant-${history.id}`],
+    [`merchant`, history.id],
     () => merchantsAPI.getMerchant(history.id),
     {
       keepPreviousData: true,
@@ -38,7 +38,6 @@ export default function MerchantDetail() {
   );
 
   const {
-    // status: loginsStatus,
     isFetching: isFetchingLogins,
     isLoading: isLoadingLogins,
     isError: isErrorLogins,
@@ -47,14 +46,14 @@ export default function MerchantDetail() {
     items: loginsItems,
     handleTableChange: handleLoginsTableChange,
   } = useTableQuery(
-    `merchant-logins-${history.id}`,
+    "merchant-logins",
     () => merchantsAPI.getMerchantLogins(history.id, {}),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: accountsStatus,
     isFetching: isFetchingAccounts,
     isLoading: isLoadingAccounts,
     isError: isErrorAccounts,
@@ -63,14 +62,14 @@ export default function MerchantDetail() {
     items: accountsItems,
     handleTableChange: handleAccountsTableChange,
   } = useTableQuery(
-    `accounts-${history.id}`,
+    "accounts",
     () => accountsAPI.getAccounts(history.id, {}),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: terminalsStatus,
     isFetching: isFetchingTerminals,
     isLoading: isLoadingTerminals,
     isError: isErrorTerminals,
@@ -79,14 +78,14 @@ export default function MerchantDetail() {
     items: terminalsItems,
     handleTableChange: handleTerminalsTableChange,
   } = useTableQuery(
-    `terminals-${history.id}`,
+    "terminals",
     () => terminalsAPI.getTerminals({ merchant_guid: history.id }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: shopsStatus,
     isFetching: isFetchingShops,
     isLoading: isLoadingShops,
     isError: isErrorShops,
@@ -95,14 +94,14 @@ export default function MerchantDetail() {
     items: shopsItems,
     handleTableChange: handleShopsTableChange,
   } = useTableQuery(
-    `shops-${history.id}`,
+    "shops",
     () => shopsAPI.getShops({ merchant_guid: history.id }),
     false,
-    10
+    10,
+    [history.id]
   );
 
   const {
-    // status: merchantHistoryStatus,
     isFetching: isFetchingMerchantHistory,
     isLoading: isLoadingMerchantHistory,
     isError: isErrorMerchantHistory,
@@ -111,13 +110,14 @@ export default function MerchantDetail() {
     items: merchantHistoryItems,
     handleTableChange: handleMerchantHistoryTableChange,
   } = useTableQuery(
-    `merchant-history-${history.id}`,
+    "merchant-history",
     () => auditAPI.getMerchantsHistory({ guid: history.id }),
     false,
-    10
+    10,
+    [history.id]
   );
 
-  const loginsColumns = useLoginColumns(ability);
+  const loginsColumns = useLoginColumns(ability, "merchant", history.id);
 
   const accountsColumns = useAccountsColumns(ability);
 
@@ -139,8 +139,12 @@ export default function MerchantDetail() {
   return (
     <>
       <Card title={`Merchant detail ${merchant.merchant_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
-          <Descriptions.Item span={3} label="GUID">
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
+          <Descriptions.Item label="GUID">
             {merchant.merchant_guid}
           </Descriptions.Item>
           <Descriptions.Item label="Merchant type">
@@ -155,12 +159,23 @@ export default function MerchantDetail() {
           <Descriptions.Item label="Monthly limit">
             {merchant.monthly_amount_limit}
           </Descriptions.Item>
+          <Descriptions.Item label="Custom limit">
+            {merchant.custom_days_limit > 0 ? (
+              <span>
+                {merchant.custom_amount_limit} per {merchant.custom_days_limit}{" "}
+                days
+              </span>
+            ) : (
+              "Disabled"
+            )}
+          </Descriptions.Item>
           <Descriptions.Item label="Monthly fee date">
             {formatDate(merchant.monthly_fee_date)}
           </Descriptions.Item>
           <Descriptions.Item label="Monthly fee">
             {merchant.monthly_fee} {merchant.monthly_fee_currency}
           </Descriptions.Item>
+
           <Descriptions.Item label="Created at">
             {formatDate(merchant.created_at)}
           </Descriptions.Item>
@@ -174,6 +189,41 @@ export default function MerchantDetail() {
             {merchant.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
+
+        <Descriptions
+          column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
+          <Descriptions.Item label="Used amount limit">
+            <Row>
+              {merchant.used_amount}
+              {" (" + merchant.used_percent + "%)"}
+            </Row>
+            <Row>
+              <Progress percent={merchant.used_percent} size="small" />
+            </Row>
+          </Descriptions.Item>
+          <Descriptions.Item label="Available amount limit">
+            {merchant.unused_amount}
+            {" (" + merchant.unused_percent + "%)"}
+          </Descriptions.Item>
+
+          <Descriptions.Item label="Used custom amount limit">
+            <Row>
+              {merchant.used_custom_amount}
+              {" (" + merchant.used_custom_percent + "%)"}
+            </Row>
+            <Row>
+              <Progress percent={merchant.used_custom_percent} size="small" />
+            </Row>
+          </Descriptions.Item>
+          <Descriptions.Item label="Available custom amount limit">
+            {merchant.unused_custom_amount}
+            {" (" + merchant.unused_custom_percent + "%)"}
+          </Descriptions.Item>
+        </Descriptions>
+
         <Divider />
         <h5>Logins</h5>
         <Table
@@ -187,16 +237,14 @@ export default function MerchantDetail() {
           error={loginsError}
         />
         <Row justify="center">
-          {/* <Button style={{ margin: "10px auto" }}>Add login</Button> */}
           <CustomModal
             header="Create Login"
             content={LoginCreator}
-            contentProps={{ guid: merchant.merchant_guid }}
+            contentProps={{ guid: merchant.merchant_guid, type: "merchant" }}
             button={<Button>Add login</Button>}
             // dialogClassName="modal-creator"
           />
         </Row>
-
         <Divider />
         <h5>Accounts</h5>
         <Table
@@ -211,7 +259,6 @@ export default function MerchantDetail() {
           isPaginated={false}
         />
         <Row justify="center">
-          {/* <Button style={{ margin: "10px auto" }}>Add accounts</Button> */}
           <CustomModal
             header="Create account"
             content={LoginCreator}
@@ -244,19 +291,20 @@ export default function MerchantDetail() {
           isError={isErrorShops}
           error={shopsError}
         />
-
         <Divider />
         <h5>Change history</h5>
-        <Table
-          columns={historyColumns}
-          handleTableChange={handleMerchantHistoryTableChange}
-          isFetching={isFetchingMerchantHistory}
-          data={merchantHistory}
-          items={merchantHistoryItems}
-          isLoading={isLoadingMerchantHistory}
-          isError={isErrorMerchantHistory}
-          error={merchantHistoryError}
-        />
+        <div>
+          <Table
+            columns={historyColumns}
+            handleTableChange={handleMerchantHistoryTableChange}
+            isFetching={isFetchingMerchantHistory}
+            data={merchantHistory}
+            items={merchantHistoryItems}
+            isLoading={isLoadingMerchantHistory}
+            isError={isErrorMerchantHistory}
+            error={merchantHistoryError}
+          />
+        </div>
       </Card>
     </>
   );

@@ -14,7 +14,14 @@ import "./assets/css/icon.css";
 import "./assets/css/gotham.css";
 import "@sweetalert2/theme-bootstrap-4";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>

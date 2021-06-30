@@ -4,9 +4,11 @@ import { Button } from "antd";
 import { AppAbility } from "../../../Components/Common/Can";
 import Editor from "../../../views/Users/Merchants/Editor";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
+import { LoginAudit } from "../../../views/Users/Common/LoginAudit";
+import { LoginEditor } from "../../../views/Users/Common/LoginEditor";
 
 //TODO: add login type
-export default function useLoginColumns(ability: AppAbility) {
+export default function useLoginColumns(ability: AppAbility, type, guid) {
   return useMemo(
     () => [
       {
@@ -67,9 +69,9 @@ export default function useLoginColumns(ability: AppAbility) {
         align: "center",
         render: (cellInfo: any) => (
           <CustomModal
-            header="Edit merchant"
-            content={Editor}
-            contentProps={{ guid: cellInfo.merchant_guid }}
+            header="Login history"
+            content={LoginAudit}
+            contentProps={{ guid: cellInfo.guid }}
             button={<Button className="btn-table">Show</Button>}
             // dialogClassName="modal-creator"
           />
@@ -81,9 +83,13 @@ export default function useLoginColumns(ability: AppAbility) {
         align: "center",
         render: (cellInfo: any) => (
           <CustomModal
-            header="Edit merchant"
-            content={Editor}
-            contentProps={{ guid: cellInfo.merchant_guid }}
+            header="Edit login"
+            content={LoginEditor}
+            contentProps={{
+              guid,
+              type,
+              login: cellInfo,
+            }}
             button={
               <i
                 className="icon-edit icon gray"
