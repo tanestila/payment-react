@@ -4,44 +4,69 @@ export default function useLoginsAuditColumns(ability) {
   return useMemo(
     () => [
       {
-        title: "Name",
-        dataIndex: "name",
-        key: "name",
-      },
-      {
-        title: "Type",
-        dataIndex: "type",
-        key: "type",
-      },
-      {
-        title: "Group",
-        dataIndex: "group_name",
-        key: "group_name",
-      },
-      {
-        title: "Connection fee",
-        dataIndex: "connection_fee",
-        key: "connection_fee",
-      },
-      {
-        title: "Monthly fee",
-        dataIndex: "monthly_fee",
-        key: "monthly_fee",
-      },
-      {
-        title: "Monthly amount limit",
-        dataIndex: "monthly_amount_limit",
-        key: "monthly_amount_limit",
-      },
-      {
-        title: "Merchant period limit",
-        dataIndex: "custom_days_limit",
-        key: "custom_days_limit",
-      },
-      {
         title: "Time",
         dataIndex: "time",
         key: "time",
+      },
+      {
+        title: "Guid",
+        dataIndex: "guid",
+        key: "guid",
+      },
+      {
+        title: "Username",
+        dataIndex: "username",
+        key: "username",
+      },
+      {
+        title: "Auth type ",
+        dataIndex: "auth_type",
+        key: "auth_type",
+      },
+      {
+        title: "Company address ",
+        dataIndex: "company_address",
+        key: "company_address",
+      },
+      {
+        title: "Company name",
+        dataIndex: "company_name",
+        key: "company_name",
+      },
+      {
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+      },
+      {
+        title: "Phone",
+        dataIndex: "phone",
+        key: "phone",
+      },
+      {
+        title: "First name",
+        dataIndex: "first_name",
+        key: "first_name",
+      },
+      {
+        title: "Last name",
+        dataIndex: "last_name",
+        key: "last_name",
+      },
+      {
+        title: "Enabled",
+        dataIndex: "enabled",
+        key: "enabled",
+      },
+      {
+        title: "Language",
+        dataIndex: "language",
+        key: "language",
+      },
+      {
+        title: "Locked",
+        dataIndex: "locked",
+        key: "locked",
       },
       {
         title: "Reason",

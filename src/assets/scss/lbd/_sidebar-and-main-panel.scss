@@ -28,7 +28,7 @@ body > .navbar-collapse {
     // overflow: auto;
     // width: 260px;
     z-index: 4;
-    padding-bottom: 100px;
+    // padding-bottom: 100px;
   }
 
   .logo {
@@ -409,7 +409,7 @@ body > .navbar-collapse {
   }
 
   &:after {
-    @include icon-gradient($new-purple, $purple-color-bottom);
+    // @include icon-gradient($new-purple, $purple-color-bottom);
     z-index: 3;
     opacity: 1;
   }
@@ -418,9 +418,10 @@ body > .navbar-collapse {
   &.has-image:after {
     opacity: 0.77;
   }
-
+  &[data-color="black"] .nav,
   &[data-color="black"]:after {
-    @include icon-gradient($default-states-color, $default-states-color);
+    background-color: $default-states-color;
+    // @include icon-gradient($default-states-color, $default-states-color);
   }
   &[data-color="black"] {
     .logo.slideOut {
@@ -442,8 +443,10 @@ body > .navbar-collapse {
       color: $white-color;
     }
   }
+  &[data-color="blue"] .nav,
   &[data-color="blue"]:after {
-    @include icon-gradient($new-dark-blue, $blue-color-bottom);
+    background-color: $new-dark-blue;
+    // @include icon-gradient($new-dark-blue, $blue-color-bottom);
   }
   &[data-color="blue"] {
     .logo.slideOut {
@@ -465,8 +468,10 @@ body > .navbar-collapse {
       color: $blue-color-icon;
     }
   }
+  &[data-color="azure"] .nav,
   &[data-color="azure"]:after {
-    @include icon-gradient($new-blue, $azure-color-bottom);
+    background-color: $new-blue;
+    // @include icon-gradient($new-blue, $azure-color-bottom);
   }
   &[data-color="azure"] {
     .logo.slideOut {
@@ -488,8 +493,10 @@ body > .navbar-collapse {
       color: $azure-color-bottom;
     }
   }
+  &[data-color="green"] .nav,
   &[data-color="green"]:after {
-    @include icon-gradient($new-green, $green-color-bottom);
+    background-color: $new-green;
+    // @include icon-gradient($new-green, $green-color-bottom);
   }
   &[data-color="green"] {
     .logo.slideOut {
@@ -511,8 +518,10 @@ body > .navbar-collapse {
       color: $success-states-color;
     }
   }
+  &[data-color="orange"] .nav,
   &[data-color="orange"]:after {
-    @include icon-gradient($new-orange, $orange-color-bottom);
+    background-color: $new-orange;
+    // @include icon-gradient($new-orange, $orange-color-bottom);
   }
   &[data-color="orange"] {
     .logo.slideOut {
@@ -534,8 +543,10 @@ body > .navbar-collapse {
       color: $orange-color-bottom;
     }
   }
+  &[data-color="red"] .nav,
   &[data-color="red"]:after {
-    @include icon-gradient($new-red, $red-color-bottom);
+    background-color: $new-red;
+    // @include icon-gradient($new-red, $red-color-bottom);
   }
   &[data-color="red"] {
     .logo.slideOut {
@@ -557,8 +568,10 @@ body > .navbar-collapse {
       color: $red-color-bottom;
     }
   }
+  &[data-color="purple"] .nav,
   &[data-color="purple"]:after {
-    @include icon-gradient($new-purple, $purple-color-bottom);
+    background-color: $new-purple;
+    // @include icon-gradient($new-purple, $purple-color-bottom);
   }
   &[data-color="purple"] {
     .logo.slideOut {

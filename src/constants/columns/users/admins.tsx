@@ -88,3 +88,42 @@ export default function useAdminsColumns(ability: AppAbility) {
     [ability]
   );
 }
+
+export function useAdminRolesColumns(ability: AppAbility) {
+  return useMemo(
+    () => [
+      {
+        title: "Name",
+        dataIndex: "name",
+        key: "name",
+        render: (text: string, record: AdminType) => (
+          <Link className="link" to={`/about/admin/${record.guid}`}>
+            {text}
+          </Link>
+        ),
+      },
+      {
+        title: "Type",
+        dataIndex: "type",
+        key: "type",
+      },
+      {
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+      },
+      ability.can("DELETE", "ADMINROLES") && {
+        key: "delete",
+        align: "center",
+        render: (text: string, record: AdminType) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.guid)}
+          />
+        ),
+      },
+    ],
+    [ability]
+  );
+}

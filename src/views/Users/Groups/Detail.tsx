@@ -16,9 +16,7 @@ import { auditAPI } from "../../../services/queries/audit";
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
-  useShopsColumns,
-  useMerchantAuditColumns,
-  useGroupsMerchantsColumns,
+  useGroupMerchantsColumns,
 } from "../../../constants/columns";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { formatDate } from "../../../helpers/formatDate";
@@ -26,6 +24,8 @@ import { Loading } from "../../../Components/Common";
 import CustomModal from "../../../Components/Common/Modal";
 import { LoginCreator } from "../Common/LoginCreator";
 import { RowAddUser } from "../Common/RowAddUser";
+import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
+import useGroupsAuditColumns from "../../../constants/columns/history/groups";
 
 export default function GroupDetail() {
   const ability = useContext(AbilityContext);
@@ -101,10 +101,10 @@ export default function GroupDetail() {
     [history.id]
   );
 
-  const merchantsColumns = useGroupsMerchantsColumns(ability);
+  const merchantsColumns = useGroupMerchantsColumns(ability);
   const loginsColumns = useLoginColumns(ability, "group", history.id);
-  const historyColumns = useMerchantAuditColumns(ability);
-  const shopsColumns = useShopsColumns(ability);
+  const historyColumns = useGroupsAuditColumns(ability);
+  const shopsColumns = useShopsColumnsForDetail(ability);
 
   if (status === "loading") {
     return <Loading />;
@@ -158,9 +158,9 @@ export default function GroupDetail() {
             {group.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
+        <Divider />
         <Descriptions
           column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-          bordered
           size="small"
         >
           <Descriptions.Item label="Used amount limit">
@@ -212,7 +212,7 @@ export default function GroupDetail() {
             header="Create login"
             content={LoginCreator}
             contentProps={{ guid: group.group_guid, type: "group" }}
-            button={<Button>Add account</Button>}
+            button={<Button>Add login</Button>}
             // dialogClassName="modal-creator"
           />
         </Row>

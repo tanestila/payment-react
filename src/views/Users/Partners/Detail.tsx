@@ -17,6 +17,7 @@ import { Loading } from "../../../Components/Common";
 import CustomModal from "../../../Components/Common/Modal";
 import { LoginCreator } from "../Common/LoginCreator";
 import { RowAddUser } from "../Common/RowAddUser";
+import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
 
 export default function PartnerDetail() {
   const ability = useContext(AbilityContext);
@@ -96,7 +97,7 @@ export default function PartnerDetail() {
   );
 
   const loginsColumns = useLoginColumns(ability, "partner", history.id);
-  const shopsColumns = useShopsColumns(ability);
+  const shopsColumns = useShopsColumnsForDetail(ability);
   const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
@@ -154,7 +155,9 @@ export default function PartnerDetail() {
           isError={isErrorGroups}
           error={groupsError}
         />
-        <RowAddUser type="partner" guid={partner.partner_guid} />
+        <Row justify="center">
+          <RowAddUser type="partner" guid={partner.partner_guid} />
+        </Row>
         <Divider />
         <h5>Logins</h5>
         <Table

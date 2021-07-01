@@ -7,7 +7,7 @@ export { default as useGroupsColumns } from "./users/groups";
 export { default as usePartnersColumns } from "./users/partners";
 export { default as useAdminsColumns } from "./users/admins";
 export { default as useCurrenciesColumns } from "./system/currencies";
-export { useGroupsMerchantsColumns } from "./users/groups";
+export { useGroupMerchantsColumns } from "./users/groups";
 export { default as useLoginsAuditColumns } from "./history/logins";
 export { default as useMerchantAuditColumns } from "./history/merchants";
 export { default as useGatewaysAuditColumns } from "./history/gateways";

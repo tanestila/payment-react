@@ -73,7 +73,7 @@ export default function useLoginColumns(ability: AppAbility, type, guid) {
             content={LoginAudit}
             contentProps={{ guid: cellInfo.guid }}
             button={<Button className="btn-table">Show</Button>}
-            // dialogClassName="modal-creator"
+            dialogClassName="modal-creator"
           />
         ),
       },

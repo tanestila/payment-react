@@ -1,4 +1,4 @@
-import { Alert, Card, Descriptions, Divider } from "antd";
+import { Alert, Card, Descriptions, Divider, Row } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -10,7 +10,8 @@ import { useLoginsAuditColumns } from "../../../constants/columns";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
-
+import { useAdminRolesColumns } from "../../../constants/columns/users/admins";
+import { RowAddRole } from "../Common/RowAddRole";
 export default function AdminDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
@@ -20,6 +21,22 @@ export default function AdminDetail() {
     status,
     error,
   } = useQuery(["admin", history.id], () => adminsAPI.getAdmin(history.id));
+
+  const {
+    isFetching: isFetchingAdminRoles,
+    isLoading: isLoadingAdminRoles,
+    isError: isErrorAdminRoles,
+    error: adminRolesError,
+    data: adminRoles,
+    items: adminRolesItems,
+    handleTableChange: handleAdminRolesTableChange,
+  } = useTableQuery(
+    "admin-roles",
+    (params: any) => adminsAPI.getAdminRoles(history.id),
+    false,
+    10,
+    [history.id]
+  );
 
   const {
     isFetching: isFetchingAdminHistory,
@@ -38,6 +55,7 @@ export default function AdminDetail() {
   );
 
   const historyColumns = useLoginsAuditColumns(ability);
+  const rolesColumns = useAdminRolesColumns(ability);
 
   if (status === "loading") {
     return <Loading />;
@@ -57,19 +75,27 @@ export default function AdminDetail() {
 
   return (
     <>
-      <Card title={`Admin detail ${admin.group_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
-          <Descriptions.Item span={3} label="GUID">
-            {admin.group_guid}
+      <Card title={`Admin detail ${admin.username}`}>
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
+          <Descriptions.Item label="GUID">{admin.guid}</Descriptions.Item>
+          <Descriptions.Item label="Username">
+            {admin.username}
           </Descriptions.Item>
-          <Descriptions.Item label="Group type">
-            {admin.group_type}
+          <Descriptions.Item label="First name">
+            {admin.first_name}
           </Descriptions.Item>
-          <Descriptions.Item label="Group name">
-            {admin.group_name}
+          <Descriptions.Item label="Last name">
+            {admin.last_name}
           </Descriptions.Item>
-          <Descriptions.Item label="Partner">
-            {admin.partner_name}
+          <Descriptions.Item label="Email">{admin.email}</Descriptions.Item>
+          <Descriptions.Item label="Phone">{admin.phone}</Descriptions.Item>
+
+          <Descriptions.Item label="Credentials expire at">
+            {formatDate(admin.credentials_expire_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
             {formatDate(admin.created_at)}
@@ -85,7 +111,23 @@ export default function AdminDetail() {
           </Descriptions.Item>
         </Descriptions>
         <Divider />
-        Roles
+
+        <h5>Roles</h5>
+        <Table
+          columns={rolesColumns}
+          handleTableChange={handleAdminRolesTableChange}
+          isFetching={isFetchingAdminRoles}
+          data={adminRoles}
+          items={adminRolesItems}
+          isLoading={isLoadingAdminRoles}
+          isError={isErrorAdminRoles}
+          error={adminRolesError}
+          isPaginated={false}
+        />
+        <Row justify="center">
+          <RowAddRole type="admin" guid={history.id} />
+        </Row>
+        <Divider />
         <h5>Change history</h5>
         <Table
           columns={historyColumns}

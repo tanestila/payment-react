@@ -43,3 +43,5 @@ export { default as BlacklistRules } from "./Security/BlacklistRules";
 export { default as GlobalBlacklist } from "./Security/GlobalBlacklist";
 export { default as MerchantBlacklist } from "./Security/MerchantBlacklist";
 export { default as RolesAndPrivileges } from "./Security/RolesAdPrivileges";
+export { default as BasicReport } from "./Reports/Basic";
+export { default as DailyReport } from "./Reports/Daily";

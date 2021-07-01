@@ -11,4 +11,14 @@ export const templatesAPI = {
     let { data } = await managementService.get(`transactions/${guid}`);
     return data;
   },
+  getTemplateSteps: async (guid, args) => {
+    let { data } = await managementService.get(`transactions/${guid}/steps`, {
+      params: { ...args },
+    });
+    return data;
+  },
+  getStepParams: async (guid) => {
+    let { data } = await managementService.get(`/steps/${guid}/params`);
+    return data;
+  },
 };

@@ -102,7 +102,7 @@ export default function useGroupsColumns(ability: AppAbility) {
   );
 }
 
-export function useGroupsMerchantsColumns(ability: AppAbility) {
+export function useGroupMerchantsColumns(ability: AppAbility) {
   return useMemo(
     () => [
       {
@@ -123,6 +123,18 @@ export function useGroupsMerchantsColumns(ability: AppAbility) {
         key: "merchant_type",
         sorter: true,
         search: "text",
+      },
+      ability.can("DELETE", "USERMERCHANT") && {
+        title: "",
+        key: "delete",
+        align: "center",
+        render: (text: string, record: GroupType) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.group_guid)}
+          />
+        ),
       },
     ],
     [ability]

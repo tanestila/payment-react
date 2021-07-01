@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
+import { Redirect } from "react-router-dom";
 import { flushTokenInStore } from "../../redux/modules/auth/actions";
 import { updateUserAccount } from "../../redux/modules/userprofile/actions";
 
@@ -58,7 +59,8 @@ export const ExpiredPassword = () => {
       setPasswordError(error.message);
     }
   };
-
+  if (!isCredentialsExpired && !isCredentialsExpires)
+    return <Redirect to="/login" />;
   return (
     <div className="login-page">
       <div className="login-card">

@@ -41,8 +41,10 @@ import {
   MerchantBlacklist,
   UsersAudit,
   RolesAndPrivileges,
+  BasicReport,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
+import TemplatesDetail from "../views/Transactions/Templates/Detail";
 
 export const adminRoutes = [
   {
@@ -199,7 +201,7 @@ export const adminRoutes = [
         path: "/report/basic",
         name: "Basic Report",
         alias: "REPORT_RATES",
-        component: Currencies,
+        component: BasicReport,
       },
       {
         path: "/report/transaction_and_commission",
@@ -419,6 +421,14 @@ export const adminNonNav = [
     path: "/about/processing/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
     component: ProcessingDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Template detailed",
+    path: "/about/template/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: TemplatesDetail,
   },
 ];
 

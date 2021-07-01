@@ -11,6 +11,12 @@ export const shopsAPI = {
     let { data } = await managementService.get(`shops/${guid}`);
     return data;
   },
+  getShopTerminals: async (guid, args) => {
+    let { data } = await managementService.get(`shops/${guid}/terminals`, {
+      params: { ...args },
+    });
+    return data;
+  },
   addShop: async (body) => {
     let { data } = await managementService.post("shops", body);
     return data;

@@ -4,6 +4,7 @@ import CustomModal from "../../Components/Common/Modal";
 import { Link } from "react-router-dom";
 import { ShopType } from "../../types/shops";
 import Editor from "../../views/Shops/Editor";
+import { DeleteModal } from "../../Components/Common/DeleteModal";
 
 export default function useShopsColumns(ability: AppAbility) {
   return useMemo(
@@ -55,19 +56,7 @@ export default function useShopsColumns(ability: AppAbility) {
           />
         ),
       },
-      // {
-      //   title: "Action",
-      //   key: "action",
-
-      //   render: (text: any, record: any) => (
-      //     <Space size="middle">
-      //       <a>Invite {record.name}</a>
-      //       <a>Delete</a>
-      //     </Space>
-      //   ),
-      // },
       ability.can("EXECUTE", "USERMERCHANT") && {
-        title: "Edit",
         key: "edit",
         align: "center",
         render: (text: string, record: ShopType) => (
@@ -86,10 +75,71 @@ export default function useShopsColumns(ability: AppAbility) {
         ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
-        title: "Delete",
+        title: "",
         key: "delete",
         align: "center",
-        render: () => <span>delete</span>,
+        render: (text: string, record: any) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(() => {}, record.merchant_guid)}
+          />
+        ),
+      },
+    ],
+    [ability]
+  );
+}
+
+export function useShopsColumnsForDetail(ability: AppAbility) {
+  return useMemo(
+    () => [
+      {
+        title: "Merchant name",
+        dataIndex: "merchant_name",
+        key: "merchant_name",
+        sorter: true,
+        search: "text",
+        render: (text: string, record: ShopType) => (
+          <Link className="link" to={`/about/merchant/${record.merchant_guid}`}>
+            {text}
+          </Link>
+        ),
+      },
+      {
+        title: "Shop name",
+        dataIndex: "name",
+        key: "name",
+        sorter: true,
+        search: "text",
+        render: (text: string, record: ShopType) => (
+          <Link className="link" to={`/about/shop/${record.guid}`}>
+            {text}
+          </Link>
+        ),
+      },
+      {
+        title: "Terminal count",
+        dataIndex: "terminal_count",
+        key: "terminal_count",
+        sorter: true,
+        search: "text",
+      },
+      {
+        title: "Status",
+        dataIndex: "enabled",
+        key: "enabled",
+        search: "bool",
+        align: "center",
+        render: (text: string, record: ShopType) => (
+          <i
+            className={
+              record.enabled
+                ? "icon-success green icon"
+                : "icon-failed red icon"
+            }
+          />
+        ),
       },
     ],
     [ability]

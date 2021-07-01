@@ -1,4 +1,4 @@
-const BasicReport = () => {
+const DailyReport = () => {
   return (
     <>
       Report Form TransactionsMain PassabilityMain CurrencyMain
@@ -6,4 +6,4 @@ const BasicReport = () => {
     </>
   );
 };
-export default BasicReport;
+export default DailyReport;

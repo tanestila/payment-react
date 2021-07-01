@@ -17,7 +17,7 @@ export default function useTransactionTemplatesColumns() {
         render: (text: any, record: any) => (
           <>
             <Copy text={text} />
-            <Link className="link" to={`/about/processing/${text}`}>
+            <Link className="link" to={`/about/template/${text}`}>
               {cutGuid(text)}
             </Link>
           </>
@@ -34,12 +34,6 @@ export default function useTransactionTemplatesColumns() {
         dataIndex: "type",
         key: "type",
         sorter: true,
-      },
-      {
-        title: "Created at",
-        dataIndex: "created_at",
-        key: "created_at",
-        align: "center",
       },
     ],
     []

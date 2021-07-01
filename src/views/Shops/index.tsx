@@ -39,7 +39,7 @@ export default function Shops() {
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
           button={<Button type="primary">Create Shop</Button>}
           content={Creator}
-          header="Create merchant"
+          header="Create shop"
           dialogClassName="modal-creator"
         />
       }

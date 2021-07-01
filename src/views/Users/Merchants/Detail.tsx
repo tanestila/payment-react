@@ -22,13 +22,13 @@ import {
   useLoginColumns,
   useAccountsColumns,
   useTerminalsColumns,
-  useShopsColumns,
   useMerchantAuditColumns,
 } from "../../../constants/columns";
 import { formatDate } from "../../../helpers/formatDate";
 import CustomModal from "../../../Components/Common/Modal";
 import { LoginCreator } from "../Common/LoginCreator";
 import Loading from "../../../Components/Common/Loading";
+import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
 
 export default function MerchantDetail() {
   const ability = useContext(AbilityContext);
@@ -125,7 +125,7 @@ export default function MerchantDetail() {
   const loginsColumns = useLoginColumns(ability, "merchant", history.id);
   const accountsColumns = useAccountsColumns(ability);
   const terminalsColumns = useTerminalsColumns(ability);
-  const shopsColumns = useShopsColumns(ability);
+  const shopsColumns = useShopsColumnsForDetail(ability);
   const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
@@ -191,9 +191,9 @@ export default function MerchantDetail() {
             {merchant.updated_by_username || "-"}
           </Descriptions.Item>
         </Descriptions>
+        <Divider />
         <Descriptions
           column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-          bordered
           size="small"
         >
           <Descriptions.Item label="Used amount limit">
@@ -298,18 +298,16 @@ export default function MerchantDetail() {
         />
         <Divider />
         <h5>Change history</h5>
-        <div>
-          <Table
-            columns={historyColumns}
-            handleTableChange={handleMerchantHistoryTableChange}
-            isFetching={isFetchingMerchantHistory}
-            data={merchantHistory}
-            items={merchantHistoryItems}
-            isLoading={isLoadingMerchantHistory}
-            isError={isErrorMerchantHistory}
-            error={merchantHistoryError}
-          />
-        </div>
+        <Table
+          columns={historyColumns}
+          handleTableChange={handleMerchantHistoryTableChange}
+          isFetching={isFetchingMerchantHistory}
+          data={merchantHistory}
+          items={merchantHistoryItems}
+          isLoading={isLoadingMerchantHistory}
+          isError={isErrorMerchantHistory}
+          error={merchantHistoryError}
+        />
       </Card>
     </>
   );

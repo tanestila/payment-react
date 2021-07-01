@@ -1,55 +1,43 @@
-import { Card, Descriptions, Divider, Typography, Button, Row } from "antd";
+import {
+  Card,
+  Descriptions,
+  Divider,
+  Typography,
+  Button,
+  Row,
+  Tabs,
+} from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
+import { Loading } from "../../../Components/Common";
 import { AbilityContext } from "../../../Components/Common/Can";
 import {
   useLoginColumns,
   useShopsColumns,
   useMerchantAuditColumns,
-  useGroupsMerchantsColumns,
+  useGroupMerchantsColumns,
 } from "../../../constants/columns";
-import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
+import { gatewaysAPI } from "../../../services/queries/management/gateways";
+import { templatesAPI } from "../../../services/queries/management/transactions/templates";
+import { TemplateSteps } from "./TemplateSteps";
 const { Text } = Typography;
 
 export default function TemplatesDetail() {
-  const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
   const {
-    data: group,
+    data: template,
     status,
     error,
-  } = useQuery(
-    [`transaction-${history.id}`],
-    () => transactionsAPI.getTransaction(history.id),
-    {
-      keepPreviousData: true,
-    }
+  } = useQuery(["template", history.id], () =>
+    templatesAPI.getTemplate(history.id)
   );
 
-  // const {
-  //   // status: merchantHistoryStatus,
-  //   isFetching: isFetchingMerchantHistory,
-  //   isLoading: isLoadingMerchantHistory,
-  //   isError: isErrorMerchantHistory,
-  //   error: merchantHistoryError,
-  //   data: merchantHistory,
-  //   items: merchantHistoryItems,
-  //   handleTableChange: handleMerchantHistoryTableChange,
-  // } = useTableQuery(
-  //   "admin-history",
-  //   (params: any) => auditAPI.getLoginsHistory({ guid: history.id, ...params }),
-  //   10
-  // );
-
-  const merchantsColumns = useGroupsMerchantsColumns(ability);
-
-  const loginsColumns = useLoginColumns(ability);
-
-  const historyColumns = useMerchantAuditColumns(ability);
-
-  const shopsColumns = useShopsColumns(ability);
+  const { data: gateways, isLoading: gatewaysIsLoading } = useQuery(
+    ["gateways", history.id],
+    () => gatewaysAPI.getGateways()
+  );
 
   if (status === "loading") {
     return <span>Loading...</span>;
@@ -62,34 +50,47 @@ export default function TemplatesDetail() {
 
   return (
     <>
-      <Card title={`Group detail ${group.group_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
+      <Card title={template.name}>
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
           <Descriptions.Item span={3} label="GUID">
-            {group.group_guid}
+            {template.guid}
           </Descriptions.Item>
-          <Descriptions.Item label="Group type">
-            {group.group_type}
-          </Descriptions.Item>
-          <Descriptions.Item label="Group name">
-            {group.group_name}
-          </Descriptions.Item>
-          <Descriptions.Item label="Partner">
-            {group.partner_name}
+          <Descriptions.Item label="Type">{template.type}</Descriptions.Item>
+          <Descriptions.Item label="Spec rate">
+            {template.spec_rate}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
-            {group.created_at}
+            {template.created_at}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
-            {group.created_by_username}
+            {template.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {group.updated_at}
+            {template.updated_at}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {group.updated_by_username}
+            {template.updated_by_username}
           </Descriptions.Item>
         </Descriptions>
         <Divider />
+        {gatewaysIsLoading ? (
+          <Loading />
+        ) : (
+          <Tabs defaultActiveKey="1">
+            {gateways?.data?.map((gate) => (
+              <Tabs.TabPane tab={gate.name} key={gate.guid}>
+                <TemplateSteps
+                  template_guid={history.id}
+                  gateway_guid={gate.guid}
+                />
+              </Tabs.TabPane>
+            ))}
+          </Tabs>
+        )}
 
         <Text strong>Change history</Text>
         {/* <Table

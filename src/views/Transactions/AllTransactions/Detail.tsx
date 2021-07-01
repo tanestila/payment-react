@@ -7,7 +7,7 @@ import {
   useLoginColumns,
   useShopsColumns,
   useMerchantAuditColumns,
-  useGroupsMerchantsColumns,
+  useGroupMerchantsColumns,
 } from "../../../constants/columns";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 const { Text } = Typography;
@@ -43,7 +43,7 @@ export default function ProcessingDetail() {
   //   10
   // );
 
-  const merchantsColumns = useGroupsMerchantsColumns(ability);
+  const merchantsColumns = useGroupMerchantsColumns(ability);
 
   const loginsColumns = useLoginColumns(ability);
 

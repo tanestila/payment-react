@@ -1,4 +1,4 @@
-import { Card, Descriptions, Divider } from "antd";
+import { Card, Descriptions, Divider, Alert, Button, Row } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -6,10 +6,15 @@ import { AbilityContext } from "../../Components/Common/Can";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { auditAPI } from "../../services/queries/audit";
-
 import Table from "../../Components/TableFactory/Table";
-import { useMerchantAuditColumns } from "../../constants/columns";
+import {
+  useShopsAuditColumns,
+  useTerminalsColumns,
+} from "../../constants/columns";
 import { formatDate } from "../../helpers/formatDate";
+import { Loading } from "../../Components/Common";
+import CustomModal from "../../Components/Common/Modal";
+import TerminalCreator from "../Terminals/Creator";
 
 export default function ShopDetail() {
   const ability = useContext(AbilityContext);
@@ -21,6 +26,21 @@ export default function ShopDetail() {
     error,
   } = useQuery(["shop", history.id], () => shopsAPI.getShop(history.id));
 
+  const {
+    isFetching: isFetchingTerminals,
+    isLoading: isLoadingTerminals,
+    isError: isErrorTerminals,
+    error: merchantTerminalsError,
+    data: merchantTerminals,
+    items: merchantTerminalsItems,
+    handleTableChange: handleTerminalsTableChange,
+  } = useTableQuery(
+    "shop-terminals",
+    (params: any) => shopsAPI.getShopTerminals(history.id, params),
+    false,
+    10,
+    [history.id]
+  );
   const {
     isFetching: isFetchingShopHistory,
     isLoading: isLoadingShopHistory,
@@ -37,33 +57,52 @@ export default function ShopDetail() {
     [history.id]
   );
 
-  const historyColumns = useMerchantAuditColumns(ability);
+  const historyColumns = useShopsAuditColumns(ability);
+  const terminalsColumns = useTerminalsColumns(ability);
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
 
   return (
     <>
-      <Card title={`Group detail ${shop.group_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
+      <Card title={`Group detail ${shop.name}`}>
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
           <Descriptions.Item span={3} label="GUID">
-            {shop.group_guid}
+            {shop.guid}
           </Descriptions.Item>
-          <Descriptions.Item label="Group type">
-            {shop.group_type}
+          <Descriptions.Item label="name">{shop.name}</Descriptions.Item>
+          <Descriptions.Item label="Display name">
+            {shop.display_name}
           </Descriptions.Item>
-          <Descriptions.Item label="Group name">
-            {shop.group_name}
+          <Descriptions.Item label="Risk category">
+            {shop.risk_category}
           </Descriptions.Item>
-          <Descriptions.Item label="Partner">
-            {shop.partner_name}
+          <Descriptions.Item label="Email">{shop.email}</Descriptions.Item>
+          <Descriptions.Item label="Phone">{shop.phone}</Descriptions.Item>
+          <Descriptions.Item label="Url">
+            {shop.url.join(", ")}
           </Descriptions.Item>
+          <Descriptions.Item label="Merchant">
+            {shop.merchant_name}
+          </Descriptions.Item>
+          <Descriptions.Item label="note">{shop.note}</Descriptions.Item>
           <Descriptions.Item label="Created at">
             {formatDate(shop.created_at)}
           </Descriptions.Item>
@@ -78,7 +117,27 @@ export default function ShopDetail() {
           </Descriptions.Item>
         </Descriptions>
         <Divider />
-
+        <h5>Terminals</h5>
+        <Table
+          columns={terminalsColumns}
+          handleTableChange={handleTerminalsTableChange}
+          isFetching={isFetchingTerminals}
+          data={merchantTerminals}
+          items={merchantTerminalsItems}
+          isLoading={isLoadingTerminals}
+          isError={isErrorTerminals}
+          error={merchantTerminalsError}
+        />
+        <Row justify="center">
+          <CustomModal
+            header="Create Login"
+            content={TerminalCreator}
+            contentProps={{ guid: shop.guid }}
+            button={<Button>Create terminal</Button>}
+            // dialogClassName="modal-creator"
+          />
+        </Row>
+        <Divider />
         <h5>Change history</h5>
         <Table
           columns={historyColumns}

@@ -7,9 +7,9 @@ import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import * as Yup from "yup";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { useWhyDidYouUpdate } from "ahooks";
+
 export const RowAddUser = ({ type, guid }) => {
-  const [isShow, setIsShow] = useState(true);
+  const [isShow, setIsShow] = useState(false);
   const queryClient = useQueryClient();
   const addMerchantMutation = useMutation(merchantsAPI.addMerchant, {
     onSuccess: () => {
@@ -70,88 +70,81 @@ export const RowAddUser = ({ type, guid }) => {
   return (
     <div>
       <Row justify="center">
-        <Button onClick={onClick}>
+        <Button onClick={onClick} className="m-b-15">
           Add {type === "group" ? "Merchant" : "Group"}
         </Button>
       </Row>
-
       {isShow ? (
-        <>
-          {merchantsIsLoading ? (
-            <Loading />
-          ) : (
-            <div>
-              <Formik
-                initialValues={{
-                  user: null,
-                  reason: "",
-                }}
-                validationSchema={Yup.object({
-                  user: Yup.object().typeError("Required").required("Required"),
-                  reason: Yup.string().required("Required"),
-                })}
-                onSubmit={async (values, { setSubmitting }) => {
-                  try {
-                    let data = {};
-                    switch (type) {
-                      case "group":
-                        data = {
-                          merchant_guid: values.user.merchant_guid,
-                          group_guid: guid,
-                          reason: values.reason,
-                        };
-                        await addMerchantMutation.mutateAsync(data);
-                        break;
-                      case "partner":
-                        data = {
-                          group_guid: values.user.group_guid,
-                          partner_guid: guid,
-                          reason: values.reason,
-                        };
-                        await addGroupMutation.mutateAsync(data);
-                        break;
-                      default:
-                        break;
-                    }
-                    SuccessModal(
-                      `${type === "group" ? "Merchant" : "Group"} was updated`
-                    );
-                  } catch (error) {
-                    ErrorModal("Error");
-                    console.log(error);
+        <div>
+          <Formik
+            initialValues={{
+              user: null,
+              reason: "",
+            }}
+            validationSchema={Yup.object({
+              user: Yup.object().typeError("Required").required("Required"),
+              reason: Yup.string().required("Required"),
+            })}
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                let data = {};
+                switch (type) {
+                  case "group":
+                    data = {
+                      merchant_guid: values.user.merchant_guid,
+                      group_guid: guid,
+                      reason: values.reason,
+                    };
+                    await addMerchantMutation.mutateAsync(data);
+                    break;
+                  case "partner":
+                    data = {
+                      group_guid: values.user.group_guid,
+                      partner_guid: guid,
+                      reason: values.reason,
+                    };
+                    await addGroupMutation.mutateAsync(data);
+                    break;
+                  default:
+                    break;
+                }
+                SuccessModal(
+                  `${type === "group" ? "Merchant" : "Group"} was updated`
+                );
+              } catch (error) {
+                ErrorModal("Error");
+                console.log(error);
+              }
+              setSubmitting(false);
+            }}
+          >
+            {({ errors, isSubmitting }) => (
+              <Form className="modal-form">
+                <Field
+                  name="user"
+                  inputType="select"
+                  options={
+                    type === "group"
+                      ? modifiedMerchantsData
+                      : modifiedGroupsData
                   }
-                  setSubmitting(false);
-                }}
-              >
-                {({ error, isSubmitting }) => (
-                  <Form className="modal-form">
-                    {error && error}
+                  label={type === "group" ? "Merchant*" : "Group*"}
+                />
+                <Field name="reason" type="text" label="Reason*" />
 
-                    <Field
-                      name="user"
-                      inputType="select"
-                      options={
-                        type === "group"
-                          ? modifiedMerchantsData
-                          : modifiedGroupsData
-                      }
-                      label={type === "group" ? "Merchant*" : "Group"}
-                    />
-                    <Field name="reason" type="text" label="Reason*" />
-
-                    {isSubmitting ? (
-                      <Loading />
-                    ) : (
-                      <Button type="primary" style={{ float: "right" }}>
-                        Submit
-                      </Button>
-                    )}
-                  </Form>
+                {isSubmitting ? (
+                  <Loading />
+                ) : (
+                  <Row justify="center">
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+                  </Row>
                 )}
-              </Formik>
-            </div>
-          )}
-        </>
+              </Form>
+            )}
+          </Formik>
+        </div>
       ) : null}
     </div>
   );

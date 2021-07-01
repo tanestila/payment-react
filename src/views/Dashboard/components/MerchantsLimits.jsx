@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { HorizontalBar } from "../../../Components/Common/Charts/HorizontalBar";
 import { useQuery } from "react-query";
 import { adminDashboardAPI } from "../../../services/queries/report/adminDashboard";
+import Checkbox from "antd/lib/checkbox/Checkbox";
 
 export const MerchantsLimits = () => {
+  const [isShowAll, setIsShowAll] = useState(false);
   const [labels, setLabels] = useState([]);
   const [datasets, setDatasets] = useState([]);
 
@@ -18,22 +20,15 @@ export const MerchantsLimits = () => {
     { refetchOnWindowFocus: false }
   );
 
-  // const modifiedData = useMemo(() => {
-  //   return data
-  //     ? data.data.map((cur) => ({ ...cur, name: cur.code }))
-  //     : [];
-  // }, [data]);
-
   useEffect(() => {
-    console.log("re");
     if (status === "success") {
       let labels = [];
       let data = [];
       let backgroundColors = [];
       let borderColors = [];
       let hoverBackgroundColors = [];
-
-      response.limits.forEach((element) => {
+      let limits = isShowAll ? response.limits : response.limits.slice(0, 5);
+      limits.forEach((element) => {
         labels.push(element.merchant_name);
         data.push(element.used_percent);
       });
@@ -57,10 +52,15 @@ export const MerchantsLimits = () => {
       ]);
       setLabels(labels);
     }
-  }, [response]);
+  }, [response, isShowAll]);
+
+  const onChange = () => {
+    setIsShowAll(!isShowAll);
+  };
 
   return (
     <div>
+      <Checkbox onChange={onChange}>Show all</Checkbox>
       {isLoading || status === "loading" || isFetching ? (
         <>loading</>
       ) : (
