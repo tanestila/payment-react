@@ -7,9 +7,11 @@ import Modal from "../../../Components/Common/Modal";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { usePartnersColumns } from "../../../constants/columns";
 import { Button } from "antd";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Partners() {
   const ability = useContext(AbilityContext);
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isError,
@@ -21,7 +23,13 @@ export default function Partners() {
     status,
   } = useTableQuery("partners", partnersAPI.getPartners, true);
 
-  const columns = usePartnersColumns(ability);
+  const deletePartnerMutation = useMutation(partnersAPI.deletePartner, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("partners");
+    },
+  });
+
+  const columns = usePartnersColumns(ability, deletePartnerMutation);
 
   return (
     <Table

@@ -8,16 +8,18 @@ import { rolesAPI } from "../../../services/queries/management/roles";
 import { Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
 
 type LoginEditorProps = {
   handleClose: Function;
   guid: string;
   type: string;
   login: any;
+  ability: any;
 };
 
 export const LoginEditor: React.FC<LoginEditorProps> = ({
@@ -25,7 +27,9 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
   guid,
   type,
   login,
+  ability,
 }) => {
+  const [privilege, setPrivilege] = useState(false);
   const queryClient = useQueryClient();
 
   const { run: checkEmail } = useCheckEmailExist();
@@ -63,6 +67,23 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
       : [];
   }, [roles]);
 
+  useEffect(() => {
+    switch (type) {
+      case "partner":
+        setPrivilege(ability.can("EXECUTE", "PARTNERLOGINEMAIL"));
+        break;
+      case "group":
+        setPrivilege(ability.can("EXECUTE", "GROUPLOGINEMAIL"));
+        break;
+      case "merchant":
+        setPrivilege(ability.can("EXECUTE", "MERCHANTLOGINEMAIL"));
+        break;
+      default:
+        setPrivilege(false);
+        break;
+    }
+  }, []);
+
   return (
     <>
       {isLoading ? (
@@ -82,6 +103,7 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
             language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
             enabled: login.enabled,
             auth_type: "",
+            reason: "",
           }}
           validationSchema={Yup.object({
             email: Yup.string()
@@ -92,7 +114,8 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
                   value &&
                   value?.length > 8 &&
                   value?.indexOf(".") !== -1 &&
-                  value?.indexOf("@") !== -1
+                  value?.indexOf("@") !== -1 &&
+                  value !== login.email
                 ) {
                   const res = await checkEmail(value);
                   return !!res;
@@ -112,7 +135,7 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
               .min(5)
               .required("Required")
               .test("phoneExist", "Phone exists", async (value) => {
-                if (value && value?.length > 5) {
+                if (value && value?.length > 5 && value !== login.phone) {
                   const res = await checkPhone(value);
                   return !!res;
                 }
@@ -120,11 +143,12 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
               }),
             role: Yup.object().typeError("Required").required("Required"),
             language: Yup.object().required("Required"),
+            reason: Yup.string().required("Required"),
           })}
           onSubmit={async (values, { setSubmitting }) => {
-            alert(JSON.stringify(values, null, 2));
             try {
               let data = {
+                login_guid: login.guid,
                 email: values.email,
                 phone: values.phone,
                 first_name: values.first_name,
@@ -134,6 +158,7 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
                 role_guid: values.role?.["guid"],
                 language: values.language.guid,
                 enabled: values.enabled === true ? 1 : 0,
+                reason: values.reason,
               };
 
               switch (type) {
@@ -156,8 +181,7 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
               handleClose();
             } catch (error) {
               console.log(error);
-              ErrorModal("Error", error);
-              alert(error);
+              ErrorModal(parseError(error));
             }
             setSubmitting(false);
           }}
@@ -166,7 +190,12 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
             <Form className="modal-form">
               <Row>
                 <Col xl={12} lg={12} md={12} sm={12} xs={12}>
-                  <Field name="email" type="email" label="Email*" />
+                  <Field
+                    name="email"
+                    type="email"
+                    label="Email*"
+                    disabled={!privilege}
+                  />
                   <Field name="first_name" type="text" label="First Name*" />
                   <Field name="last_name" type="text" label="Last Name*" />
                   <Field name="phone" inputType="phone" label="Phone*" />
@@ -196,12 +225,13 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
                       { name: "RU", guid: "ru" },
                     ]}
                   />
+                  <Field name="reason" type="text" label="Reason*" />
                 </Col>
               </Row>
               {isSubmitting ? (
-                "lodaing"
+                <Loading />
               ) : (
-                <Button htmlType="submit" type="primary">
+                <Button htmlType="submit" type="primary" className="f-right">
                   Submit
                 </Button>
               )}

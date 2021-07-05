@@ -1,6 +1,13 @@
+import { UseMutationResult } from "react-query";
 import Swal from "sweetalert2";
+import { parseError } from "../../../helpers/parseError";
+import ErrorModal from "../ErrorModal";
+import SuccessModal from "../SuccessModal";
 
-export const DeleteModal = (handleDelete: Function, guid: string) => {
+export const DeleteModal = (
+  handleDelete: UseMutationResult<any>,
+  props: any
+) => {
   Swal.fire({
     title: "Are you sure?",
     text: "Once deleted, you will not be able to recover this. Type reason below.",
@@ -12,15 +19,14 @@ export const DeleteModal = (handleDelete: Function, guid: string) => {
       } else return null;
     },
     showCancelButton: true,
-  }).then((res) => {
+  }).then(async (res) => {
     if (res.isConfirmed && res.value) {
-      handleDelete(guid, res.value);
-      Swal.fire({
-        title: "Deleted",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 2000,
-      });
+      try {
+        await handleDelete.mutateAsync({ ...props, reason: res.value });
+        SuccessModal("Entity was deleted");
+      } catch (error) {
+        ErrorModal(parseError(error));
+      }
     }
   });
 };

@@ -40,4 +40,12 @@ export const partnersAPI = {
     let { data } = await managementService.post("users/partners", body);
     return data;
   },
+  deletePartner: async ({ guid, reason }) => {
+    let { data } = await managementService.post("users/partners", {
+      partner_guid: guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
 };

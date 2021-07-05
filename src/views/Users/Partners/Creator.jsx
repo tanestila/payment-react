@@ -9,6 +9,7 @@ import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 import { Button } from "antd";
+import { parseError } from "../../../helpers/parseError";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
@@ -102,7 +103,7 @@ export default function Creator({ handleClose }) {
           SuccessModal("Partner was created");
           handleClose();
         } catch (error) {
-          ErrorModal("Error");
+          ErrorModal(parseError(error));
           console.log(error);
         }
         setSubmitting(false);
@@ -132,7 +133,7 @@ export default function Creator({ handleClose }) {
               <Field name="type" type="text" label="Partner type" />
             </Col>
             <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field name="enabled" type="checkbox" label="Enable" />
+              <Field name="enabled" inputType="checkbox" label="Enable" />
               <Field
                 name="send_mail"
                 inputType="checkbox"

@@ -4,9 +4,9 @@ import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Button } from "antd";
-import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { parseError } from "../../../helpers/parseError";
 
 export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -32,24 +32,26 @@ export default function Editor({ handleClose, guid }) {
           initialValues={{
             name: partner.partner_name,
             type: partner.partner_type,
+            reason: "",
           }}
           validationSchema={Yup.object({
             name: Yup.string().required("Required"),
             type: Yup.string().required("Required"),
+            reason: Yup.string().required("Required"),
           })}
           onSubmit={async (values, { setSubmitting }) => {
-            alert(JSON.stringify(values, null, 2));
             try {
               let data = {
-                guid,
+                partner_guid: guid,
                 partner_name: values.name,
                 partner_type: values.type,
+                reason: values.reason,
               };
               await mutation.mutateAsync(data);
               SuccessModal("Partner was updated");
               handleClose();
             } catch (error) {
-              ErrorModal("Error");
+              ErrorModal(parseError(error));
               console.log(error);
             }
             setSubmitting(false);
@@ -57,17 +59,17 @@ export default function Editor({ handleClose, guid }) {
         >
           {({ isSubmitting, errors }) => (
             <Form className="modal-form">
-              {errors && errors}
               <Row>
                 <Col>
-                  <Field name="name" type="text" label="Merchant name*" />
-                  <Field name="type" type="text" label="Merchant type*" />
+                  <Field name="name" type="text" label="Partner name*" />
+                  <Field name="type" type="text" label="Partner type*" />
+                  <Field name="reason" type="text" label="Reason*" />
                 </Col>
               </Row>
               {isSubmitting ? (
                 <Loading />
               ) : (
-                <Button type="primary" style={{ float: "right" }}>
+                <Button htmlType="submit" type="primary" className="f-right">
                   Submit
                 </Button>
               )}

@@ -7,9 +7,11 @@ import Modal from "../../../Components/Common/Modal";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { useAdminsColumns } from "../../../constants/columns";
 import { Button } from "antd";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Admins() {
   const ability = useContext(AbilityContext);
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isError,
@@ -21,7 +23,13 @@ export default function Admins() {
     status,
   } = useTableQuery("admins", adminsAPI.getAdmins, true);
 
-  const columns = useAdminsColumns(ability);
+  const deleteAdminMutation = useMutation(adminsAPI.deleteAdmin, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("admins");
+    },
+  });
+
+  const columns = useAdminsColumns(ability, deleteAdminMutation);
 
   return (
     <Table

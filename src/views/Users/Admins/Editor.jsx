@@ -5,16 +5,25 @@ import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Button } from "antd";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
-import { Loading, SuccessModal } from "../../../Components/Common";
+import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
+import { AbilityContext } from "../../../Components/Common/Can";
+import { useContext } from "react";
+import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
+import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 
 export default function Editor({ handleClose, guid }) {
+  const ability = useContext(AbilityContext);
   const queryClient = useQueryClient();
   const {
-    data: merchant,
+    data: admin,
     status,
     isFetching,
     error,
   } = useQuery(["admin"], () => adminsAPI.getAdmin(guid));
+
+  const { run: checkEmail } = useCheckEmailExist();
+  const { run: checkPhone } = useCheckPhoneExist();
 
   const mutation = useMutation(adminsAPI.addAdmin, {
     onSuccess: () => {
@@ -29,86 +38,105 @@ export default function Editor({ handleClose, guid }) {
       ) : (
         <Formik
           initialValues={{
-            name: merchant.merchant_name,
-            type: merchant.merchant_type,
+            email: admin.email,
+            first_name: admin.first_name,
+            last_name: admin.last_name,
+            username: admin.username,
+            phone: admin.phone,
+            enabled: admin.enabled,
+            auth_type: admin.auth_type === "login-password-mail",
+            reason: "",
           }}
           validationSchema={Yup.object({
             email: Yup.string()
               .email("Invalid email address")
-              .required("Required"),
-            first_name: Yup.string()
-              .max(15, "Must be 15 characters or less")
-              .required("Required"),
-            last_name: Yup.string()
-              .max(20, "Must be 20 characters or less")
-              .required("Required"),
-            company_name: Yup.string().required("Required"),
-            company_address: Yup.string().required("Required"),
-            name: Yup.string().required("Required"),
-            type: Yup.string().required("Required"),
-            monthly_fee: Yup.number()
-              .typeError("You must specify a number")
-              .required("Required"),
-            monthly_fee_currency: Yup.object()
-              .typeError("Required")
-              .required("Required"),
-            monthly_fee_date: Yup.string().required("Required"),
-            monthly_amount_limit: Yup.number()
-              .typeError("You must specify a number")
-              .required("Required"),
-            phone: Yup.string().required().min(5).required("Required"),
-            role: Yup.object().typeError("Required").required("Required"),
-            language: Yup.object().required("Required"),
-            custom_amount_limit: Yup.string()
-              .typeError("You must specify a number")
-              .max(15)
-              .required("Required"),
-            custom_days_limit: Yup.number()
-              .typeError("You must specify a number")
-              .max(1000)
-              .required("Required"),
+              .required("Required")
+              .test("emailExist", "Email exists", async (value) => {
+                if (
+                  value &&
+                  value?.length > 8 &&
+                  value?.indexOf(".") !== -1 &&
+                  value?.indexOf("@") !== -1 &&
+                  value !== admin.email
+                ) {
+                  const res = await checkEmail(value);
+                  return !!res;
+                }
+                return true;
+              }),
+            first_name: Yup.string().required("Required"),
+            last_name: Yup.string().required("Required"),
+            username: Yup.string().required("Required"),
+            phone: Yup.string()
+              .required()
+              .min(5)
+              .required("Required")
+              .test("phoneExist", "Phone exists", async (value) => {
+                if (value && value?.length > 5 && value !== admin.phone) {
+                  const res = await checkPhone(value);
+                  return !!res;
+                }
+                return true;
+              }),
+            reason: Yup.string().required("Required"),
           })}
           onSubmit={async (values, { setSubmitting }) => {
-            alert(JSON.stringify(values, null, 2));
             try {
               let data = {
-                merchant_name: values.name,
-                merchant_type: values.type,
-                email: values.email,
-                phone: values.phone,
+                guid,
+                email: ability.can("EXECUTE", "USERADMINEMAIL")
+                  ? values.email
+                  : undefined,
                 first_name: values.first_name,
                 last_name: values.last_name,
-                company_name: values.company_name,
-                company_address: values.company_address,
-                role_guid: values.role?.["guid"],
-                password: values.send_mail ? undefined : values.password,
-                send_mail: values.send_mail ? 1 : 0,
-                language: values.language,
-                enabled: values.enabled === true ? 1 : 0,
+                username: values.username,
+                phone: values.phone,
+                enabled: values.enabled ? 1 : 0,
+                auth_type: ability.can("EXECUTE", "USERADMINAUTHTYPE")
+                  ? values.auth_type
+                    ? "login-password-mail"
+                    : "login-password"
+                  : undefined,
+                reason: values.reason,
               };
               await mutation.mutateAsync(data);
-              SuccessModal("Merchant was updated");
+              SuccessModal("Admin was updated");
               handleClose();
             } catch (error) {
+              ErrorModal(parseError(error));
               console.log(error);
-            } finally {
-              console.log("done");
             }
             setSubmitting(false);
           }}
         >
-          {({ values, isSubmitting, meta }) => (
+          {({ isSubmitting }) => (
             <Form className="modal-form">
               <Row>
                 <Col>
-                  <Field name="name" type="text" label="Merchant name*" />
-                  <Field name="type" type="text" label="Merchant type*" />
+                  <Field
+                    name="email"
+                    type="email"
+                    label="Email*"
+                    disabled={!ability.can("EXECUTE", "USERADMINEMAIL")}
+                  />
+                  <Field name="username" type="text" label="Username*" />
+                  <Field name="first_name" type="text" label="First Name*" />
+                  <Field name="last_name" type="text" label="Last Name*" />
+                  <Field name="phone" inputType="phone" label="Phone*" />
+                  <Field name="enabled" inputType="checkbox" label="Enable" />
+                  <Field
+                    name="auth_type"
+                    inputType="checkbox"
+                    label="Two-factor authentication"
+                    disabled={!ability.can("EXECUTE", "USERADMINAUTHTYPE")}
+                  />
+                  <Field name="reason" type="text" label="Reason*" />
                 </Col>
               </Row>
               {isSubmitting ? (
                 <Loading />
               ) : (
-                <Button type="primary" style={{ float: "right" }}>
+                <Button htmlType="submit" type="primary" className="f-right">
                   Submit
                 </Button>
               )}

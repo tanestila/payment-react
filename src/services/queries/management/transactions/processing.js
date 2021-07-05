@@ -13,4 +13,10 @@ export const transactionsAPI = {
     );
     return data;
   },
+  getTransactionProcessingSteps: async (args) => {
+    let { data } = await managementService.get(`steps/processing`, {
+      params: { ...args },
+    });
+    return data;
+  },
 };

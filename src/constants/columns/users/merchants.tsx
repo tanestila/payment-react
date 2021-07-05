@@ -5,8 +5,12 @@ import { MerchantType } from "../../../types/merchants";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import { AppAbility } from "../../../Components/Common/Can";
+import { UseMutationResult } from "react-query";
 
-export default function useMerchantsColumns(ability: AppAbility) {
+export default function useMerchantsColumns(
+  ability: AppAbility,
+  handleDelete: UseMutationResult<any, unknown, any, unknown>
+) {
   return useMemo(
     () => [
       {
@@ -65,17 +69,6 @@ export default function useMerchantsColumns(ability: AppAbility) {
         sorter: true,
         search: "text",
       },
-      // {
-      //   title: "Action",
-      //   key: "action",
-
-      //   render: (text: any, record: any) => (
-      //     <Space size="middle">
-      //       <a>Invite {record.name}</a>
-      //       <a>Delete</a>
-      //     </Space>
-      //   ),
-      // },
       {
         title: "Status",
         dataIndex: "enabled",
@@ -108,7 +101,7 @@ export default function useMerchantsColumns(ability: AppAbility) {
                 style={{ cursor: "pointer" }}
               />
             }
-            // dialogClassName="modal-creator"
+            dialogClassName="modal-creator"
           />
         ),
       },
@@ -120,7 +113,9 @@ export default function useMerchantsColumns(ability: AppAbility) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.merchant_guid)}
+            onClick={() =>
+              DeleteModal(handleDelete, { guid: record.merchant_guid })
+            }
           />
         ),
       },

@@ -37,3 +37,4 @@ export { default as useBacklistMerchantColumns } from "./security/merchantBL";
 export { default as useBacklistGlobalColumns } from "./security/globalBl";
 export { default as useRolesColumns } from "./security/roles";
 export { default as usePrivilegesColumns } from "./security/privileges";
+export { default as useTransactionStepsColumns } from "./transactions/steps";

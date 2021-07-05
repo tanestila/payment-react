@@ -37,4 +37,21 @@ export const groupsAPI = {
     let { data } = await managementService.post(`users/groups`, body);
     return data;
   },
+  deleteGroup: async ({ guid, reason }) => {
+    let { data } = await managementService.post("users/groups", {
+      group_guid: guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
+  deleteGroupLogin: async ({ guid, reason, login_guid, role_guid }) => {
+    let { data } = await managementService.post(`/groups/${guid}/logins`, {
+      login_guid: login_guid,
+      role_guid: role_guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
 };

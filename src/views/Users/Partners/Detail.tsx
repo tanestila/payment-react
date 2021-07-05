@@ -124,7 +124,7 @@ export default function PartnerDetail() {
           bordered
           size="small"
         >
-          <Descriptions.Item span={3} label="GUID">
+          <Descriptions.Item label="GUID">
             {partner.partner_guid}
           </Descriptions.Item>
           <Descriptions.Item label="Partner type">

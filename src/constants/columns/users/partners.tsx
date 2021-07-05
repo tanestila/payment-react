@@ -5,8 +5,12 @@ import { AppAbility } from "../../../Components/Common/Can";
 import { PartnerType } from "../../../types/partners";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import Editor from "../../../views/Users/Partners/Editor";
+import { UseMutationResult } from "react-query";
 
-export default function usePartnersColumns(ability: AppAbility) {
+export default function usePartnersColumns(
+  ability: AppAbility,
+  handleDelete: UseMutationResult<any, unknown, any, unknown>
+) {
   return useMemo(
     () => [
       {
@@ -83,7 +87,9 @@ export default function usePartnersColumns(ability: AppAbility) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.partner_guid)}
+            onClick={() =>
+              DeleteModal(handleDelete, { guid: record.partner_guid })
+            }
           />
         ),
       },

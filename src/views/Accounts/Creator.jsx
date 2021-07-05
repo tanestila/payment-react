@@ -8,6 +8,7 @@ import { ErrorModal, Loading, SuccessModal } from "../../Components/Common";
 import { Button } from "antd";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { accountsAPI } from "../../services/queries/management/accounts";
+import { parseError } from "../../helpers/parseError";
 
 export default function Creator({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ export default function Creator({ handleClose, guid }) {
           SuccessModal("Account was created");
           handleClose();
         } catch (error) {
-          ErrorModal("Error");
+          ErrorModal(parseError(error));
           console.log(error);
         }
         setSubmitting(false);

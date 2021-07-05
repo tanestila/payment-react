@@ -11,6 +11,7 @@ import { partnersAPI } from "../../../services/queries/management/users/partners
 import { useMemo } from "react";
 import { Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
@@ -128,7 +129,7 @@ export default function Creator({ handleClose }) {
           SuccessModal("Group was created");
           handleClose();
         } catch (error) {
-          ErrorModal("Error");
+          ErrorModal(parseError(error));
           console.log(error);
         }
         setSubmitting(false);
@@ -163,7 +164,7 @@ export default function Creator({ handleClose }) {
                 type="text"
                 label="Monthly amount limit"
               />
-              <Field name="enabled" type="checkbox" label="Enable" />
+              <Field name="enabled" inputType="checkbox" label="Enable" />
               <Field
                 name="send_mail"
                 inputType="checkbox"

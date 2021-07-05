@@ -9,8 +9,9 @@ import * as Yup from "yup";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
+import { parseError } from "../../../helpers/parseError";
 
-export const RowAddRole = ({ type, guid }) => {
+export const RowAddRole = ({ type, guid, adminRoles }) => {
   const [isShow, setIsShow] = useState(false);
   const queryClient = useQueryClient();
   const mutation = useMutation(adminsAPI.addAdminRole, {
@@ -23,10 +24,26 @@ export const RowAddRole = ({ type, guid }) => {
     setIsShow(!isShow);
   };
 
-  const { data: roles, isLoading: merchantsIsLoading } = useQuery(
-    ["roles"],
-    () => rolesAPI.getRoles({ type })
+  const { data: roles } = useQuery(["roles"], () =>
+    rolesAPI.getRoles({ type })
   );
+
+  const modifiedRolesData = useMemo(() => {
+    return roles
+      ? roles.data
+          .map((role: any) => ({
+            ...role,
+            value: role.guid,
+            label: role.name,
+          }))
+          .filter(
+            (x) =>
+              !adminRoles.includes(
+                adminRoles.filter((y) => y.guid === x.guid)[0]
+              )
+          )
+      : [];
+  }, [roles]);
 
   return (
     <div>
@@ -39,27 +56,24 @@ export const RowAddRole = ({ type, guid }) => {
         <div>
           <Formik
             initialValues={{
-              user: null,
+              role: null,
               reason: "",
             }}
             validationSchema={Yup.object({
-              user: Yup.object().typeError("Required").required("Required"),
+              role: Yup.object().typeError("Required").required("Required"),
               reason: Yup.string().required("Required"),
             })}
             onSubmit={async (values, { setSubmitting }) => {
               try {
-                let data = {};
-
-                data = {
-                  merchant_guid: values.user.merchant_guid,
-                  group_guid: guid,
+                let data = {
+                  guid: values.role.guid,
                   reason: values.reason,
                 };
-                await mutation.mutateAsync(data);
+                await mutation.mutateAsync({ guid, body: data });
 
                 SuccessModal(`Role was added`);
               } catch (error) {
-                ErrorModal("Error");
+                ErrorModal(parseError(error));
                 console.log(error);
               }
               setSubmitting(false);
@@ -68,9 +82,9 @@ export const RowAddRole = ({ type, guid }) => {
             {({ errors, isSubmitting }) => (
               <Form className="modal-form">
                 <Field
-                  name="user"
+                  name="role"
                   inputType="select"
-                  options={roles.data || []}
+                  options={modifiedRolesData || []}
                   label="Roles"
                 />
                 <Field name="reason" type="text" label="Reason*" />

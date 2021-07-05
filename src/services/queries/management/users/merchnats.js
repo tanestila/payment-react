@@ -21,11 +21,28 @@ export const merchantsAPI = {
     let { data } = await managementService.post("users/merchants", body);
     return data;
   },
+  deleteMerchant: async ({ guid, reason }) => {
+    let { data } = await managementService.post("users/merchants", {
+      merchant_guid: guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
   addMerchantLogin: async ({ guid, body }) => {
     let { data } = await managementService.post(
       `merchants/${guid}/logins`,
       body
     );
+    return data;
+  },
+  deleteMerchantLogin: async ({ guid, reason, login_guid, role_guid }) => {
+    let { data } = await managementService.post(`/merchants/${guid}/logins`, {
+      login_guid: login_guid,
+      role_guid: role_guid,
+      delete: true,
+      reason,
+    });
     return data;
   },
 };

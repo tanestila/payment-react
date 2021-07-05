@@ -9,6 +9,7 @@ import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
 
 export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -72,16 +73,9 @@ export default function Editor({ handleClose, guid }) {
             group: modifiedGroupsData.filter(
               (group) => merchant.group_guid === group.group_guid
             )[0],
+            reason: "",
           }}
           validationSchema={Yup.object({
-            first_name: Yup.string()
-              .max(15, "Must be 15 characters or less")
-              .required("Required"),
-            last_name: Yup.string()
-              .max(20, "Must be 20 characters or less")
-              .required("Required"),
-            company_name: Yup.string().required("Required"),
-            company_address: Yup.string().required("Required"),
             name: Yup.string().required("Required"),
             type: Yup.string().required("Required"),
             monthly_fee: Yup.number()
@@ -94,9 +88,6 @@ export default function Editor({ handleClose, guid }) {
             monthly_amount_limit: Yup.number()
               .typeError("You must specify a number")
               .required("Required"),
-            phone: Yup.string().required().min(5).required("Required"),
-            role: Yup.object().typeError("Required").required("Required"),
-            language: Yup.object().required("Required"),
             custom_amount_limit: Yup.string()
               .typeError("You must specify a number")
               .max(15)
@@ -105,24 +96,14 @@ export default function Editor({ handleClose, guid }) {
               .typeError("You must specify a number")
               .max(1000)
               .required("Required"),
+            reason: Yup.string().required("Required"),
           })}
           onSubmit={async (values, { setSubmitting }) => {
-            alert(JSON.stringify(values, null, 2));
             try {
               let data = {
-                guid,
+                merchant_guid: guid,
                 merchant_name: values.name,
                 merchant_type: values.type,
-                email: values.email,
-                phone: values.phone,
-                first_name: values.first_name,
-                last_name: values.last_name,
-                company_name: values.company_name,
-                company_address: values.company_address,
-                password: values.send_mail ? undefined : values.password,
-                send_mail: values.send_mail ? 1 : 0,
-                language: values.language,
-                enabled: values.enabled === true ? 1 : 0,
                 monthly_fee_currency: values.monthly_fee_currency?.["name"],
                 monthly_fee: +values.monthly_fee * 100,
                 monthly_fee_date: values.monthly_fee_date,
@@ -133,25 +114,31 @@ export default function Editor({ handleClose, guid }) {
                   +values.custom_amount_limit * 100
                 ).toString(),
                 custom_days_limit: values.custom_days_limit,
+                group_guid: values.group?.["group_guid"],
+                reason: values.reason,
               };
               await merchantMutation.mutateAsync(data);
               SuccessModal("Merchant was updated");
               handleClose();
             } catch (error) {
-              ErrorModal("Error");
+              ErrorModal(parseError(error));
               console.log(error);
             }
             setSubmitting(false);
           }}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, errors }) => (
             <Form className="modal-form">
-              {error && error}
               <Row>
-                <Col>
+                <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                   <Field name="name" type="text" label="Merchant name*" />
                   <Field name="type" type="text" label="Merchant type*" />
-
+                  <Field
+                    name="group"
+                    inputType="select"
+                    options={modifiedGroupsData}
+                    label="Group"
+                  />
                   <Field
                     name="custom_days_limit"
                     type="number"
@@ -162,6 +149,8 @@ export default function Editor({ handleClose, guid }) {
                     type="number"
                     label="Merchant amount limit*"
                   />
+                </Col>
+                <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                   <Field
                     name="monthly_amount_limit"
                     type="number"
@@ -182,18 +171,14 @@ export default function Editor({ handleClose, guid }) {
                     inputType="date-single"
                     tip="From this date begins the payment of monthly fee."
                   />
-                  <Field
-                    name="group"
-                    inputType="select"
-                    options={modifiedGroupsData}
-                    label="Group"
-                  />
+
+                  <Field name="reason" type="text" label="Reason*" />
                 </Col>
               </Row>
               {isSubmitting ? (
                 <Loading />
               ) : (
-                <Button type="primary" style={{ float: "right" }}>
+                <Button htmlType="submit" type="primary" className="f-right">
                   Submit
                 </Button>
               )}

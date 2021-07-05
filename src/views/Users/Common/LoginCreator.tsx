@@ -8,7 +8,8 @@ import { rolesAPI } from "../../../services/queries/management/roles";
 import { Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
-import { SuccessModal, ErrorModal } from "../../../Components/Common";
+import { SuccessModal, ErrorModal, Loading } from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
 
 type LoginCreatorProps = {
   handleClose: Function;
@@ -73,7 +74,6 @@ export const LoginCreator: React.FC<LoginCreatorProps> = ({
         language: Yup.object().required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
-        alert(JSON.stringify(values, null, 2));
         try {
           let data = {
             email: values.email,
@@ -109,8 +109,7 @@ export const LoginCreator: React.FC<LoginCreatorProps> = ({
           handleClose();
         } catch (error) {
           console.log(error);
-          ErrorModal("Error", error);
-          alert(error);
+          ErrorModal(parseError(error));
         }
         setSubmitting(false);
       }}
@@ -158,9 +157,9 @@ export const LoginCreator: React.FC<LoginCreatorProps> = ({
             </Col>
           </Row>
           {isSubmitting ? (
-            "lodaing"
+            <Loading />
           ) : (
-            <Button htmlType="submit" type="primary">
+            <Button htmlType="submit" type="primary" className="f-right">
               Submit
             </Button>
           )}

@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 import { ShopType } from "../../types/shops";
 import Editor from "../../views/Shops/Editor";
 import { DeleteModal } from "../../Components/Common/DeleteModal";
+import { UseMutationResult } from "react-query";
 
-export default function useShopsColumns(ability: AppAbility) {
+export default function useShopsColumns(
+  ability: AppAbility,
+  handleDelete: UseMutationResult<any, unknown, any, unknown>
+) {
   return useMemo(
     () => [
       {
@@ -82,7 +86,7 @@ export default function useShopsColumns(ability: AppAbility) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.merchant_guid)}
+            onClick={() => DeleteModal(handleDelete, { guid: record.guid })}
           />
         ),
       },

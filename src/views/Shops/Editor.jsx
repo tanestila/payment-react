@@ -7,6 +7,7 @@ import { Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { merchantsAPI } from "../../services/queries/management/users/merchnats";
+import { parseError } from "../../helpers/parseError";
 
 export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -81,7 +82,7 @@ export default function Editor({ handleClose, guid }) {
               SuccessModal("Shop was created");
               handleClose();
             } catch (error) {
-              ErrorModal("Error");
+              ErrorModal(parseError(error));
               console.log(error);
             }
             setSubmitting(false);

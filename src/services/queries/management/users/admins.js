@@ -22,9 +22,9 @@ export const adminsAPI = {
     );
     return data;
   },
-  deleteAdminRole: async ({ guid, roleGuid, reason }) => {
+  deleteAdminRole: async ({ guid, role_guid, reason }) => {
     let { data } = await managementService.post(`users/admins/${guid}/roles`, {
-      guid: roleGuid,
+      guid: role_guid,
       delete: true,
       reason,
     });
@@ -32,6 +32,14 @@ export const adminsAPI = {
   },
   addAdmin: async (body) => {
     let { data } = await managementService.post("users/admins", body);
+    return data;
+  },
+  deleteAdmin: async ({ guid, reason }) => {
+    let { data } = await managementService.post("users/admins", {
+      guid,
+      delete: true,
+      reason,
+    });
     return data;
   },
 };

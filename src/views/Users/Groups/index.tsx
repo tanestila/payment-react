@@ -7,9 +7,11 @@ import { groupsAPI } from "../../../services/queries/management/users/groups";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useGroupsColumns } from "../../../constants/columns";
 import { Button } from "antd";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Groups() {
   const ability = useContext(AbilityContext);
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isError,
@@ -21,7 +23,13 @@ export default function Groups() {
     status,
   } = useTableQuery("groups", groupsAPI.getGroups, true);
 
-  const columns = useGroupsColumns(ability);
+  const deleteGroupMutation = useMutation(groupsAPI.deleteGroup, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("groups");
+    },
+  });
+
+  const columns = useGroupsColumns(ability, deleteGroupMutation);
 
   return (
     <Table

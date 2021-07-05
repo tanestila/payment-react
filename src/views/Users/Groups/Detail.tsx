@@ -8,7 +8,7 @@ import {
   Alert,
 } from "antd";
 import { useContext } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
@@ -30,12 +30,19 @@ import useGroupsAuditColumns from "../../../constants/columns/history/groups";
 export default function GroupDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const {
     data: group,
     status,
     error,
   } = useQuery(["group", history.id], () => groupsAPI.getGroup(history.id));
+
+  const deleteGroupLoginMutation = useMutation(groupsAPI.deleteGroupLogin, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("group-logins");
+    },
+  });
 
   const {
     isFetching: isFetchingLogins,
@@ -102,7 +109,12 @@ export default function GroupDetail() {
   );
 
   const merchantsColumns = useGroupMerchantsColumns(ability);
-  const loginsColumns = useLoginColumns(ability, "group", history.id);
+  const loginsColumns = useLoginColumns(
+    ability,
+    "group",
+    history.id,
+    deleteGroupLoginMutation
+  );
   const historyColumns = useGroupsAuditColumns(ability);
   const shopsColumns = useShopsColumnsForDetail(ability);
 
@@ -166,7 +178,7 @@ export default function GroupDetail() {
           <Descriptions.Item label="Used amount limit">
             <Row>
               {group.used_amount}
-              {` (${group.used_percent}%)`}
+              {/* {` (${group.used_percent}%)`} */}
             </Row>
             {group.used_percent !== "Disabled" && (
               <Row>

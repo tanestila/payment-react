@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import { GroupType } from "../../../types/groups";
 import { AppAbility } from "../../../Components/Common/Can";
+import { UseMutationResult } from "react-query";
 
-export default function useGroupsColumns(ability: AppAbility) {
+export default function useGroupsColumns(
+  ability: AppAbility,
+  handleDelete: UseMutationResult<any, unknown, any, unknown>
+) {
   return useMemo(
     () => [
       {
@@ -93,7 +97,9 @@ export default function useGroupsColumns(ability: AppAbility) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.group_guid)}
+            onClick={() =>
+              DeleteModal(handleDelete, { guid: record.group_guid })
+            }
           />
         ),
       },

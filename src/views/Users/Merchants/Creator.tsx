@@ -13,10 +13,10 @@ import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
-
   const mutation = useMutation(merchantsAPI.addMerchant, {
     onSuccess: () => {
       queryClient.invalidateQueries("merchants");
@@ -162,7 +162,7 @@ export default function Creator({ handleClose }) {
           SuccessModal("Merchant was created");
           handleClose();
         } catch (error) {
-          ErrorModal("Error");
+          ErrorModal(parseError(error));
           console.log(error);
         }
         setSubmitting(false);

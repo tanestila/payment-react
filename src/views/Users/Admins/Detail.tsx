@@ -1,6 +1,6 @@
 import { Alert, Card, Descriptions, Divider, Row } from "antd";
 import { useContext } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
@@ -15,12 +15,18 @@ import { RowAddRole } from "../Common/RowAddRole";
 export default function AdminDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
-
+  const queryClient = useQueryClient();
   const {
     data: admin,
     status,
     error,
   } = useQuery(["admin", history.id], () => adminsAPI.getAdmin(history.id));
+
+  const deleteAdminRoleMutation = useMutation(adminsAPI.deleteAdminRole, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("admin-roles");
+    },
+  });
 
   const {
     isFetching: isFetchingAdminRoles,
@@ -55,7 +61,11 @@ export default function AdminDetail() {
   );
 
   const historyColumns = useLoginsAuditColumns(ability);
-  const rolesColumns = useAdminRolesColumns(ability);
+  const rolesColumns = useAdminRolesColumns(
+    ability,
+    history.id,
+    deleteAdminRoleMutation
+  );
 
   if (status === "loading") {
     return <Loading />;
@@ -125,7 +135,7 @@ export default function AdminDetail() {
           isPaginated={false}
         />
         <Row justify="center">
-          <RowAddRole type="admin" guid={history.id} />
+          <RowAddRole type="admin" guid={history.id} adminRoles={adminRoles} />
         </Row>
         <Divider />
         <h5>Change history</h5>

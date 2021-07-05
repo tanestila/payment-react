@@ -8,13 +8,12 @@ import {
   Alert,
 } from "antd";
 import { useContext } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { accountsAPI } from "../../../services/queries/management/accounts";
 import { shopsAPI } from "../../../services/queries/management/shops";
-import { terminalsAPI } from "../../../services/queries/management/transactions/steps";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { auditAPI } from "../../../services/queries/audit";
 import Table from "../../../Components/TableFactory/Table";
@@ -29,10 +28,12 @@ import CustomModal from "../../../Components/Common/Modal";
 import { LoginCreator } from "../Common/LoginCreator";
 import Loading from "../../../Components/Common/Loading";
 import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
+import { terminalsAPI } from "../../../services/queries/management/terminals";
 
 export default function MerchantDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const {
     data: merchant,
@@ -40,6 +41,15 @@ export default function MerchantDetail() {
     error,
   } = useQuery([`merchant`, history.id], () =>
     merchantsAPI.getMerchant(history.id)
+  );
+
+  const deleteMerchantLoginMutation = useMutation(
+    merchantsAPI.deleteMerchantLogin,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("merchant-logins");
+      },
+    }
   );
 
   const {
@@ -122,7 +132,12 @@ export default function MerchantDetail() {
     [history.id]
   );
 
-  const loginsColumns = useLoginColumns(ability, "merchant", history.id);
+  const loginsColumns = useLoginColumns(
+    ability,
+    "merchant",
+    history.id,
+    deleteMerchantLoginMutation
+  );
   const accountsColumns = useAccountsColumns(ability);
   const terminalsColumns = useTerminalsColumns(ability);
   const shopsColumns = useShopsColumnsForDetail(ability);
@@ -199,7 +214,7 @@ export default function MerchantDetail() {
           <Descriptions.Item label="Used amount limit">
             <Row>
               {merchant.used_amount}
-              {` (${merchant.used_percent}%)`}
+              {/* {` (${merchant.used_percent}%)`} */}
             </Row>
             {merchant.used_percent !== "Disabled" && (
               <Row>
@@ -215,7 +230,7 @@ export default function MerchantDetail() {
           <Descriptions.Item label="Used custom amount limit">
             <Row>
               {merchant.used_custom_amount}
-              {` (${merchant.used_custom_percent}%)`}
+              {/* {` (${merchant.used_custom_percent}%)`} */}
             </Row>
             {merchant.used_custom_percent !== "Disabled" && (
               <Row>

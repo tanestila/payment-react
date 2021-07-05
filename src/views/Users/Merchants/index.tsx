@@ -7,10 +7,11 @@ import Creator from "./Creator";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useMerchantsColumns } from "../../../constants/columns";
 import { Button } from "antd";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Merchants() {
   const ability = useContext(AbilityContext);
-
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isError,
@@ -22,7 +23,13 @@ export default function Merchants() {
     status,
   } = useTableQuery("merchants", merchantsAPI.getMerchants, true);
 
-  const columns = useMerchantsColumns(ability);
+  const deleteMerchantMutation = useMutation(merchantsAPI.deleteMerchant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("merchants");
+    },
+  });
+
+  const columns = useMerchantsColumns(ability, deleteMerchantMutation);
 
   return (
     <Table

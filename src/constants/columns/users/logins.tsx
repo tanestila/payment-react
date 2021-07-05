@@ -7,8 +7,12 @@ import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import { LoginAudit } from "../../../views/Users/Common/LoginAudit";
 import { LoginEditor } from "../../../views/Users/Common/LoginEditor";
 
-//TODO: add login type
-export default function useLoginColumns(ability: AppAbility, type, guid) {
+export default function useLoginColumns(
+  ability: AppAbility,
+  type,
+  guid,
+  handleDelete
+) {
   return useMemo(
     () => [
       {
@@ -89,6 +93,7 @@ export default function useLoginColumns(ability: AppAbility, type, guid) {
               guid,
               type,
               login: cellInfo,
+              ability,
             }}
             button={
               <i
@@ -108,7 +113,13 @@ export default function useLoginColumns(ability: AppAbility, type, guid) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.guid)}
+            onClick={() =>
+              DeleteModal(handleDelete, {
+                guid,
+                login_guid: record.guid,
+                role_guid: record.role.guid,
+              })
+            }
           />
         ),
       },

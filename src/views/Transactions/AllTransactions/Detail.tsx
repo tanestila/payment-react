@@ -1,107 +1,218 @@
-import { Card, Descriptions, Divider, Typography, Button, Row } from "antd";
+import {
+  Card,
+  Descriptions,
+  Divider,
+  Typography,
+  Button,
+  Row,
+  Alert,
+} from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
+import { Loading } from "../../../Components/Common";
 import { AbilityContext } from "../../../Components/Common/Can";
+import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import {
-  useLoginColumns,
-  useShopsColumns,
-  useMerchantAuditColumns,
-  useGroupMerchantsColumns,
+  useTransactionDataAuditColumns,
+  useTransactionOverviewAuditColumns,
+  useTransactionProcessingAuditColumns,
+  useTransactionStepsColumns,
 } from "../../../constants/columns";
+import { formatDate, formatDateForTable } from "../../../helpers/formatDate";
+import { auditAPI } from "../../../services/queries/audit";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
-const { Text } = Typography;
+import Table from "../../../Components/TableFactory/Table";
 
 export default function ProcessingDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
   const {
-    data: group,
+    data: transaction,
     status,
     error,
   } = useQuery(
-    [`transaction-${history.id}`],
+    [`transaction`, history.id],
     () => transactionsAPI.getTransaction(history.id),
     {
       keepPreviousData: true,
     }
   );
+  const TDHistoryColumns = useTransactionDataAuditColumns(ability);
+  const TPHistoryColumns = useTransactionProcessingAuditColumns(ability);
+  const TOHistoryColumns = useTransactionOverviewAuditColumns(ability);
+  const stepsColumns = useTransactionStepsColumns(ability);
 
-  // const {
-  //   // status: merchantHistoryStatus,
-  //   isFetching: isFetchingMerchantHistory,
-  //   isLoading: isLoadingMerchantHistory,
-  //   isError: isErrorMerchantHistory,
-  //   error: merchantHistoryError,
-  //   data: merchantHistory,
-  //   items: merchantHistoryItems,
-  //   handleTableChange: handleMerchantHistoryTableChange,
-  // } = useTableQuery(
-  //   "admin-history",
-  //   (params: any) => auditAPI.getLoginsHistory({ guid: history.id, ...params }),
-  //   10
-  // );
+  const {
+    isFetching: isFetchingSteps,
+    isLoading: isLoadingSteps,
+    isError: isErrorSteps,
+    error: StepsError,
+    data: Steps,
+    items: StepsItems,
+    handleTableChange: handleStepsTableChange,
+  } = useTableQuery(
+    "transaction-processing",
+    (params: any) =>
+      auditAPI.getTransactionProcessingHistory({ guid: history.id, ...params }),
+    true,
+    10,
+    [history.id]
+  );
 
-  const merchantsColumns = useGroupMerchantsColumns(ability);
+  const {
+    isFetching: isFetchingTDHistory,
+    isLoading: isLoadingTDHistory,
+    isError: isErrorTDHistory,
+    error: TDHistoryError,
+    data: TDHistory,
+    items: TDHistoryItems,
+    handleTableChange: handleTDHistoryTableChange,
+  } = useTableQuery(
+    "transaction-data",
+    (params: any) =>
+      auditAPI.getTransactionDataHistory({ guid: history.id, ...params }),
+    true,
+    10,
+    [history.id]
+  );
 
-  const loginsColumns = useLoginColumns(ability);
+  const {
+    isFetching: isFetchingTOHistory,
+    isLoading: isLoadingTOHistory,
+    isError: isErrorTOHistory,
+    error: TOHistoryError,
+    data: TOHistory,
+    items: TOHistoryItems,
+    handleTableChange: handleTOHistoryTableChange,
+  } = useTableQuery(
+    "transaction-overview",
+    (params: any) =>
+      auditAPI.getTransactionOverviewsHistory({ guid: history.id, ...params }),
+    true,
+    10,
+    [history.id]
+  );
 
-  const historyColumns = useMerchantAuditColumns(ability);
-
-  const shopsColumns = useShopsColumns(ability);
+  const {
+    isFetching: isFetchingTPHistory,
+    isLoading: isLoadingTPHistory,
+    isError: isErrorTPHistory,
+    error: TPHistoryError,
+    data: TPHistory,
+    items: TPHistoryItems,
+    handleTableChange: handleTPHistoryTableChange,
+  } = useTableQuery(
+    "transaction-processing",
+    (params: any) =>
+      auditAPI.getTransactionProcessingHistory({ guid: history.id, ...params }),
+    true,
+    10,
+    [history.id]
+  );
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
-
   return (
     <>
-      <Card title={`Group detail ${group.group_name}`}>
-        <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
-          <Descriptions.Item span={3} label="GUID">
-            {group.group_guid}
+      <Card title={`Transaction ${transaction.guid}`}>
+        <Descriptions
+          column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+          bordered
+          size="small"
+        >
+          <Descriptions.Item label="transaction type">
+            {transaction.transaction_type}
           </Descriptions.Item>
-          <Descriptions.Item label="Group type">
-            {group.group_type}
+          <Descriptions.Item label="Amount">
+            {transaction.amount / 100} {transaction.currency}
           </Descriptions.Item>
-          <Descriptions.Item label="Group name">
-            {group.group_name}
+          <Descriptions.Item label="Status">
+            {transaction.status}
           </Descriptions.Item>
-          <Descriptions.Item label="Partner">
-            {group.partner_name}
+          <Descriptions.Item label="Date time">
+            {formatDateForTable(transaction.date_time)}
           </Descriptions.Item>
+          <Descriptions.Item label="Bin country">
+            {transaction.bin_country}
+          </Descriptions.Item>
+
           <Descriptions.Item label="Created at">
-            {group.created_at}
+            {formatDate(transaction.created_at)}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
-            {group.created_by_username}
+            {transaction.created_by}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {group.updated_at}
+            {formatDate(transaction.updated_at) || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {group.updated_by_username}
+            {transaction.updated_by || "-"}
           </Descriptions.Item>
         </Descriptions>
-        <Divider />
 
-        <Text strong>Change history</Text>
-        {/* <Table
-          columns={historyColumns}
-          handleTableChange={handleMerchantHistoryTableChange}
-          isFetching={isFetchingMerchantHistory}
-          data={merchantHistory}
-          items={merchantHistoryItems}
-          isLoading={isLoadingMerchantHistory}
-          isError={isErrorMerchantHistory}
-          error={merchantHistoryError}
-        /> */}
+        <Divider />
+        <h5>Steps</h5>
+        <Table
+          columns={stepsColumns}
+          handleTableChange={handleStepsTableChange}
+          isFetching={isFetchingSteps}
+          data={Steps}
+          items={StepsItems}
+          isLoading={isLoadingSteps}
+          isError={isErrorSteps}
+          error={StepsError}
+        />
+        <Divider />
+        <h5>Change history</h5>
+        <Table
+          columns={TDHistoryColumns}
+          handleTableChange={handleTDHistoryTableChange}
+          isFetching={isFetchingTDHistory}
+          data={TDHistory}
+          items={TDHistoryItems}
+          isLoading={isLoadingTDHistory}
+          isError={isErrorTDHistory}
+          error={TDHistoryError}
+        />
+        <Divider />
+        <h5>Tp Change history</h5>
+        <Table
+          columns={TPHistoryColumns}
+          handleTableChange={handleTPHistoryTableChange}
+          isFetching={isFetchingTPHistory}
+          data={TPHistory}
+          items={TPHistoryItems}
+          isLoading={isLoadingTPHistory}
+          isError={isErrorTPHistory}
+          error={TPHistoryError}
+        />
+        <Divider />
+        <h5>To Change history</h5>
+        <Table
+          columns={TOHistoryColumns}
+          handleTableChange={handleTOHistoryTableChange}
+          isFetching={isFetchingTOHistory}
+          data={TOHistory}
+          items={TOHistoryItems}
+          isLoading={isLoadingTOHistory}
+          isError={isErrorTOHistory}
+          error={TOHistoryError}
+        />
       </Card>
     </>
   );

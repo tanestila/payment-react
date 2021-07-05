@@ -7,6 +7,7 @@ import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import * as Yup from "yup";
 import { Field } from "../../../Components/Common/Formik/Field";
+import { parseError } from "../../../helpers/parseError";
 
 export const RowAddUser = ({ type, guid }) => {
   const [isShow, setIsShow] = useState(false);
@@ -112,7 +113,7 @@ export const RowAddUser = ({ type, guid }) => {
                   `${type === "group" ? "Merchant" : "Group"} was updated`
                 );
               } catch (error) {
-                ErrorModal("Error");
+                ErrorModal(parseError(error));
                 console.log(error);
               }
               setSubmitting(false);

@@ -5,8 +5,12 @@ import { AppAbility } from "../../../Components/Common/Can";
 import { AdminType } from "../../../types/admins";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import Editor from "../../../views/Users/Admins/Editor";
+import { UseMutationResult } from "react-query";
 
-export default function useAdminsColumns(ability: AppAbility) {
+export default function useAdminsColumns(
+  ability: AppAbility,
+  handleDelete: UseMutationResult<any, unknown, any, unknown>
+) {
   return useMemo(
     () => [
       {
@@ -80,7 +84,7 @@ export default function useAdminsColumns(ability: AppAbility) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.guid)}
+            onClick={() => DeleteModal(handleDelete, { guid: record.guid })}
           />
         ),
       },
@@ -89,7 +93,11 @@ export default function useAdminsColumns(ability: AppAbility) {
   );
 }
 
-export function useAdminRolesColumns(ability: AppAbility) {
+export function useAdminRolesColumns(
+  ability: AppAbility,
+  guid: string,
+  handleDelete: UseMutationResult<any, unknown, any, unknown>
+) {
   return useMemo(
     () => [
       {
@@ -115,13 +123,16 @@ export function useAdminRolesColumns(ability: AppAbility) {
       ability.can("DELETE", "ADMINROLES") && {
         key: "delete",
         align: "center",
-        render: (text: string, record: AdminType) => (
-          <i
-            className="far fa-trash-alt  icon red"
-            style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.guid)}
-          />
-        ),
+        render: (text: string, record: AdminType) =>
+          record.name !== "system" ? (
+            <i
+              className="far fa-trash-alt  icon red"
+              style={{ cursor: "pointer" }}
+              onClick={() =>
+                DeleteModal(handleDelete, { guid, role_guid: record.guid })
+              }
+            />
+          ) : null,
       },
     ],
     [ability]

@@ -7,9 +7,11 @@ import Modal from "../../Components/Common/Modal";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { Button } from "antd";
 import { useShopsColumns } from "../../constants/columns";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Shops() {
   const ability = useContext(AbilityContext);
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isError,
@@ -21,7 +23,13 @@ export default function Shops() {
     onSearch,
   } = useTableQuery("shops", shopsAPI.getShops, true);
 
-  const columns = useShopsColumns(ability);
+  const deleteShopsMutation = useMutation(shopsAPI.deleteShop, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("shops");
+    },
+  });
+
+  const columns = useShopsColumns(ability, deleteShopsMutation);
 
   return (
     <Table

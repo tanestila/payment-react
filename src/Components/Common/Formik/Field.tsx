@@ -23,6 +23,7 @@ type CustomInputProps = {
   id?: string;
   type?: string;
   tip?: string;
+  disabled?: boolean;
 };
 
 const customStyles = {
