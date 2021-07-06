@@ -5,6 +5,9 @@ import { AppAbility } from "../../../Components/Common/Can";
 import { AdminType } from "../../../types/admins";
 import { cutGuid } from "../../../helpers/cutGuid";
 import { Copy } from "../../../Components/Common/CopyToClipboard";
+import { formatDateForTable } from "../../../helpers/formatDate";
+import { Button } from "antd";
+import Editor from "../../../views/Users/Merchants/Editor";
 
 export default function useAllTransactionsColumns(ability: AppAbility) {
   return useMemo(
@@ -90,6 +93,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         dataIndex: "created_at",
         key: "created_at",
         align: "center",
+        render: (text: string) => formatDateForTable(text),
       },
       // ability.can("READ", "TRANSACTIONSPROCESSINGRATES") &&
       {
@@ -97,11 +101,44 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         dataIndex: "rates",
         key: "rates",
         align: "center",
-        // render: (text: any, record: any) => (
-        //   <button type="button" className="btn btn-table">
-        //     Show
-        //   </button>
-        // ),
+        render: (text: any, record: any) => (
+          <Button className="btn btn-table">Show</Button>
+        ),
+      },
+      ability.can("EXECUTE", "USERADMIN") && {
+        key: "edit",
+        align: "center",
+        render: (text: string, record: AdminType) => (
+          <CustomModal
+            header="Edit admin"
+            content={Editor}
+            contentProps={{ guid: record.guid }}
+            button={
+              <i
+                className="icon-edit icon gray"
+                style={{ cursor: "pointer" }}
+              />
+            }
+            // dialogClassName="modal-creator"
+          />
+        ),
+      },
+      ability.can("EXECUTE", "USERADMIN") && {
+        key: "activate",
+        align: "center",
+        render: (text: string, record: any) => (
+          <CustomModal
+            header="Edit admin"
+            content={Editor}
+            contentProps={{ guid: record.guid }}
+            button={
+              <Button danger className="btn-table">
+                Deactivate
+              </Button>
+            }
+            // dialogClassName="modal-creator"
+          />
+        ),
       },
     ],
     [ability]

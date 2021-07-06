@@ -78,7 +78,7 @@ export default function ShopDetail() {
 
   return (
     <>
-      <Card title={`Group detail ${shop.name}`}>
+      <Card title={`Shop detail ${shop.name}`}>
         <Descriptions
           column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
           bordered
@@ -97,7 +97,7 @@ export default function ShopDetail() {
           <Descriptions.Item label="Email">{shop.email}</Descriptions.Item>
           <Descriptions.Item label="Phone">{shop.phone}</Descriptions.Item>
           <Descriptions.Item label="Url">
-            {shop.url.join(", ")}
+            {shop.url?.join(", ")}
           </Descriptions.Item>
           <Descriptions.Item label="Merchant">
             {shop.merchant_name}

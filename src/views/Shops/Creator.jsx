@@ -57,13 +57,33 @@ export default function Creator({ handleClose }) {
         merchant: Yup.object().typeError("Required").required("Required"),
         display_name: Yup.string().required("Required"),
         email: Yup.string().email("Invalid email address").required("Required"),
-        url: Yup.array().required("Required"),
-        phone: Yup.string().required().min(5).required("Required"),
+        url: Yup.array()
+          .of(
+            Yup.string()
+              .matches(
+                /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
+                "Enter correct url!"
+              )
+              .required("Please enter website")
+          )
+          .min(1)
+          .required("Required"),
+        phone: Yup.string().min(5).required("Required"),
         note: Yup.string(),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          let data = {};
+          let data = {
+            name: values.name,
+            risk_category: values.risk?.["name"],
+            merchant_guid: values.merchant?.["merchant_guid"],
+            display_name: values.display_name,
+            email: values.email,
+            url: values.url,
+            phone: values.phone,
+            note: values.note,
+            enabled: values.enabled ? 1 : 0,
+          };
           await mutation.mutateAsync(data);
           SuccessModal("Shop was created");
           handleClose();
@@ -86,8 +106,7 @@ export default function Creator({ handleClose }) {
             label="merchant*"
             options={modifiedMerchantsData}
           />
-          <Field name="url" inputType="text" label="URL*" />
-          {/*creatable multiselect*/}
+          <Field name="url" inputType="array" label="URL*" />
           <Field name="email" type="text" label="Email*" />
           <Field name="phone" inputType="phone" label=" Phone*" />
           <Field name="note" type="text" label="Note" />

@@ -42,6 +42,9 @@ import {
   UsersAudit,
   RolesAndPrivileges,
   BasicReport,
+  OrderDetail,
+  ChargebackDetail,
+  MismatchDetail,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
@@ -429,6 +432,30 @@ export const adminNonNav = [
     path: "/about/template/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
     component: TemplatesDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Order detailed",
+    path: "/about/order/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: OrderDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Chargeback detailed",
+    path: "/about/chargeback/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: ChargebackDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Mismatch transaction detailed",
+    path: "/about/mismatch/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: MismatchDetail,
   },
 ];
 

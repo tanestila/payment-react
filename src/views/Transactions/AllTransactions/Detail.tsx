@@ -23,6 +23,7 @@ import { formatDate, formatDateForTable } from "../../../helpers/formatDate";
 import { auditAPI } from "../../../services/queries/audit";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 import Table from "../../../Components/TableFactory/Table";
+import { useTransactionProcessingStepsColumns } from "../../../constants/columns/transactions/steps";
 
 export default function ProcessingDetail() {
   const ability = useContext(AbilityContext);
@@ -42,7 +43,7 @@ export default function ProcessingDetail() {
   const TDHistoryColumns = useTransactionDataAuditColumns(ability);
   const TPHistoryColumns = useTransactionProcessingAuditColumns(ability);
   const TOHistoryColumns = useTransactionOverviewAuditColumns(ability);
-  const stepsColumns = useTransactionStepsColumns(ability);
+  const stepsColumns = useTransactionProcessingStepsColumns();
 
   const {
     isFetching: isFetchingSteps,
@@ -53,9 +54,12 @@ export default function ProcessingDetail() {
     items: StepsItems,
     handleTableChange: handleStepsTableChange,
   } = useTableQuery(
-    "transaction-processing",
+    "transaction-steps",
     (params: any) =>
-      auditAPI.getTransactionProcessingHistory({ guid: history.id, ...params }),
+      transactionsAPI.getTransactionProcessingSteps({
+        guid: history.id,
+        ...params,
+      }),
     true,
     10,
     [history.id]

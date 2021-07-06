@@ -91,18 +91,6 @@ export default function TemplatesDetail() {
             ))}
           </Tabs>
         )}
-
-        <Text strong>Change history</Text>
-        {/* <Table
-          columns={historyColumns}
-          handleTableChange={handleMerchantHistoryTableChange}
-          isFetching={isFetchingMerchantHistory}
-          data={merchantHistory}
-          items={merchantHistoryItems}
-          isLoading={isLoadingMerchantHistory}
-          isError={isErrorMerchantHistory}
-          error={merchantHistoryError}
-        /> */}
       </Card>
     </>
   );

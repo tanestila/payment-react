@@ -7,4 +7,8 @@ export const chargebacksAPI = {
     });
     return data;
   },
+  getChargeback: async (guid) => {
+    let { data } = await managementService.get(`chargebacks/${guid}`);
+    return data;
+  },
 };

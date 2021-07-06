@@ -65,7 +65,7 @@ export default function useShopsColumns(
         align: "center",
         render: (text: string, record: ShopType) => (
           <CustomModal
-            header="Edit merchant"
+            header="Edit shop"
             content={Editor}
             contentProps={{ guid: record.guid }}
             button={

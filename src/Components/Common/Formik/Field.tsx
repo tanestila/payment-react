@@ -1,4 +1,4 @@
-import { useField } from "formik";
+import { FieldArray, useField, Field as FormikField } from "formik";
 import { ReactNode, useCallback } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import { HelpTip } from "../HelpTip";
@@ -7,6 +7,8 @@ import { CustomPhoneInput } from "../Inputs/CustomPhoneInput";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import "bootstrap-daterangepicker/daterangepicker.css";
 import moment from "moment";
+import { Button } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 
 type CustomInputProps = {
   label: string;
@@ -18,7 +20,8 @@ type CustomInputProps = {
     | "date-range"
     | "input"
     | "phone"
-    | "checkbox";
+    | "checkbox"
+    | "array";
   children?: ReactNode;
   id?: string;
   type?: string;
@@ -71,10 +74,6 @@ export const Field: React.FC<CustomInputProps> = ({
     },
     [helpers]
   );
-
-  // const onSingleDateChange = useCallback((date) => {
-  //   helpers.setValue(date);
-  // }, []);
 
   const renderInput = () => {
     switch (inputType) {
@@ -151,6 +150,53 @@ export const Field: React.FC<CustomInputProps> = ({
           />
         );
 
+      case "array":
+        return (
+          <FieldArray
+            {...field}
+            {...props}
+            render={(arrayHelpers) => (
+              <>
+                {field.value && field.value.length > 0 ? (
+                  <>
+                    {field.value.map((value, index) => (
+                      <Row>
+                        <Col className="form-input">
+                          <div key={index} style={{ display: "flex" }}>
+                            <FormikField
+                              className="form-control ant-input"
+                              name={`${props.name}.${index}`}
+                            />
+                            <CloseOutlined
+                              onClick={() => arrayHelpers.remove(index)}
+                              style={{ marginLeft: "5px", marginTop: "5px" }}
+                            />
+                          </div>
+
+                          {meta.error && meta.error[index] && meta.touched ? (
+                            <span className="validate-error">
+                              {meta.error[index]}
+                            </span>
+                          ) : null}
+                        </Col>
+                      </Row>
+                    ))}
+                    <>
+                      <Button type="link" onClick={() => arrayHelpers.push("")}>
+                        Add value
+                      </Button>
+                    </>
+                  </>
+                ) : (
+                  <Button type="link" onClick={() => arrayHelpers.push("")}>
+                    Add value
+                  </Button>
+                )}
+              </>
+            )}
+          />
+        );
+
       default:
         return (
           <Form.Control
@@ -170,7 +216,7 @@ export const Field: React.FC<CustomInputProps> = ({
       </Col>
       <Col lg={8} md={8} sm={7} xs={6} className="form-input">
         {renderInput()}
-        {meta.touched && meta.error ? (
+        {!Array.isArray(meta.error) && meta.touched && meta.error ? (
           <span className="validate-error">{meta.error}</span>
         ) : null}
       </Col>

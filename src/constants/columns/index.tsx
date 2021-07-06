@@ -38,3 +38,6 @@ export { default as useBacklistGlobalColumns } from "./security/globalBl";
 export { default as useRolesColumns } from "./security/roles";
 export { default as usePrivilegesColumns } from "./security/privileges";
 export { default as useTransactionStepsColumns } from "./transactions/steps";
+export { default as useOrdersColumns } from "./transactions/orders";
+export { default as useChargebacksColumns } from "./transactions/chargebacks";
+export { default as useMismatchTransactionsColumns } from "./transactions/mismatchTransactions";

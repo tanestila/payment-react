@@ -62,3 +62,78 @@ export default function useTransactionStepsColumns() {
     []
   );
 }
+
+export function useTransactionProcessingStepsColumns() {
+  return useMemo(
+    () => [
+      {
+        title: "ID",
+        dataIndex: "guid",
+        key: "guid",
+        search: "text",
+        render: (text: any, record: any) => (
+          <>
+            <Copy text={text} />
+            <Link className="link" to={`/about/processing/${text}`}>
+              {cutGuid(text)}
+            </Link>
+          </>
+        ),
+      },
+      {
+        title: "name",
+        dataIndex: "name",
+        key: "name",
+      },
+      {
+        title: "Type",
+        dataIndex: "type",
+        key: "type",
+      },
+      {
+        title: "Created at",
+        dataIndex: "created_at",
+        key: "created_at",
+      },
+      {
+        title: "Updated at",
+        dataIndex: "updated_at",
+        key: "updated_at",
+      },
+      {
+        title: "Duration",
+        dataIndex: "duration",
+        key: "duration",
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+      },
+      {
+        title: "Parameters",
+        key: "Parameters",
+        align: "center",
+        render: (step) => (
+          <CustomModal
+            header={"Params " + step.name}
+            content={Params}
+            contentProps={{ guid: step.guid }}
+            button={
+              <Button type="button" className="btn">
+                Show
+              </Button>
+            }
+            // dialogClassName="modal-creator"
+          />
+        ),
+        // render: (text: any, record: any) => (
+        //   <button type="button" className="btn btn-table">
+        //     Show
+        //   </button>
+        // ),
+      },
+    ],
+    []
+  );
+}
