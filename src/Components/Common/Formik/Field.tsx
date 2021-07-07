@@ -27,6 +27,7 @@ type CustomInputProps = {
   type?: string;
   tip?: string;
   disabled?: boolean;
+  callback?: Function;
 };
 
 const customStyles = {
@@ -63,6 +64,7 @@ export const Field: React.FC<CustomInputProps> = ({
   options = [],
   inputType,
   children,
+  callback,
   ...props
 }) => {
   const [field, meta, helpers] = useField(props.name);
@@ -71,6 +73,7 @@ export const Field: React.FC<CustomInputProps> = ({
     (value) => {
       helpers.setTouched(true);
       helpers.setValue(value);
+      callback && callback(value);
     },
     [helpers]
   );

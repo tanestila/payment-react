@@ -2,42 +2,45 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { merchantsAPI } from "../../services/queries/management/users/merchnats";
 import { parseError } from "../../helpers/parseError";
+import { gatewaysAPI } from "../../services/queries/management/gateways";
+import { ratesAPI } from "../../services/queries/management/rates";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
+  const [gateway, setGateway] = useState(null);
 
   const mutation = useMutation(shopsAPI.addShop, {
     onSuccess: () => {
-      queryClient.invalidateQueries("shops");
+      queryClient.invalidateQueries("shop-terminals");
     },
   });
 
-  const { data: merchants } = useQuery(["merchants"], () =>
-    merchantsAPI.getMerchants()
+  const { data: gateways } = useQuery(["gateways"], () =>
+    gatewaysAPI.getGateways()
   );
 
-  const modifiedMerchantsData = useMemo(() => {
-    return merchants
-      ? merchants.data.map((mer) => ({
-          ...mer,
-          name: mer.merchant_name,
-          guid: mer.merchant_guid,
-        }))
-      : [];
-  }, [merchants]);
+  const { data: rates } = useQuery(["rates", gateway], () =>
+    ratesAPI.getRates({ gateway_guid: gateway.guid })
+  );
 
-  const risks = [
-    { guid: 1, name: "Low" },
-    { guid: 2, name: "Medium" },
-    { guid: 3, name: "High" },
-  ];
+  const modifiedGatewaysData = useMemo(() => {
+    return gateways
+      ? gateways.data.map((gate) => {
+          gate.currencies = gate.currencies.map((cur) => ({
+            ...cur,
+            name: cur.code,
+          }));
+          return gate;
+        })
+      : [];
+  }, [gateways]);
 
   return (
     <Formik
@@ -103,7 +106,8 @@ export default function Creator({ handleClose }) {
                 name="gateway"
                 inputType="select"
                 label="Gateway*"
-                options={[]}
+                options={modifiedGatewaysData}
+                callback={(value) => setGateway(value)}
               />
               <Field
                 name="rate"
@@ -115,7 +119,7 @@ export default function Creator({ handleClose }) {
                 name="currency"
                 inputType="select"
                 label="Currency*"
-                options={[]}
+                options={values.gateway?.currencies}
               />
               <Field name="three_d" inputType="checkbox" label="3D" />
               <Field
