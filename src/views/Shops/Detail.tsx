@@ -130,11 +130,11 @@ export default function ShopDetail() {
         />
         <Row justify="center">
           <CustomModal
-            header="Create Login"
+            header="Create terminal"
             content={TerminalCreator}
             contentProps={{ guid: shop.guid }}
             button={<Button>Create terminal</Button>}
-            // dialogClassName="modal-creator"
+            dialogClassName="modal-creator"
           />
         </Row>
         <Divider />

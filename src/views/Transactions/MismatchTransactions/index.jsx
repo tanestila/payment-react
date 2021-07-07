@@ -21,7 +21,8 @@ export default function MismatchTransactions() {
     onSearch,
   } = useTableQuery(
     "mismatch_transaction",
-    mismatchAPI.getMismatchTransactions
+    mismatchAPI.getMismatchTransactions,
+    true
   );
 
   const columns = useMismatchTransactionsColumns(ability);

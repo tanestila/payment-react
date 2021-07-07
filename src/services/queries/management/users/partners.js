@@ -48,4 +48,13 @@ export const partnersAPI = {
     });
     return data;
   },
+  deletePartnerLogin: async ({ guid, reason, login_guid, role_guid }) => {
+    let { data } = await managementService.post(`/partner/${guid}/logins`, {
+      login_guid: login_guid,
+      role_guid: role_guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
 };

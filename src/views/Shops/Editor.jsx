@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo } from "react";
-import { Button } from "antd";
+import { Alert, Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { merchantsAPI } from "../../services/queries/management/users/merchnats";
@@ -114,8 +114,16 @@ export default function Editor({ handleClose, guid }) {
             setSubmitting(false);
           }}
         >
-          {({ values, isSubmitting }) => (
+          {({ isSubmitting }) => (
             <Form className="modal-form">
+              {status === "error" && (
+                <Alert
+                  message="Error"
+                  description={error.message}
+                  type="error"
+                  showIcon
+                />
+              )}
               <Field name="name" type="text" label="Name*" />
               <Field name="display_name" type="text" label="Display name*" />
               <Field

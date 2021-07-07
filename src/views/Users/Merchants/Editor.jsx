@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import { useMemo } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
-import { Button } from "antd";
+import { Alert, Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
@@ -127,8 +127,16 @@ export default function Editor({ handleClose, guid }) {
             setSubmitting(false);
           }}
         >
-          {({ isSubmitting, errors }) => (
+          {({ isSubmitting }) => (
             <Form className="modal-form">
+              {status === "error" && (
+                <Alert
+                  message="Error"
+                  description={error.message}
+                  type="error"
+                  showIcon
+                />
+              )}
               <Row>
                 <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                   <Field name="name" type="text" label="Merchant name*" />

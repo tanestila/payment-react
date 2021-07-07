@@ -21,7 +21,7 @@ export default function Orders() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("orders", ordersAPI.getOrders);
+  } = useTableQuery("orders", ordersAPI.getOrders, true);
 
   const columns = useOrdersColumns(ability);
 

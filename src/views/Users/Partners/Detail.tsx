@@ -1,6 +1,6 @@
 import { Card, Descriptions, Divider, Button, Row, Alert } from "antd";
 import { useContext } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
@@ -8,7 +8,6 @@ import { auditAPI } from "../../../services/queries/audit";
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
-  useShopsColumns,
   useMerchantAuditColumns,
 } from "../../../constants/columns";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
@@ -22,6 +21,7 @@ import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
 export default function PartnerDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const {
     data: partner,
@@ -29,6 +29,15 @@ export default function PartnerDetail() {
     error,
   } = useQuery(["partner", history.id], () =>
     partnersAPI.getPartner(history.id)
+  );
+
+  const deletePartnerLoginMutation = useMutation(
+    partnersAPI.deletePartnerLogin,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("partner-logins");
+      },
+    }
   );
 
   const {
@@ -96,7 +105,12 @@ export default function PartnerDetail() {
     [history.id]
   );
 
-  const loginsColumns = useLoginColumns(ability, "partner", history.id);
+  const loginsColumns = useLoginColumns(
+    ability,
+    "partner",
+    history.id,
+    deletePartnerLoginMutation
+  );
   const shopsColumns = useShopsColumnsForDetail(ability);
   const historyColumns = useMerchantAuditColumns(ability);
 

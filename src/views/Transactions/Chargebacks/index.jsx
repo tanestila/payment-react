@@ -19,7 +19,7 @@ export default function Chargebacks() {
     isFetching,
     handleTableChange,
     onSearch,
-  } = useTableQuery("chargebacks", chargebacksAPI.getChargebacks);
+  } = useTableQuery("chargebacks", chargebacksAPI.getChargebacks, true);
 
   const columns = useChargebacksColumns(ability);
 

@@ -94,7 +94,7 @@ export default function Creator({ handleClose }) {
         setSubmitting(false);
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ isSubmitting }) => (
         <Form className="modal-form">
           <Field name="name" type="text" label="Name*" />
           <Field name="display_name" type="text" label="Display name*" />

@@ -15,7 +15,7 @@ import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
 
-export default function Creator({ handleClose }) {
+export default function Creator({ handleClose }: { handleClose: Function }) {
   const queryClient = useQueryClient();
   const mutation = useMutation(merchantsAPI.addMerchant, {
     onSuccess: () => {
@@ -36,13 +36,13 @@ export default function Creator({ handleClose }) {
 
   const modifiedCurrenciesData = useMemo(() => {
     return currencies
-      ? currencies.data.map((cur) => ({ ...cur, name: cur.code }))
+      ? currencies.data.map((cur: any) => ({ ...cur, name: cur.code }))
       : [];
   }, [currencies]);
 
   const modifiedGroupsData = useMemo(() => {
     return groups
-      ? groups.data.map((group) => ({
+      ? groups.data.map((group: any) => ({
           ...group,
           name: group.group_name,
           guid: group.group_guid,

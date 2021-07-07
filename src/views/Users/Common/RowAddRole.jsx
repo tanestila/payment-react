@@ -3,8 +3,6 @@ import { Form, Formik } from "formik";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
-import { groupsAPI } from "../../../services/queries/management/users/groups";
-import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
 import * as Yup from "yup";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { rolesAPI } from "../../../services/queries/management/roles";
@@ -43,7 +41,7 @@ export const RowAddRole = ({ type, guid, adminRoles }) => {
               )
           )
       : [];
-  }, [roles]);
+  }, [roles, adminRoles]);
 
   return (
     <div>
@@ -79,7 +77,7 @@ export const RowAddRole = ({ type, guid, adminRoles }) => {
               setSubmitting(false);
             }}
           >
-            {({ errors, isSubmitting }) => (
+            {({ isSubmitting }) => (
               <Form className="modal-form">
                 <Field
                   name="role"

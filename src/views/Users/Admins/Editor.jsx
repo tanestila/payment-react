@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { Button } from "antd";
+import { Alert, Button } from "antd";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
@@ -111,6 +111,14 @@ export default function Editor({ handleClose, guid }) {
         >
           {({ isSubmitting }) => (
             <Form className="modal-form">
+              {status === "error" && (
+                <Alert
+                  message="Error"
+                  description={error.message}
+                  type="error"
+                  showIcon
+                />
+              )}
               <Row>
                 <Col>
                   <Field

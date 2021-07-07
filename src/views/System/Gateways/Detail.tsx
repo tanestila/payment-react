@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { auditAPI } from "../../../services/queries/audit";
+import { gatewayAPI } from "../../../services/queries/management/gateways";
 import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
@@ -21,42 +21,16 @@ import {
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
-import CustomModal from "../../../Components/Common/Modal";
-import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
-import useGroupsAuditColumns from "../../../constants/columns/history/groups";
 
 export default function GatewayDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
 
   const {
     data: group,
     status,
     error,
-  } = useQuery(["group", history.id], () => groupsAPI.getGroup(history.id));
-
-  const deleteGroupLoginMutation = useMutation(groupsAPI.deleteGroupLogin, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("group-logins");
-    },
-  });
-
-  const {
-    isFetching: isFetchingLogins,
-    isLoading: isLoadingLogins,
-    isError: isErrorLogins,
-    error: loginsError,
-    data: logins,
-    items: loginsItems,
-    handleTableChange: handleLoginsTableChange,
-  } = useTableQuery(
-    "group-logins",
-    (params: any) => groupsAPI.getGroupLogins(history.id, { params }),
-    false,
-    10,
-    [history.id]
-  );
+  } = useQuery(["gateway", history.id], () => gatewayAPI.getGroup(history.id));
 
   const {
     isFetching: isFetchingMerchants,
@@ -74,47 +48,7 @@ export default function GatewayDetail() {
     [history.id]
   );
 
-  const {
-    isFetching: isFetchingShops,
-    isLoading: isLoadingShops,
-    isError: isErrorShops,
-    error: shopsError,
-    data: shops,
-    items: shopsItems,
-    handleTableChange: handleShopsTableChange,
-  } = useTableQuery(
-    "group-shops",
-    (params: any) => groupsAPI.getGroupShops(history.id, { params }),
-    false,
-    10,
-    [history.id]
-  );
-
-  const {
-    isFetching: isFetchingMerchantHistory,
-    isLoading: isLoadingMerchantHistory,
-    isError: isErrorMerchantHistory,
-    error: merchantHistoryError,
-    data: merchantHistory,
-    items: merchantHistoryItems,
-    handleTableChange: handleMerchantHistoryTableChange,
-  } = useTableQuery(
-    "group-history",
-    (params: any) => auditAPI.getGroupsHistory({ guid: history.id, ...params }),
-    false,
-    10,
-    [history.id]
-  );
-
   const merchantsColumns = useGroupMerchantsColumns(ability);
-  const loginsColumns = useLoginColumns(
-    ability,
-    "group",
-    history.id,
-    deleteGroupLoginMutation
-  );
-  const historyColumns = useGroupsAuditColumns(ability);
-  const shopsColumns = useShopsColumnsForDetail(ability);
 
   if (status === "loading") {
     return <Loading />;
@@ -201,32 +135,6 @@ export default function GatewayDetail() {
           isLoading={isLoadingMerchants}
           isError={isErrorMerchants}
           error={merchantsError}
-        />
-
-        <Divider />
-        <h5>Shops</h5>
-        <Table
-          columns={shopsColumns}
-          handleTableChange={handleShopsTableChange}
-          isFetching={isFetchingShops}
-          data={shops}
-          items={shopsItems}
-          isLoading={isLoadingShops}
-          isError={isErrorShops}
-          error={shopsError}
-        />
-
-        <Divider />
-        <h5>Change history</h5>
-        <Table
-          columns={historyColumns}
-          handleTableChange={handleMerchantHistoryTableChange}
-          isFetching={isFetchingMerchantHistory}
-          data={merchantHistory}
-          items={merchantHistoryItems}
-          isLoading={isLoadingMerchantHistory}
-          isError={isErrorMerchantHistory}
-          error={merchantHistoryError}
         />
       </Card>
     </>

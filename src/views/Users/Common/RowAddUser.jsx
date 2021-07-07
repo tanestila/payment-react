@@ -28,18 +28,13 @@ export const RowAddUser = ({ type, guid }) => {
     setIsShow(!isShow);
   };
 
-  const { data: merchants, isLoading: merchantsIsLoading } = useQuery(
+  const { data: merchants } = useQuery(
     ["merchants"],
     () => merchantsAPI.getMerchants(),
     { enabled: type === "group" }
   );
 
-  const {
-    data: groups,
-    status: groupsStatus,
-    isLoading: groupsIsLoading,
-    error: groupsError,
-  } = useQuery(["groups"], () => groupsAPI.getGroups(), {
+  const { data: groups } = useQuery(["groups"], () => groupsAPI.getGroups(), {
     enabled: type === "partner",
   });
 
