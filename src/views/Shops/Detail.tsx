@@ -132,7 +132,7 @@ export default function ShopDetail() {
           <CustomModal
             header="Create terminal"
             content={TerminalCreator}
-            contentProps={{ guid: shop.guid }}
+            contentProps={{ shop_guid: shop.guid }}
             button={<Button>Create terminal</Button>}
             dialogClassName="modal-creator"
           />

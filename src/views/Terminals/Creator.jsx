@@ -6,17 +6,16 @@ import { useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
-import { shopsAPI } from "../../services/queries/management/shops";
-import { merchantsAPI } from "../../services/queries/management/users/merchnats";
 import { parseError } from "../../helpers/parseError";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { ratesAPI } from "../../services/queries/management/rates";
+import { terminalsAPI } from "../../services/queries/management/terminals";
 
-export default function Creator({ handleClose }) {
+export default function Creator({ shop_guid, handleClose }) {
   const queryClient = useQueryClient();
   const [gateway, setGateway] = useState(null);
 
-  const mutation = useMutation(shopsAPI.addShop, {
+  const mutation = useMutation(terminalsAPI.addTerminal, {
     onSuccess: () => {
       queryClient.invalidateQueries("shop-terminals");
     },
@@ -86,7 +85,25 @@ export default function Creator({ handleClose }) {
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          let data = {};
+          let data = {
+            shop_guid,
+            name: values.name,
+            billing_descriptor: values.billing_descriptor,
+            routing_string: values.routing_string,
+            payment_amount_limit: values.payment_amount_limit.toString(),
+            monthly_amount_limit: values.monthly_amount_limit.toString(),
+            transaction_count_limit: values.transaction_count_limit,
+            supported_brands: values.supported_brands,
+            currency_guid: values.currency?.["guid"],
+            gateway_guid: values.gateway?.["guid"],
+            rate_guid: values.rate?.["guid"],
+            enabled: values.enabled,
+            three_d: values.three_d,
+            enable_checkout: values.enable_checkout,
+            checkout_method: values.checkout_method,
+            antifraud_monitor: values.antifraud_monitor,
+            antifraud_monitor_value: values.antifraud_monitor_value.toString(),
+          };
           await mutation.mutateAsync(data);
           SuccessModal("Terminal was created");
           handleClose();
@@ -113,7 +130,7 @@ export default function Creator({ handleClose }) {
                 name="rate"
                 inputType="select"
                 label="Rate*"
-                options={[]}
+                options={rates?.data}
               />
               <Field
                 name="currency"

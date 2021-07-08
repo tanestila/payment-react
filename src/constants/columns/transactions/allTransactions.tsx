@@ -7,7 +7,9 @@ import { cutGuid } from "../../../helpers/cutGuid";
 import { Copy } from "../../../Components/Common/CopyToClipboard";
 import { formatDateForTable } from "../../../helpers/formatDate";
 import { Button } from "antd";
-import Editor from "../../../views/Users/Merchants/Editor";
+import Editor from "../../../views/Transactions/AllTransactions/Editor";
+import { RatesDetail } from "../../../views/Transactions/AllTransactions/RatesDetail";
+import { ModalChangeActiveStatus } from "../../../views/Transactions/AllTransactions/ModalChangeActiveStatus";
 
 export default function useAllTransactionsColumns(ability: AppAbility) {
   return useMemo(
@@ -102,7 +104,13 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         key: "rates",
         align: "center",
         render: (text: any, record: any) => (
-          <Button className="btn btn-table">Show</Button>
+          <CustomModal
+            header="Edit transaction"
+            content={RatesDetail}
+            contentProps={{ guid: record.guid }}
+            button={<Button className="btn btn-table">Show</Button>}
+            dialogClassName="modal-creator"
+          />
         ),
       },
       ability.can("EXECUTE", "USERADMIN") && {
@@ -110,7 +118,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         align: "center",
         render: (text: string, record: AdminType) => (
           <CustomModal
-            header="Edit admin"
+            header="Edit transaction"
             content={Editor}
             contentProps={{ guid: record.guid }}
             button={
@@ -119,7 +127,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
                 style={{ cursor: "pointer" }}
               />
             }
-            // dialogClassName="modal-creator"
+            dialogClassName="modal-creator"
           />
         ),
       },
@@ -129,7 +137,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         render: (text: string, record: any) => (
           <CustomModal
             header="Edit admin"
-            content={Editor}
+            content={ModalChangeActiveStatus}
             contentProps={{ guid: record.guid }}
             button={
               <Button danger className="btn-table">

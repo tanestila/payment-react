@@ -13,10 +13,23 @@ export const transactionsAPI = {
     );
     return data;
   },
+  updateTransaction: async (body) => {
+    let { data } = await managementService.post(
+      `transactions/processing/`,
+      body
+    );
+    return data;
+  },
   getTransactionProcessingSteps: async (args) => {
     let { data } = await managementService.get(`steps/processing`, {
       params: { ...args },
     });
+    return data;
+  },
+  getTransactionRates: async (guid) => {
+    let { data } = await managementService.get(
+      `transactions/processing/${guid}/rates`
+    );
     return data;
   },
 };

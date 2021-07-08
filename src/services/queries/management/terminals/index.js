@@ -11,4 +11,11 @@ export const terminalsAPI = {
     let { data } = await managementService.get(`shops/${guid}`);
     return data;
   },
+  addTerminal: async ({ shop_guid, ...body }) => {
+    let { data } = await managementService.post(
+      `shops/${shop_guid}/terminals`,
+      body
+    );
+    return data;
+  },
 };
