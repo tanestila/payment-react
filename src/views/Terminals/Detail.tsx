@@ -1,28 +1,32 @@
-import { Card, Descriptions, Divider, Typography } from "antd";
+import { Card, Descriptions, Divider, Alert } from "antd";
 import { useContext } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { shopsAPI } from "../../services/queries/management/shops";
-
 import { auditAPI } from "../../services/queries/audit";
-
 import Table from "../../Components/TableFactory/Table";
 import { useMerchantAuditColumns } from "../../constants/columns";
-const { Text } = Typography;
+import { Loading } from "../../Components/Common";
+import { terminalsAPI } from "../../services/queries/management/terminals";
 
 export default function TerminalDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const {
-    data: group,
+    data: terminal,
     status,
     error,
-  } = useQuery([`shop-${history.id}`], () => shopsAPI.getShop(history.id), {
-    keepPreviousData: true,
-  });
+  } = useQuery(
+    ["terminal", history.id],
+    () => terminalsAPI.getTerminal(history.id),
+    {
+      keepPreviousData: true,
+    }
+  );
 
   const {
     // status: merchantHistoryStatus,
@@ -42,12 +46,19 @@ export default function TerminalDetail() {
   const historyColumns = useMerchantAuditColumns(ability);
 
   if (status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (status === "error") {
     let errorObj = error as any;
-    return <span>Error: {errorObj.message}</span>;
+    return (
+      <Alert
+        message="Error"
+        description={errorObj.message}
+        type="error"
+        showIcon
+      />
+    );
   }
 
   return (
@@ -55,33 +66,33 @@ export default function TerminalDetail() {
       <Card title={`Group detail ${group.group_name}`}>
         <Descriptions column={{ xs: 1, sm: 1, md: 2, lg: 3 }}>
           <Descriptions.Item span={3} label="GUID">
-            {group.group_guid}
+            {terminal.group_guid}
           </Descriptions.Item>
           <Descriptions.Item label="Group type">
-            {group.group_type}
+            {terminal.group_type}
           </Descriptions.Item>
           <Descriptions.Item label="Group name">
-            {group.group_name}
+            {terminal.group_name}
           </Descriptions.Item>
           <Descriptions.Item label="Partner">
-            {group.partner_name}
+            {terminal.partner_name}
           </Descriptions.Item>
           <Descriptions.Item label="Created at">
-            {group.created_at}
+            {terminal.created_at}
           </Descriptions.Item>
           <Descriptions.Item label="Created by">
-            {group.created_by_username}
+            {terminal.created_by_username}
           </Descriptions.Item>
           <Descriptions.Item label="Updated at">
-            {group.updated_at}
+            {terminal.updated_at}
           </Descriptions.Item>
           <Descriptions.Item label="Updated by">
-            {group.updated_by_username}
+            {terminal.updated_by_username}
           </Descriptions.Item>
         </Descriptions>
         <Divider />
 
-        <Text strong>Change history</Text>
+        <h5>Change history</h5>
         <Table
           columns={historyColumns}
           handleTableChange={handleMerchantHistoryTableChange}

@@ -48,3 +48,5 @@ export { default as DailyReport } from "./Reports/Daily";
 export { default as OrderDetail } from "./Transactions/Orders/Detail";
 export { default as ChargebackDetail } from "./Transactions/Chargebacks/Detail";
 export { default as MismatchDetail } from "./Transactions/MismatchTransactions/Detail";
+export { default as StatementCreator } from "./Transactions/Statements/Creator";
+export { default as StatementDetail } from "./Transactions/Statements/Detail";

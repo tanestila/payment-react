@@ -4,6 +4,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import { HelpTip } from "../HelpTip";
 import { CustomSelect } from "../Inputs/CustomSelect";
 import { CustomPhoneInput } from "../Inputs/CustomPhoneInput";
+import { FileInput } from "../Inputs/FileInput";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import "bootstrap-daterangepicker/daterangepicker.css";
 import moment from "moment";
@@ -21,7 +22,9 @@ type CustomInputProps = {
     | "input"
     | "phone"
     | "checkbox"
-    | "array";
+    | "array"
+    | "file"
+    | "multi-select";
   children?: ReactNode;
   id?: string;
   type?: string;
@@ -78,16 +81,56 @@ export const Field: React.FC<CustomInputProps> = ({
     [helpers]
   );
 
+  const onChangeCallbackCheckbox = useCallback(
+    (value) => {
+      helpers.setTouched(true);
+      helpers.setValue(value.currentTarget.checked);
+      callback && callback(value.currentTarget.checked);
+    },
+    [helpers]
+  );
+
+  const uploadFileCallback = useCallback(
+    (event) => {
+      helpers.setTouched(true);
+      let reader = new FileReader();
+      reader.readAsDataURL(event.currentTarget.files[0]);
+
+      reader.onloadend = function () {
+        helpers.setValue(reader.result);
+        callback && callback(reader.result);
+      };
+      reader.onerror = function (error) {
+        console.log("Error: ", error);
+        helpers.setValue("");
+      };
+    },
+    [helpers]
+  );
+
   const renderInput = () => {
     switch (inputType) {
       case "select":
         return (
           <CustomSelect
             {...props}
+            className="m-b-15"
             styles={customStyles}
             options={options}
             onChange={onChangeCallback}
-            defaultValue={field.value}
+            value={field.value}
+          />
+        );
+      case "multi-select":
+        return (
+          <CustomSelect
+            {...props}
+            className="m-b-15"
+            styles={customStyles}
+            options={options}
+            onChange={onChangeCallback}
+            value={field.value}
+            isMulti
           />
         );
       case "date-single":
@@ -132,7 +175,6 @@ export const Field: React.FC<CustomInputProps> = ({
             onChange={onChangeCallback}
           />
         );
-
       case "checkbox":
         return (
           <Form.Control
@@ -141,9 +183,9 @@ export const Field: React.FC<CustomInputProps> = ({
             checked={field.value}
             {...field}
             {...props}
+            onChange={onChangeCallbackCheckbox}
           />
         );
-
       case "input":
         return (
           <Form.Control
@@ -152,7 +194,19 @@ export const Field: React.FC<CustomInputProps> = ({
             {...props}
           />
         );
-
+      case "file":
+        return (
+          <>
+            <FileInput {...field} {...props} onChange={uploadFileCallback} />
+            {/* <Form.Control
+              className="form-control ant-input"
+              {...field}
+              {...props}
+              type="file"
+              onChange={uploadFileCallback}
+            /> */}
+          </>
+        );
       case "array":
         return (
           <FieldArray

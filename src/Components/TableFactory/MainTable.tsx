@@ -32,6 +32,7 @@ type TablePropsType = {
   searchQuery?: any;
   rowKey?: any;
   status: string;
+  rowClassName?: any;
 };
 
 export default function TableFactory({
@@ -47,8 +48,8 @@ export default function TableFactory({
   isError,
   error,
   searchQuery = {},
-  rowKey,
   status,
+  rowClassName,
 }: TablePropsType) {
   const ability = useContext(AbilityContext);
   const [isShowFrom, showForm] = useState(false);
@@ -221,7 +222,8 @@ export default function TableFactory({
             }}
             bordered
             loading={isFetching}
-            rowKey={(record) => uuidv4()}
+            rowKey={() => uuidv4()}
+            rowClassName={rowClassName}
           />
         )}
       </div>

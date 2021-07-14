@@ -3,10 +3,12 @@ import CustomModal from "../../Components/Common/Modal";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import Editor from "../../views/Users/Merchants/Editor";
-import { DeleteModal } from "../../Components/Common/DeleteModal";
 
-export default function useTerminalsColumns(ability, handleDelete) {
+import { DeleteModal } from "../../Components/Common/DeleteModal";
+import Params from "../../views/Terminals/Params";
+import Editor from "../../views/Terminals/Editor";
+
+export default function useTerminalsColumns(ability, handleDelete, shop_guid) {
   return useMemo(
     () => [
       {
@@ -87,9 +89,12 @@ export default function useTerminalsColumns(ability, handleDelete) {
         align: "center",
         render: (cellInfo: any) => (
           <CustomModal
-            header="Edit merchant"
-            content={Editor}
-            contentProps={{ guid: cellInfo.merchant_guid }}
+            header="Edit properties"
+            content={Params}
+            contentProps={{
+              terminal_guid: cellInfo.guid,
+              gateway_guid: cellInfo.gateway_guid,
+            }}
             button={<Button className="btn-table">Show</Button>}
             // dialogClassName="modal-creator"
           />
@@ -131,14 +136,17 @@ export default function useTerminalsColumns(ability, handleDelete) {
           <CustomModal
             header="Edit shop"
             content={Editor}
-            contentProps={{ guid: cellInfo.guid }}
+            contentProps={{
+              terminal_guid: cellInfo.guid,
+              shop_guid,
+            }}
             button={
               <i
                 className="icon-edit icon gray"
                 style={{ cursor: "pointer" }}
               />
             }
-            // dialogClassName="modal-creator"
+            dialogClassName="modal-creator"
           />
         ),
       },
@@ -150,7 +158,9 @@ export default function useTerminalsColumns(ability, handleDelete) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(handleDelete, { guid: cellInfo.guid })}
+            onClick={() =>
+              DeleteModal(handleDelete, { shop_guid, guid: cellInfo.guid })
+            }
           />
         ),
       },

@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
@@ -11,9 +11,18 @@ import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { ratesAPI } from "../../services/queries/management/rates";
 import { terminalsAPI } from "../../services/queries/management/terminals";
 
-export default function Creator({ shop_guid, handleClose }) {
+export default function Editor({ shop_guid, terminal_guid, handleClose }) {
   const queryClient = useQueryClient();
   const [gateway, setGateway] = useState(null);
+
+  const {
+    data: terminal,
+    status,
+    isFetching,
+    error,
+  } = useQuery(["terminal", shop_guid, terminal_guid], () =>
+    terminalsAPI.getTerminal(shop_guid, terminal_guid)
+  );
 
   const mutation = useMutation(terminalsAPI.addTerminal, {
     onSuccess: () => {
@@ -21,45 +30,92 @@ export default function Creator({ shop_guid, handleClose }) {
     },
   });
 
-  const { data: gateways } = useQuery(["gateways"], () =>
-    gatewaysAPI.getGateways()
-  );
+  const {
+    data: gateways,
+    isLoading: isGatewayLoading,
+    isFetching: isGatewayFetching,
+  } = useQuery(["gateways"], () => gatewaysAPI.getGateways());
 
-  const { data: rates } = useQuery(["rates", gateway], () =>
-    ratesAPI.getRates({ gateway_guid: gateway.guid })
+  const { data: rates } = useQuery(
+    ["rates", gateway],
+    () =>
+      ratesAPI.getRates({
+        gateway_guid: gateway.guid,
+      }),
+    { enabled: gateway !== null }
   );
 
   const modifiedGatewaysData = useMemo(() => {
     return gateways
-      ? gateways.data.map((gate) => {
-          gate.currencies = gate.currencies.map((cur) => ({
-            ...cur,
-            name: cur.code,
-          }));
-          return gate;
-        })
+      ? gateways.data.map((gateway) => ({
+          ...gateway,
+          currencies: gateway.currencies.map((currency) => ({
+            ...currency,
+            name: currency.code,
+            label: currency.code,
+            value: currency.guid,
+          })),
+          label: gateway.name,
+          value: gateway.guid,
+        }))
       : [];
   }, [gateways]);
 
+  const modifiedRatesData = useMemo(() => {
+    return rates
+      ? rates.data.map((rate) => ({
+          ...rate,
+          name: rate.name,
+          guid: rate.guid,
+          label: rate.name,
+          value: rate.guid,
+        }))
+      : [];
+  }, [rates]);
+
+  useEffect(() => {
+    if (modifiedGatewaysData && terminal) {
+      const gate = modifiedGatewaysData.filter(
+        (gate) => gate.guid === terminal.gateway_guid
+      )[0];
+      setGateway(gate);
+    }
+  }, [modifiedGatewaysData, terminal]);
+
+  if (
+    status === "loading" ||
+    isFetching ||
+    isGatewayLoading ||
+    isGatewayFetching
+  )
+    return <Loading />;
   return (
     <Formik
       initialValues={{
-        name: "",
-        billing_descriptor: "",
-        routing_string: "",
-        payment_amount_limit: "",
-        monthly_amount_limit: "",
-        transaction_count_limit: "",
-        supported_brands: "",
-        currency: null,
-        gateway: null,
-        rate: null,
-        enabled: false,
-        three_d: false,
-        enable_checkout: false,
-        checkout_method: "",
-        antifraud_monitor: false,
-        antifraud_monitor_value: "",
+        name: terminal.name,
+        billing_descriptor: terminal.billing_descriptor,
+        routing_string: terminal.routing_string,
+        payment_amount_limit: terminal.payment_amount_limit,
+        monthly_amount_limit: terminal.monthly_amount_limit,
+        transaction_count_limit: terminal.transaction_count_limit,
+        supported_brands: terminal.supported_brands,
+        gateway: modifiedGatewaysData.filter(
+          (gate) => gate.guid === terminal.gateway_guid
+        )[0],
+        currency: modifiedGatewaysData
+          .filter((gate) => gate.guid === terminal.gateway_guid)[0]
+          .currencies.filter((cur) => cur.name === terminal.currency_code)[0],
+
+        rate: modifiedRatesData.filter(
+          (rate) => rate.guid === terminal.rate_guid
+        )[0],
+        enabled: terminal.enabled,
+        three_d: terminal.three_d,
+        enable_checkout: terminal.enable_checkout,
+        checkout_method: terminal.checkout_method,
+        antifraud_monitor: terminal.antifraud_monitor,
+        antifraud_monitor_value: terminal.antifraud_monitor_value,
+        reason: "",
       }}
       validationSchema={Yup.object({
         name: Yup.string().required("Required"),
@@ -82,10 +138,12 @@ export default function Creator({ shop_guid, handleClose }) {
         antifraud_monitor_value: Yup.number()
           .typeError("You must specify a number")
           .required("Required"),
+        reason: Yup.string().required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
+            guid: terminal_guid,
             shop_guid,
             name: values.name,
             billing_descriptor: values.billing_descriptor,
@@ -103,9 +161,10 @@ export default function Creator({ shop_guid, handleClose }) {
             checkout_method: values.checkout_method,
             antifraud_monitor: values.antifraud_monitor,
             antifraud_monitor_value: values.antifraud_monitor_value.toString(),
+            reason: values.reason,
           };
           await mutation.mutateAsync(data);
-          SuccessModal("Terminal was created");
+          SuccessModal("Terminal was updated");
           handleClose();
         } catch (error) {
           ErrorModal(parseError(error));
@@ -116,6 +175,7 @@ export default function Creator({ shop_guid, handleClose }) {
     >
       {({ values, isSubmitting, setFieldValue }) => (
         <Form className="modal-form">
+          {console.log(values)}
           <Row>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
               <Field name="name" type="text" label="Name*" />
@@ -133,7 +193,7 @@ export default function Creator({ shop_guid, handleClose }) {
                 name="rate"
                 inputType="select"
                 label="Rate*"
-                options={rates?.data}
+                options={modifiedRatesData}
               />
               <Field
                 name="currency"
@@ -196,6 +256,7 @@ export default function Creator({ shop_guid, handleClose }) {
                 inputType="checkbox"
                 label="Antifraud monitor"
               />
+              <Field name="reason" type="text" label="Reason" />
             </Col>
           </Row>
           {isSubmitting ? (

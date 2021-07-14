@@ -45,9 +45,12 @@ import {
   OrderDetail,
   ChargebackDetail,
   MismatchDetail,
+  StatementCreator,
+  StatementDetail,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
+import TerminalDetail from "../views/Terminals/Detail";
 
 export const adminRoutes = [
   {
@@ -456,6 +459,30 @@ export const adminNonNav = [
     path: "/about/mismatch/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
     component: MismatchDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Terminal detailed",
+    path: "/about/shop/:shopId/terminal/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: TerminalDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Interim statement",
+    path: "/interim/statement",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: StatementCreator,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
+    name: "Statement detail",
+    path: "/about/statement/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: StatementDetail,
   },
 ];
 

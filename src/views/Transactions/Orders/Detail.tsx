@@ -8,13 +8,10 @@ import {
   Alert,
   Col,
 } from "antd";
-import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useParams } from "react-router-dom";
+import { useContext, useMemo } from "react";
+import { useQuery, useQueryClient } from "react-query";
+import { Link, useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { auditAPI } from "../../../services/queries/audit";
-import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
   useGroupMerchantsColumns,
@@ -23,9 +20,9 @@ import { ordersAPI } from "../../../services/queries/report/orders";
 import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
 import CustomModal from "../../../Components/Common/Modal";
-
+import { Table } from "react-bootstrap";
 import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
-import useGroupsAuditColumns from "../../../constants/columns/history/groups";
+import { formatDateForTable } from "../../../helpers/formatDate";
 
 export default function OrderDetail() {
   const ability = useContext(AbilityContext);
@@ -43,6 +40,19 @@ export default function OrderDetail() {
   //     queryClient.invalidateQueries("group-logins");
   //   },
   // });
+  const countryClasses = useMemo(() => {
+    return {
+      ipFlagClasses: order
+        ? ` flag ${order.billing_address.ip_country_code.toLowerCase()}`
+        : "",
+      binFlagClasses: order
+        ? ` flag ${order.customer_details.bin_country.toLowerCase()}`
+        : "",
+      countryFlagClasses: order
+        ? ` flag ${order.billing_address.country.toLowerCase()}`
+        : "",
+    };
+  }, order);
 
   if (status === "loading") {
     return <Loading />;
@@ -64,117 +74,284 @@ export default function OrderDetail() {
     <Row>
       <Space>
         <Col>
-          <Card title={`Transaction guid ${order.guid}`}>
-            <h5>Payment info</h5>
-            <Descriptions
-              // column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-              size="small"
-            >
-              <Descriptions.Item span={3} label="Type">
-                {order.guid}
-              </Descriptions.Item>
-              <Descriptions.Item label="Test transaction">
-                {order.type}
-              </Descriptions.Item>
-              <Descriptions.Item label="Recurring">
-                {order.recurring}
-              </Descriptions.Item>
-              <Descriptions.Item label="Active">
-                {order.active}
-              </Descriptions.Item>
-              <Descriptions.Item label="Status">
-                {order.spec_rate}
-              </Descriptions.Item>
-              <Descriptions.Item label="payment status">
-                {order.payment_status}
-              </Descriptions.Item>
-              <Descriptions.Item label="TrackingId">
-                {order.created_by_username}
-              </Descriptions.Item>
-              <Descriptions.Item label="Date">{order.date}</Descriptions.Item>
-              <Descriptions.Item label="Amount">
-                {order.amount}
-              </Descriptions.Item>
-              <Descriptions.Item label="Currency">
-                {order.currency}
-              </Descriptions.Item>
-              <Descriptions.Item label="Merchant">
-                {order.merchant_name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Shop">
-                {order.updated_by_username}
-              </Descriptions.Item>
-              <Descriptions.Item label="Terminal">
-                {order.updated_by_username}
-              </Descriptions.Item>
-              <Descriptions.Item label="Description">
-                {order.description}
-              </Descriptions.Item>
-              <Descriptions.Item label="Hold release date">
-                {order.hold_date}
-              </Descriptions.Item>
-              <Descriptions.Item label="Bank ID">
-                {order.bank_id}
-              </Descriptions.Item>
-              <Descriptions.Item label="Client ID">
-                {order.client_id}
-              </Descriptions.Item>
-            </Descriptions>
-          </Card>
+          <Space direction="vertical">
+            <Card title={`Transaction guid ${order.transaction_details.guid}`}>
+              <h5>Payment info</h5>
+              <Table responsive className="detailInfo">
+                <tbody>
+                  <tr>
+                    <th>Type:</th>
+                    <td>{order.transaction_details.type}</td>
+                  </tr>
+                  <tr>
+                    <th>Test transaction:</th>
+                    <td>{order.transaction_details.test.toString()}</td>
+                  </tr>
+                  {order.transaction_details.three_d ? (
+                    <tr>
+                      <th>3D:</th>
+                      <td>{order.transaction_details.three_d.toString()}</td>
+                    </tr>
+                  ) : null}
+                  <tr>
+                    <th>Status:</th>
+                    <td>{order.transaction_details.status}</td>
+                  </tr>
+                  {order.transaction_details.status_code ? (
+                    <tr>
+                      <th>Error:</th>
+                      <td>
+                        {order.transaction_details.status_code +
+                          " " +
+                          order.transaction_details.status_message}
+                      </td>
+                    </tr>
+                  ) : null}
+                  <tr>
+                    <th>Payment status:</th>
+                    <td>
+                      {/* <Badge
+                            className={`badge-order-${order.transaction_details.payment_status}`}
+                          >
+                            {order.transaction_details.payment_status}
+                          </Badge> */}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>TrackingID:</th>
+                    <td>{order.transaction_details.tracking_id}</td>
+                  </tr>
+                  <tr>
+                    <th>Date:</th>
+                    <td>
+                      {formatDateForTable(order.transaction_details.date)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Amount:</th>
+                    <td>{order.transaction_details.amount}</td>
+                  </tr>
+                  <tr>
+                    <th>Currency:</th>
+                    <td>{order.transaction_details.currency}</td>
+                  </tr>
+                  <tr>
+                    <th>Merchant:</th>
+                    <td>
+                      <Link
+                        className="link"
+                        to={`/about/merchant/${order.transaction_details.merchant_guid}`}
+                      >
+                        {order.transaction_details.merchant_name}
+                      </Link>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Shop:</th>
+                    <td>
+                      <Link
+                        className="link"
+                        to={`/about/shop/${order.transaction_details.shop_guid}`}
+                      >
+                        {order.transaction_details.shop_name}
+                      </Link>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Terminal:</th>
+                    <td>
+                      <Link
+                        className="link"
+                        to={`/about/${order.transaction_details.shop_guid}/terminal/${order.transaction_details.terminal_guid}`}
+                      >
+                        {order.transaction_details.terminal_name}
+                      </Link>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Description:</th>
+                    <td>{order.transaction_details.description}</td>
+                  </tr>
+                  {order.transaction_details.type === "Recurring" && (
+                    <tr>
+                      <th>Recurring:</th>
+                      <td>
+                        {order.transaction_details.recurring ? "true" : "false"}
+                      </td>
+                    </tr>
+                  )}
+                  {order.transaction_details.type === "Recurring" && (
+                    <tr>
+                      <th>Recurring:</th>
+                      <td>
+                        {order.transaction_details.recurring_period_length}
+                        {order.transaction_details.recurring_period_unit}
+                      </td>
+                    </tr>
+                  )}
+                  {order.transaction_details.hold_date && (
+                    <tr>
+                      <th>Hold release date:</th>
+                      <td>
+                        {formatDateForTable(
+                          order.transaction_details.hold_date
+                        )}
+                      </td>
+                    </tr>
+                  )}
+
+                  {order.transaction_details.bank_id && (
+                    <tr>
+                      <th>Bank ID:</th>
+                      <td>{order.transaction_details.bank_id}</td>
+                    </tr>
+                  )}
+                  {order.transaction_details.client_id && (
+                    <tr>
+                      <th>Client ID:</th>
+                      <td>{order.transaction_details.client_id}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </Card>
+          </Space>
         </Col>
         <Col>
           <Space direction="vertical">
             <Card title={"Customer details"}>
-              <Descriptions
-                // column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-                size="small"
-              >
-                <Descriptions.Item span={3} label="GUID">
-                  {order.guid}
-                </Descriptions.Item>
-                <Descriptions.Item label="Type">{order.type}</Descriptions.Item>
-                <Descriptions.Item label="Spec rate">
-                  {order.spec_rate}
-                </Descriptions.Item>
-                <Descriptions.Item label="Created at">
-                  {order.created_at}
-                </Descriptions.Item>
-                <Descriptions.Item label="Created by">
-                  {order.created_by_username}
-                </Descriptions.Item>
-                <Descriptions.Item label="Updated at">
-                  {order.updated_at}
-                </Descriptions.Item>
-                <Descriptions.Item label="Updated by">
-                  {order.updated_by_username}
-                </Descriptions.Item>
-              </Descriptions>
+              <Table responsive className="detailInfo">
+                <tbody>
+                  <tr>
+                    <th>Card holder:</th>
+                    <td>{order.customer_details.card_holder}</td>
+                    <td>
+                      {/* <Button
+                            value={order.customer_details.card_number}
+                            type="mask"
+                          /> */}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Card number:</th>
+                    <td>{order.customer_details.card_number}</td>
+                    <td>
+                      <Button
+                        value={order.customer_details.card_number}
+                        type="mask"
+                        name={`order-tr-GUID-${order.transaction_details.guid}-mask`}
+                        merchant_guid={order.transaction_details.merchant_guid}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Card schema:</th>
+                    <td>{order.customer_details.card_schema}</td>
+                  </tr>
+                  <tr>
+                    <th>Card type:</th>
+                    <td>{order.customer_details.card_type}</td>
+                  </tr>
+                  <tr>
+                    <th>Euro card:</th>
+                    <td>{order.customer_details.card_eu}</td>
+                  </tr>
+                  <tr>
+                    <th>Email:</th>
+                    <td>{order.customer_details.email}</td>
+                    <td>
+                      <Button
+                        value={order.customer_details.email}
+                        type="email"
+                        name={`order-tr-GUID-${order.transaction_details.guid}-email`}
+                        merchant_guid={order.transaction_details.merchant_guid}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Phone:</th>
+                    <td>{order.customer_details.phone}</td>
+                  </tr>
+                  <tr>
+                    <th>IP:</th>
+                    <td>
+                      <Row>
+                        <Col>
+                          {order.customer_details.ip}(
+                          {order.billing_address.ip_country_code})
+                        </Col>
+                        <Col className="react-tel-input">
+                          <div className={countryClasses.ipFlagClasses} />
+                        </Col>
+                      </Row>
+                    </td>
+                    <td>
+                      <Button
+                        value={order.customer_details.ip}
+                        type="ip"
+                        name={`order-tr-GUID-${order.transaction_details.guid}-ip`}
+                        merchant_guid={order.transaction_details.merchant_guid}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>BIN country:</th>
+                    <td>
+                      <Row>
+                        <Col>{order.customer_details.bin_country}</Col>
+                        <Col className="react-tel-input">
+                          <div className={countryClasses.binFlagClasses} />
+                        </Col>
+                      </Row>
+                    </td>
+                    <td>
+                      <Button
+                        value={order.customer_details.bin_country}
+                        type="country"
+                        name={`order-tr-GUID-${order.transaction_details.guid}-country`}
+                        merchant_guid={order.transaction_details.merchant_guid}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             </Card>
             <Card title={"Billng addresss"}>
-              <Descriptions
-                // column={{ xxl: 3, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-                size="small"
-              >
-                <Descriptions.Item span={3} label="GUID">
-                  {order.guid}
-                </Descriptions.Item>
-                <Descriptions.Item label="Type">{order.type}</Descriptions.Item>
-                <Descriptions.Item label="Spec rate">
-                  {order.spec_rate}
-                </Descriptions.Item>
-                <Descriptions.Item label="Created at">
-                  {order.created_at}
-                </Descriptions.Item>
-                <Descriptions.Item label="Created by">
-                  {order.created_by_username}
-                </Descriptions.Item>
-                <Descriptions.Item label="Updated at">
-                  {order.updated_at}
-                </Descriptions.Item>
-                <Descriptions.Item label="Updated by">
-                  {order.updated_by_username}
-                </Descriptions.Item>
-              </Descriptions>
+              <Table responsive className="detailInfo">
+                <tbody>
+                  <tr>
+                    <th>First name:</th>
+                    <td>{order.billing_address.first_name}</td>
+                  </tr>
+                  <tr>
+                    <th>Last name:</th>
+                    <td>{order.billing_address.last_name}</td>
+                  </tr>
+                  <tr>
+                    <th>Country:</th>
+                    <td>
+                      <Row>
+                        <Col>{order.billing_address.country}</Col>
+                        <Col className="react-tel-input">
+                          <div className={countryClasses.countryFlagClasses} />
+                        </Col>
+                      </Row>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>City</th>
+                    <td>{order.billing_address.city}</td>
+                  </tr>
+                  <tr>
+                    <th>Address:</th>
+                    <td>{order.billing_address.address}</td>
+                  </tr>
+                  <tr>
+                    <th>Zip:</th>
+                    <td>{order.billing_address.zip}</td>
+                  </tr>
+                </tbody>
+              </Table>
             </Card>
           </Space>
         </Col>

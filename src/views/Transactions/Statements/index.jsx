@@ -4,8 +4,12 @@ import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { cutGuid } from "../../../helpers/cutGuid";
 import { statementsAPI } from "../../../services/queries/management/statements";
 import { Badge } from "react-bootstrap";
+import { Can, AbilityContext } from "../../../Components/Common/Can";
+import React, { useContext } from "react";
+import { Button } from "antd";
 
 export default function Statements() {
+  const ability = useContext(AbilityContext);
   const {
     isLoading,
     isError,
@@ -138,6 +142,29 @@ export default function Statements() {
       isFetching={isFetching}
       data={data}
       items={items}
+      rowClassName={(record) => {
+        console.log(record);
+        return record.merge_statement_flag ? "colored" : undefined;
+      }}
+      modalComponent={
+        <React.Fragment
+          allowed={
+            ability.can("EXECUTE", "STATEMENTS") ||
+            ability.can("EXECUTE", "MERGESTATEMENTS")
+          }
+        >
+          <Can do="EXECUTE" on="STATEMENTS">
+            <Link to="/interim/statement">
+              <Button>Interim statement</Button>
+            </Link>
+          </Can>
+          <Can do="EXECUTE" on="MERGESTATEMENTS">
+            <Link to="/payable/statement">
+              <Button>Payable statement</Button>
+            </Link>
+          </Can>
+        </React.Fragment>
+      }
     />
   );
 }

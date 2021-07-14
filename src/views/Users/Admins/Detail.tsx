@@ -12,6 +12,7 @@ import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
 import { useAdminRolesColumns } from "../../../constants/columns/users/admins";
 import { RowAddRole } from "../Common/RowAddRole";
+
 export default function AdminDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();

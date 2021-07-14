@@ -7,6 +7,8 @@ type CustomSelectProps = {
   defaultValue?: any;
   styles?: any;
   value?: any;
+  isMulti?: boolean;
+  className?: string;
 };
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({

@@ -14,7 +14,6 @@ import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { auditAPI } from "../../../services/queries/audit";
-import Table from "../../../Components/TableFactory/Table";
 import {
   useLoginColumns,
   useGroupMerchantsColumns,
@@ -23,9 +22,26 @@ import { chargebacksAPI } from "../../../services/queries/management/transaction
 import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
 import CustomModal from "../../../Components/Common/Modal";
-
+import { Table } from "react-bootstrap";
 import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
 import useGroupsAuditColumns from "../../../constants/columns/history/groups";
+import { mismatchAPI } from "../../../services/queries/management/transactions/mismatch";
+
+const parameters = [
+  { path: "card_number", label: "card_number" },
+  { path: "merchant_name", label: "merchant_name" },
+  { path: "merchant_id", label: "merchant_id" },
+  { path: "card_schema", label: "card_schema" },
+  { path: "amount", label: "amount" },
+  { path: "currency_code", label: "currency_code" },
+  { path: "tr_type", label: "tr_type" },
+  { path: "proc_code", label: "proc_code" },
+  { path: "issuer_country", label: "issuer_country" },
+  { path: "proc_region", label: "proc_region" },
+  { path: "merchant_country", label: "merchant_country" },
+  { path: "tran_region", label: "tran_region" },
+  { path: "card_product_type", label: "card_product_class" },
+];
 
 export default function MismatchDetail() {
   const ability = useContext(AbilityContext);
@@ -33,11 +49,11 @@ export default function MismatchDetail() {
   const queryClient = useQueryClient();
 
   const {
-    data: chargeback,
+    data: mismatchTransaction,
     status,
     error,
-  } = useQuery(["chargeback", history.id], () =>
-    chargebacksAPI.getChargeback(history.id)
+  } = useQuery(["mismatch-transaction", history.id], () =>
+    mismatchAPI.getMismatchTransaction(history.id)
   );
 
   // const deleteGroupLoginMutation = useMutation(groupsAPI.deleteGroupLogin, {
@@ -64,29 +80,41 @@ export default function MismatchDetail() {
 
   return (
     <>
-      <Card title={`Chargeback guid ${chargeback.guid}`}>
-        <Descriptions
-          column={{ xxl: 1, xl: 1, lg: 1, md: 1, sm: 1, xs: 1 }}
-          size="small"
-        >
-          <Descriptions.Item label="GUID">{chargeback.guid}</Descriptions.Item>
-          <Descriptions.Item label="Type">{chargeback.type}</Descriptions.Item>
-          <Descriptions.Item label="Spec rate">
-            {chargeback.spec_rate}
-          </Descriptions.Item>
-          <Descriptions.Item label="Created at">
-            {chargeback.created_at}
-          </Descriptions.Item>
-          <Descriptions.Item label="Created by">
-            {chargeback.created_by_username}
-          </Descriptions.Item>
-          <Descriptions.Item label="Updated at">
-            {chargeback.updated_at}
-          </Descriptions.Item>
-          <Descriptions.Item label="Updated by">
-            {chargeback.updated_by_username}
-          </Descriptions.Item>
-        </Descriptions>
+      <Card title={`Chargeback guid ${mismatchTransaction.guid}`}>
+        <Table responsive className="detailInfo">
+          <tbody>
+            <tr>
+              <th>transaction_processing_guid:</th>
+              <td>{mismatchTransaction.transaction_processing_guid}</td>
+            </tr>
+            <tr>
+              <th>payment_id:</th>
+              <td>{mismatchTransaction.payment_id}</td>
+            </tr>
+            <tr>
+              <th>created_at:</th>
+              <td>{mismatchTransaction.created_at}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </Card>
+      <Card title={`Info`}>
+        <Table responsive className="detailInfo">
+          <tbody>
+            <tr>
+              <th>parameters</th>
+              <th>Our </th>
+              <th>Decta </th>
+            </tr>
+            {parameters.map((item) => (
+              <tr key={item.path}>
+                <td>{item.label}</td>
+                <td>{mismatchTransaction[item.path]}</td>
+                <td>{mismatchTransaction.decta[item.path]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Card>
     </>
   );

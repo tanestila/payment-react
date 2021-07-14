@@ -1,10 +1,11 @@
 import { Card, Descriptions, Divider, Alert, Button, Row } from "antd";
 import { useContext } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../Components/Common/Can";
 import useTableQuery from "../../Components/TableFactory/useTableQuery";
 import { shopsAPI } from "../../services/queries/management/shops";
+import { terminalsAPI } from "../../services/queries/management/terminals";
 import { auditAPI } from "../../services/queries/audit";
 import Table from "../../Components/TableFactory/Table";
 import {
@@ -19,6 +20,7 @@ import TerminalCreator from "../Terminals/Creator";
 export default function ShopDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
 
   const {
     data: shop,
@@ -57,8 +59,18 @@ export default function ShopDetail() {
     [history.id]
   );
 
+  const deleteTerminalMutation = useMutation(terminalsAPI.deleteTerminal, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("shop-terminals");
+    },
+  });
+
   const historyColumns = useShopsAuditColumns(ability);
-  const terminalsColumns = useTerminalsColumns(ability);
+  const terminalsColumns = useTerminalsColumns(
+    ability,
+    deleteTerminalMutation,
+    history.id
+  );
 
   if (status === "loading") {
     return <Loading />;
