@@ -11,27 +11,11 @@ export const Creator = ({ handleClose }) => {
     <Formik
       initialValues={{
         name: "",
-        code: "",
-        number: "",
-        rate_to_eur: "",
-        exchange_markup_value: "",
-        isFlat: false,
+        description: "",
       }}
       validationSchema={Yup.object({
         name: Yup.string().min(1).max(100).trim().required("Required"),
-        code: Yup.string()
-          .matches(/^[A-Z]{3}$/, "Must contain three uppercase characters")
-          .required("Required"),
-        number: Yup.string()
-          .matches(/^[0-9]{3}$/, "Must contain three digits")
-          .required("Required"),
-        rate_to_eur: Yup.number().required("Required"),
-        exchange_markup_value: Yup.number()
-          .typeError("you must specify a number")
-          .min(0)
-          .max(100)
-          .required("Required"),
-        isFlat: Yup.boolean().required("Required"),
+        description: Yup.string().trim().required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
@@ -49,16 +33,8 @@ export const Creator = ({ handleClose }) => {
         <Form onSubmit={formik.handleSubmit}>
           <Row>
             <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field name="name" type="text" label="name" />
-              <Field name="code" type="text" label="code" />
-              <Field name="number" type="text" label="number" />
-              <Field name="rate_to_eur" type="text" label="Rate to eur" />
-              <Field
-                name="exchange_markup_value"
-                type="number"
-                label="exchange_markup_value"
-              />
-              <Field name="isFlat" type="checkbox" label="isFlat" />
+              <Field name="name" type="text" label="Name" />
+              <Field name="description" type="text" label="Description" />
             </Col>
           </Row>
           {mutation.isLoading && "loading"}

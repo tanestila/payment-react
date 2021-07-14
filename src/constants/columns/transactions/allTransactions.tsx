@@ -109,7 +109,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
             content={RatesDetail}
             contentProps={{ guid: record.guid }}
             button={<Button className="btn btn-table">Show</Button>}
-            dialogClassName="modal-creator"
+            // dialogClassName="modal-creator"
           />
         ),
       },
@@ -136,7 +136,7 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
         align: "center",
         render: (text: string, record: any) => (
           <CustomModal
-            header="Edit admin"
+            header="Change transaction"
             content={ModalChangeActiveStatus}
             contentProps={{ guid: record.guid }}
             button={

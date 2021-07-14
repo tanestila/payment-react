@@ -44,4 +44,10 @@ export const terminalsAPI = {
     );
     return data;
   },
+  getGatewayTerminals: async (gateway_guid) => {
+    let { data } = await managementService.get(
+      `gateway/${gateway_guid}/terminals`
+    );
+    return data;
+  },
 };

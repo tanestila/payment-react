@@ -50,3 +50,5 @@ export { default as ChargebackDetail } from "./Transactions/Chargebacks/Detail";
 export { default as MismatchDetail } from "./Transactions/MismatchTransactions/Detail";
 export { default as StatementCreator } from "./Transactions/Statements/Creator";
 export { default as StatementDetail } from "./Transactions/Statements/Detail";
+export { default as GatewayDetail } from "./System/Gateways/Detail";
+export { default as RateDetail } from "./System/Rates/Detail";

@@ -16,7 +16,7 @@ export default function useGatewaysColumns(ability: AppAbility) {
         sorter: true,
         search: "text",
         render: (text: string, record: GroupType) => (
-          <Link className="link" to={`/about/group/${record.guid}`}>
+          <Link className="link" to={`/about/gateway/${record.guid}`}>
             {text}
           </Link>
         ),

@@ -15,7 +15,7 @@ export default function useRatesColumns(ability: AppAbility) {
         sorter: true,
         search: "text",
         render: (text: string, record: ShopType) => (
-          <Link className="link" to={`/about/rates/${record.guid}`}>
+          <Link className="link" to={`/about/rate/${record.guid}`}>
             {text}
           </Link>
         ),

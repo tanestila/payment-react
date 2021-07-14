@@ -47,6 +47,8 @@ import {
   MismatchDetail,
   StatementCreator,
   StatementDetail,
+  GatewayDetail,
+  RateDetail,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
@@ -483,6 +485,22 @@ export const adminNonNav = [
     path: "/about/statement/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
     component: StatementDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Systems",
+    name: "Gateway detail",
+    path: "/about/gateway/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: GatewayDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Systems",
+    name: "Rates detail",
+    path: "/about/rate/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: RateDetail,
   },
 ];
 

@@ -37,9 +37,9 @@ export default function Gateways() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          button={<Button type="primary">Create currency</Button>}
+          button={<Button type="primary">Create gateway</Button>}
           content={Creator}
-          header="Create currency"
+          header="Create gateway"
           dialogClassName="modal-creator"
         />
       }
