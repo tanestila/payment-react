@@ -14,6 +14,7 @@ export default function MismatchTransactions() {
     isError,
     error,
     data,
+    status,
     items,
     search,
     isFetching,
@@ -36,6 +37,10 @@ export default function MismatchTransactions() {
       isFetching={isFetching}
       data={data}
       items={items}
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      status={status}
     />
   );
 }

@@ -1,16 +1,14 @@
 import { Card } from "antd";
-import StatementForm from "./common/interim/StatementForm";
+import MergeStatementForm from "./common/payable/MergeStatementForm";
 import { statementsAPI } from "../../../services/queries/management/statements";
 import { useMutation, useQueryClient } from "react-query";
 import StatementTables from "./common/interim/StatementTables";
 import { useState } from "react";
 import { Loading } from "../../../Components/Common";
-import { useHistory } from "react-router-dom";
 
-const Creator = () => {
+const Merge = () => {
   const [statement, setStatement] = useState(null);
   const queryClient = useQueryClient();
-  let history = useHistory();
 
   const mutation = useMutation(statementsAPI.createStatement, {
     onSuccess: () => {
@@ -18,19 +16,16 @@ const Creator = () => {
     },
   });
 
-  const onSubmit = async (data, isSave) => {
+  const onSubmit = async (data) => {
     const statement = await mutation.mutateAsync(data);
-    if (isSave) {
-      history.push("/transactions/statements");
-    } else {
-      setStatement(statement);
-    }
+    console.log(statement);
+    setStatement(statement);
   };
 
   return (
     <div>
       <Card title="Interim statement">
-        <StatementForm onSubmit={onSubmit} />
+        <MergeStatementForm onSubmit={onSubmit} />
       </Card>
       <br />
       <Card>
@@ -43,4 +38,4 @@ const Creator = () => {
     </div>
   );
 };
-export default Creator;
+export default Merge;

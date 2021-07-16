@@ -138,10 +138,14 @@ export default function useAllTransactionsColumns(ability: AppAbility) {
           <CustomModal
             header="Change transaction"
             content={ModalChangeActiveStatus}
-            contentProps={{ guid: record.guid }}
+            contentProps={{ guid: record.guid, active: record.active }}
             button={
-              <Button danger className="btn-table">
-                Deactivate
+              <Button
+                danger={record.active}
+                type={!record.active ? "ghost" : undefined}
+                className="btn-table"
+              >
+                {record.active ? "Deactivate" : "Activate"}
               </Button>
             }
             // dialogClassName="modal-creator"

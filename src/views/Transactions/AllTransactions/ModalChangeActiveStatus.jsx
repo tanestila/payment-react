@@ -1,11 +1,20 @@
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
-import { Alert, Button } from "antd";
+import { Button } from "antd";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { parseError } from "../../../helpers/parseError";
+import { useMutation, useQueryClient } from "react-query";
+import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 
-export const ModalChangeActiveStatus = ({ handleClose, guid }) => {
+export const ModalChangeActiveStatus = ({ handleClose, guid, active }) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation(transactionsAPI.activeTransaction, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("transactions");
+    },
+  });
+
   return (
     <div>
       <Formik
@@ -18,10 +27,12 @@ export const ModalChangeActiveStatus = ({ handleClose, guid }) => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             let data = {
-              reason: "",
+              guid,
+              reason: values.reason,
+              active: active ? 0 : 1,
             };
-            // await merchantMutation.mutateAsync(data);
-            SuccessModal("Merchant was updated");
+            await mutation.mutateAsync(data);
+            SuccessModal("Transaction status changed");
             handleClose();
           } catch (error) {
             ErrorModal(parseError(error));

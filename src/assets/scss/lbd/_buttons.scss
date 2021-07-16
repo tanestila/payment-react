@@ -164,7 +164,7 @@
   border-width: 1px;
   height: 20px;
   @include opacity(1);
-  @include btn-styles(gray, #bdbdbd);
+  // @include btn-styles(gray, #bdbdbd);
 
   &.btn-danger {
     @include btn-styles(#fb3743, #ff989e);

@@ -52,3 +52,5 @@ export { default as StatementCreator } from "./Transactions/Statements/Creator";
 export { default as StatementDetail } from "./Transactions/Statements/Detail";
 export { default as GatewayDetail } from "./System/Gateways/Detail";
 export { default as RateDetail } from "./System/Rates/Detail";
+export { default as TerminalDetail } from "./Terminals/Detail";
+export { default as StatementMerge } from "./Transactions/Statements/Merge";

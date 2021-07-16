@@ -1,14 +1,10 @@
-import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useMemo, useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import { useMemo } from "react";
 import { Button } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
 import { parseError } from "../../helpers/parseError";
-import { gatewaysAPI } from "../../services/queries/management/gateways";
-import { ratesAPI } from "../../services/queries/management/rates";
 import { terminalsAPI } from "../../services/queries/management/terminals";
 
 export default function Params({ terminal_guid, gateway_guid, handleClose }) {
@@ -38,7 +34,6 @@ export default function Params({ terminal_guid, gateway_guid, handleClose }) {
   return (
     <Formik
       initialValues={initialValues}
-      // validationSchema={Yup.object({ schema })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let results = await Promise.allSettled(

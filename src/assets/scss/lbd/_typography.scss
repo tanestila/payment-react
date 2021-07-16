@@ -143,3 +143,65 @@ h1 .subtitle {
 .ant-descriptions-item-label {
   color: #9a9a9a;
 }
+
+.badge {
+  min-width: 100px;
+  font-weight: 400;
+  border-radius: 5px;
+  text-transform: capitalize;
+  color: white;
+}
+.badge-pill {
+  color: black;
+}
+.badge-rate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #51bcda;
+  border-radius: 5px;
+}
+.badge-role-type {
+  background-color: transparent;
+  color: black;
+  font-weight: 1000;
+  font-size: 14;
+}
+.badge-privilege-type {
+  background-color: transparent;
+  color: black;
+  font-weight: 1000;
+  font-size: 14;
+}
+.badge-order-paid,
+.badge-statement-paid,
+.badge-order-success {
+  background-color: #26a69a;
+}
+.badge-order-unpaid,
+.badge-order-pending,
+.badge-order-3dwaiting {
+  background-color: #d9b15a;
+}
+.badge-order-aborted,
+.badge-order-failed {
+  background-color: #ec5e6f;
+}
+.badge-order-refunded {
+  background-color: #ec5e6f;
+}
+.badge-order-cancelled {
+  background-color: #d9b15a;
+}
+.badge-order-subscribed {
+  background-color: #1378cb;
+}
+.badge-statement-created {
+  background-color: #8f939f;
+}
+.badge-statement-verified {
+  background-color: #1378cb;
+}
+.badge-statement-paymentdue {
+  background-color: #d9b15a;
+}

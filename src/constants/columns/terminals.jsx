@@ -2,11 +2,10 @@ import { useMemo } from "react";
 import CustomModal from "../../Components/Common/Modal";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
-
 import { DeleteModal } from "../../Components/Common/DeleteModal";
 import Params from "../../views/Terminals/Params";
 import Editor from "../../views/Terminals/Editor";
+import { GenerateNewSecret } from "../../views/Terminals/GenerateNewSecret";
 
 export default function useTerminalsColumns(ability, handleDelete, shop_guid) {
   return useMemo(
@@ -16,7 +15,7 @@ export default function useTerminalsColumns(ability, handleDelete, shop_guid) {
         dataIndex: "guid",
         key: "guid",
         render: (text: string) => (
-          <Link className="link" to={`/about/terminal/${text}`}>
+          <Link className="link" to={`/about/${shop_guid}/terminal/${text}`}>
             {text}
           </Link>
         ),
@@ -105,27 +104,19 @@ export default function useTerminalsColumns(ability, handleDelete, shop_guid) {
         key: "generate",
         align: "center",
         render: (cellInfo: any) => (
-          <i
-            className="fas fa-sync icon blue"
-            style={{ cursor: "pointer" }}
-            onClick={() =>
-              Swal({
-                title: "Are you sure?",
-                text: "You want to generate a new secret and hash key",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-              }).then((willGenerate) => {
-                if (willGenerate) {
-                  this.handleGenerate(cellInfo.guid);
-                  Swal("Generated", {
-                    icon: "success",
-                    button: false,
-                    timer: 2000,
-                  });
-                }
-              })
+          <CustomModal
+            header=""
+            content={GenerateNewSecret}
+            contentProps={{
+              terminal_guid: cellInfo.guid,
+            }}
+            button={
+              <i
+                className="fas fa-sync icon blue"
+                style={{ cursor: "pointer" }}
+              />
             }
+            // dialogClassName="modal-creator"
           />
         ),
       },
@@ -134,7 +125,7 @@ export default function useTerminalsColumns(ability, handleDelete, shop_guid) {
         align: "center",
         render: (cellInfo: any) => (
           <CustomModal
-            header="Edit shop"
+            header="Edit terminal"
             content={Editor}
             contentProps={{
               terminal_guid: cellInfo.guid,

@@ -4,12 +4,16 @@ import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
-import { useMemo } from "react";
-import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Alert, Button } from "antd";
-import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
+
+const statuses = [
+  { name: "Success", guid: "1", label: "Success", value: "1" },
+  { name: "Failed", guid: "2", label: "Failed", value: "2" },
+  { name: "Pending", guid: "3", label: "Pending", value: "3" },
+  { name: "3Dwaiting", guid: "4", label: "3Dwaiting", value: "4" },
+];
 
 export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -35,7 +39,9 @@ export default function Editor({ handleClose, guid }) {
       ) : (
         <Formik
           initialValues={{
-            status: transaction.status,
+            status: statuses.filter(
+              (status) => status.name === transaction.status
+            )[0],
             date: transaction.date_time,
             bin_country: transaction.bin_country,
             amount: transaction.amount,
@@ -53,8 +59,8 @@ export default function Editor({ handleClose, guid }) {
           validationSchema={() => {
             return Yup.lazy((values) => {
               let schema = {
-                status: Yup.string().required("Required"),
-                date: Yup.string().required("Required"),
+                status: Yup.object().typeError("Required").required("Required"),
+                date: Yup.string().typeError("Required").required("Required"),
                 bin_country: Yup.string().required("Required"),
                 amount: Yup.number()
                   .typeError("You must specify a number")
@@ -93,19 +99,19 @@ export default function Editor({ handleClose, guid }) {
           onSubmit={async (values, { setSubmitting }) => {
             try {
               let data = {
-                status: values.merchant_name,
-                date: values.merchant_type,
-                bin_country: values.monthly_fee,
-                amount: values.monthly_fee,
-                to_processor_pct: values.monthly_fee_date,
-                to_processor_fixed: values.monthly_amount_limit,
-                to_bank_pct: values.custom_amount_limit,
-                need_rates_changes: values.custom_days_limit,
-                to_bank_fixed: values.custom_days_limit,
-                hold: values.custom_days_limit,
-                hold_date: values.custom_days_limit,
-                hold_flag: values.custom_days_limit,
-                reason: "",
+                guid,
+                status: values.status.name,
+                date: values.date,
+                bin_country: values.bin_country,
+                amount: values.amount.toString(),
+                to_processor_pct: values.to_processor_pct,
+                to_processor_fixed: values.to_processor_fixed,
+                to_bank_pct: values.to_bank_pct,
+                to_bank_fixed: values.to_bank_fixed,
+                hold: values.hold,
+                hold_date: values.hold_date,
+                hold_flag: values.hold_flag,
+                reason: values.reason,
               };
               await merchantMutation.mutateAsync(data);
               SuccessModal("Merchant was updated");
@@ -129,8 +135,13 @@ export default function Editor({ handleClose, guid }) {
               )}
               <Row>
                 <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-                  <Field name="status" type="text" label="Status*" />
-                  <Field name="date" type="text" label="Date*" />
+                  <Field
+                    name="status"
+                    inputType="select"
+                    options={statuses}
+                    label="Status*"
+                  />
+                  <Field name="date" inputType="date-time" label="Date*" />
                   <Field name="bin_country" type="text" label="BIN country*" />
                   <Field name="amount" type="number" label="Amount*" />
                   <Field name="reason" type="text" label="Reason*" />
@@ -146,12 +157,12 @@ export default function Editor({ handleClose, guid }) {
                       <Field name="hold" type="number" label="Hold*" />
                       <Field
                         name="hold_date"
-                        type="number"
+                        inputType="date-single"
                         label="Hold date*"
                       />
                       <Field
                         name="hold_flag"
-                        type="number"
+                        inputType="checkbox"
                         label="Hold flag*"
                       />
                       <Field

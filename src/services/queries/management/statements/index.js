@@ -8,9 +8,7 @@ export const statementsAPI = {
     return data;
   },
   createStatement: async (body) => {
-    let { data } = await managementService.post("statements", {
-      body,
-    });
+    let { data } = await managementService.post("statements", body);
     return data;
   },
   getStatement: async (guid) => {

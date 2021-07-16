@@ -1,30 +1,10 @@
-import {
-  Card,
-  Descriptions,
-  Divider,
-  Button,
-  Row,
-  Space,
-  Alert,
-  Col,
-} from "antd";
+import { Card, Alert } from "antd";
 import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { auditAPI } from "../../../services/queries/audit";
-import {
-  useLoginColumns,
-  useGroupMerchantsColumns,
-} from "../../../constants/columns";
-import { chargebacksAPI } from "../../../services/queries/management/transactions/chargebacks";
-import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
-import CustomModal from "../../../Components/Common/Modal";
 import { Table } from "react-bootstrap";
-import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
-import useGroupsAuditColumns from "../../../constants/columns/history/groups";
 import { mismatchAPI } from "../../../services/queries/management/transactions/mismatch";
 
 const parameters = [
@@ -46,7 +26,6 @@ const parameters = [
 export default function MismatchDetail() {
   const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
 
   const {
     data: mismatchTransaction,
@@ -55,12 +34,6 @@ export default function MismatchDetail() {
   } = useQuery(["mismatch-transaction", history.id], () =>
     mismatchAPI.getMismatchTransaction(history.id)
   );
-
-  // const deleteGroupLoginMutation = useMutation(groupsAPI.deleteGroupLogin, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("group-logins");
-  //   },
-  // });
 
   if (status === "loading") {
     return <Loading />;

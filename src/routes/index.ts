@@ -49,10 +49,11 @@ import {
   StatementDetail,
   GatewayDetail,
   RateDetail,
+  TerminalDetail,
+  StatementMerge,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
-import TerminalDetail from "../views/Terminals/Detail";
 
 export const adminRoutes = [
   {
@@ -481,6 +482,14 @@ export const adminNonNav = [
   {
     nonNav: true,
     mainName: "Transactions",
+    name: "Payable statement",
+    path: "/payable/statement",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: StatementMerge,
+  },
+  {
+    nonNav: true,
+    mainName: "Transactions",
     name: "Statement detail",
     path: "/about/statement/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
@@ -501,6 +510,14 @@ export const adminNonNav = [
     path: "/about/rate/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
     component: RateDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Shops",
+    name: "Terminal detail",
+    path: "/about/:shop_guid/terminal/:terminal_guid",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: TerminalDetail,
   },
 ];
 

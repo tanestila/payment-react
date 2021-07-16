@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import CustomModal from "../../../Components/Common/Modal";
 import { Link } from "react-router-dom";
-import { AppAbility } from "../../../Components/Common/Can";
-import { AdminType } from "../../../types/admins";
 import { cutGuid } from "../../../helpers/cutGuid";
 import { Copy } from "../../../Components/Common/CopyToClipboard";
 import { Params } from "../../../views/Transactions/Templates/Params";
+import { Params as ProcessingParams } from "../../../views/Transactions/AllTransactions/Params";
 import { Button } from "antd";
+import moment from "moment";
 
 export default function useTransactionStepsColumns() {
   return useMemo(
@@ -45,7 +45,7 @@ export default function useTransactionStepsColumns() {
             content={Params}
             contentProps={{ guid: step.guid }}
             button={
-              <Button type="button" className="btn">
+              <Button type="button" className="btn-table">
                 Show
               </Button>
             }
@@ -94,16 +94,25 @@ export function useTransactionProcessingStepsColumns() {
         title: "Created at",
         dataIndex: "created_at",
         key: "created_at",
+        render: (text) =>
+          moment(text).utcOffset(0).format("DD.MM.YYYY HH:mm:ss.SSS"),
       },
       {
         title: "Updated at",
         dataIndex: "updated_at",
         key: "updated_at",
+        render: (text) =>
+          moment(text).utcOffset(0).format("DD.MM.YYYY HH:mm:ss.SSS"),
       },
       {
         title: "Duration",
-        dataIndex: "duration",
         key: "duration",
+        render: (cellInfo) =>
+          cellInfo.updated_at
+            ? moment(moment(cellInfo.updated_at) - moment(cellInfo.created_at))
+                .utcOffset(0)
+                .format("mm:ss.SSS")
+            : null,
       },
       {
         title: "Status",
@@ -114,19 +123,23 @@ export function useTransactionProcessingStepsColumns() {
         title: "Parameters",
         key: "Parameters",
         align: "center",
-        render: (step) => (
-          <CustomModal
-            header={"Params " + step.name}
-            content={Params}
-            contentProps={{ guid: step.guid }}
-            button={
-              <Button type="button" className="btn">
-                Show
-              </Button>
-            }
-            // dialogClassName="modal-creator"
-          />
-        ),
+        render: (step) => {
+          if (step.params.length)
+            return (
+              <CustomModal
+                header={"Params " + step.name}
+                content={ProcessingParams}
+                contentProps={{ params: step.params }}
+                button={
+                  <Button type="button" className="btn-table">
+                    Show
+                  </Button>
+                }
+                // dialogClassName="modal-creator"
+              />
+            );
+          else return null;
+        },
         // render: (text: any, record: any) => (
         //   <button type="button" className="btn btn-table">
         //     Show

@@ -7,7 +7,7 @@ export const FileInput = ({ value, ...props }) => {
     <>
       <Row>
         {value && (
-          <Col md={3} sm={4} xs={4} className="form-label">
+          <Col>
             <a
               href={value}
               download="key.p12"
@@ -17,8 +17,12 @@ export const FileInput = ({ value, ...props }) => {
             </a>
           </Col>
         )}
-        <Col md={8}>
+        <Col>
+          <Form.Label for="file-upload" className="custom-file-upload">
+            Upload
+          </Form.Label>
           <Form.Control
+            id="file-upload"
             className="form-control ant-input"
             type="file"
             style={{ border: "none" }}

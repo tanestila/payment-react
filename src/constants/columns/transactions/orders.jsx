@@ -5,6 +5,7 @@ import { AppAbility } from "../../../Components/Common/Can";
 import { AdminType } from "../../../types/admins";
 import { cutGuid } from "../../../helpers/cutGuid";
 import { Copy } from "../../../Components/Common/CopyToClipboard";
+import { Badge } from "react-bootstrap";
 
 export default function useOrdersColumns(ability: AppAbility) {
   return useMemo(
@@ -23,6 +24,16 @@ export default function useOrdersColumns(ability: AppAbility) {
         ),
       },
       {
+        title: " status",
+        dataIndex: "status",
+        key: "status",
+        render: (text: any, record: any) => (
+          <Badge className={`badge-order-${record.status.toLowerCase()}`}>
+            {record.status}
+          </Badge>
+        ),
+      },
+      {
         title: "Date",
         dataIndex: "date",
         key: "date",
@@ -35,18 +46,14 @@ export default function useOrdersColumns(ability: AppAbility) {
       },
       {
         title: "Payment status",
-        dataIndex: "status",
-        key: "status",
+        dataIndex: "payment_status",
+        key: "payment_status",
         render: (text: any, record: any) => (
-          <i
-            className={
-              text === "Success"
-                ? "icon-success icon green"
-                : text === "Failed"
-                ? "icon-failed icon red"
-                : "far fa-pause-circle icon orange"
-            }
-          />
+          <Badge
+            className={`badge-order-${record.payment_status.toLowerCase()}`}
+          >
+            {record.payment_status}
+          </Badge>
         ),
       },
 

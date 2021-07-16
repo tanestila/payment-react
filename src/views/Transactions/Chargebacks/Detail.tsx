@@ -1,30 +1,8 @@
-import {
-  Card,
-  Descriptions,
-  Divider,
-  Button,
-  Row,
-  Space,
-  Alert,
-  Col,
-} from "antd";
-import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { Card, Alert } from "antd";
+import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { AbilityContext } from "../../../Components/Common/Can";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { auditAPI } from "../../../services/queries/audit";
-import {
-  useLoginColumns,
-  useGroupMerchantsColumns,
-} from "../../../constants/columns";
 import { chargebacksAPI } from "../../../services/queries/management/transactions/chargebacks";
-import { formatDate } from "../../../helpers/formatDate";
 import { Loading } from "../../../Components/Common";
-import CustomModal from "../../../Components/Common/Modal";
-
-import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
-import useGroupsAuditColumns from "../../../constants/columns/history/groups";
 import { Table } from "react-bootstrap";
 
 const columns = [
@@ -139,9 +117,7 @@ const columns = [
 ];
 
 export default function ChargebackDetail() {
-  const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
 
   const {
     data: chargeback,
@@ -150,12 +126,6 @@ export default function ChargebackDetail() {
   } = useQuery(["chargeback", history.id], () =>
     chargebacksAPI.getChargeback(history.id)
   );
-
-  // const deleteGroupLoginMutation = useMutation(groupsAPI.deleteGroupLogin, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("group-logins");
-  //   },
-  // });
 
   if (status === "loading") {
     return <Loading />;

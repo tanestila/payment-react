@@ -45,7 +45,7 @@ export default function useTemplateStepsColumns() {
             content={Params}
             contentProps={{ guid: step.guid }}
             button={
-              <Button type="button" className="btn">
+              <Button type="button" className="btn-table">
                 Show
               </Button>
             }

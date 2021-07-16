@@ -1,12 +1,4 @@
-import {
-  Card,
-  Descriptions,
-  Divider,
-  Typography,
-  Button,
-  Row,
-  Alert,
-} from "antd";
+import { Card, Descriptions, Divider, Alert } from "antd";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
@@ -17,7 +9,6 @@ import {
   useTransactionDataAuditColumns,
   useTransactionOverviewAuditColumns,
   useTransactionProcessingAuditColumns,
-  useTransactionStepsColumns,
 } from "../../../constants/columns";
 import { formatDate, formatDateForTable } from "../../../helpers/formatDate";
 import { auditAPI } from "../../../services/queries/audit";
@@ -57,7 +48,7 @@ export default function ProcessingDetail() {
     "transaction-steps",
     (params: any) =>
       transactionsAPI.getTransactionProcessingSteps({
-        guid: history.id,
+        transaction_processing_guid: history.id,
         ...params,
       }),
     true,
@@ -154,7 +145,6 @@ export default function ProcessingDetail() {
           <Descriptions.Item label="Bin country">
             {transaction.bin_country}
           </Descriptions.Item>
-
           <Descriptions.Item label="Created at">
             {formatDate(transaction.created_at)}
           </Descriptions.Item>
@@ -182,7 +172,7 @@ export default function ProcessingDetail() {
           error={StepsError}
         />
         <Divider />
-        <h5>Change history</h5>
+        <h5>Transaction data changes history</h5>
         <Table
           columns={TDHistoryColumns}
           handleTableChange={handleTDHistoryTableChange}
@@ -194,7 +184,7 @@ export default function ProcessingDetail() {
           error={TDHistoryError}
         />
         <Divider />
-        <h5>Tp Change history</h5>
+        <h5>Transaction processing changes history</h5>
         <Table
           columns={TPHistoryColumns}
           handleTableChange={handleTPHistoryTableChange}
@@ -206,7 +196,7 @@ export default function ProcessingDetail() {
           error={TPHistoryError}
         />
         <Divider />
-        <h5>To Change history</h5>
+        <h5>Transaction overview changes history</h5>
         <Table
           columns={TOHistoryColumns}
           handleTableChange={handleTOHistoryTableChange}

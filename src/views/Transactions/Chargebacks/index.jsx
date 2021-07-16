@@ -1,10 +1,8 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
 import { AbilityContext } from "../../../Components/Common/Can";
 import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useChargebacksColumns } from "../../../constants/columns";
-import { cutGuid } from "../../../helpers/cutGuid";
 import { chargebacksAPI } from "../../../services/queries/management/transactions/chargebacks";
 
 export default function Chargebacks() {
@@ -14,6 +12,7 @@ export default function Chargebacks() {
     isError,
     error,
     data,
+    status,
     items,
     search,
     isFetching,
@@ -32,6 +31,10 @@ export default function Chargebacks() {
       isFetching={isFetching}
       data={data}
       items={items}
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      status={status}
     />
   );
 }

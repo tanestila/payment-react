@@ -11,4 +11,10 @@ export const currenciesAPI = {
     let { data } = await managementService.post("currencies", body);
     return data;
   },
+  getCurrenciesRates: async (args) => {
+    let { data } = await managementService.get("currencies/exchange_all", {
+      params: { ...args },
+    });
+    return data;
+  },
 };

@@ -1,9 +1,3 @@
-import { auditAPI } from "../../../services/queries/audit";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import Table from "../../../Components/TableFactory/Table";
-import { useLoginsAuditColumns } from "../../../constants/columns";
-import { useContext } from "react";
-import { AbilityContext } from "../../../Components/Common/Can";
 import { useQuery } from "react-query";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 import { Loading } from "../../../Components/Common";
@@ -11,12 +5,7 @@ import { Descriptions } from "antd";
 import { formatDate } from "../../../helpers/formatDate";
 
 export const RatesDetail = ({ guid }) => {
-  const {
-    data: rates,
-    status,
-    isFetching,
-    error,
-  } = useQuery(["transaction-rates", guid], () =>
+  const { data: rates, status } = useQuery(["transaction-rates", guid], () =>
     transactionsAPI.getTransactionRates(guid)
   );
 

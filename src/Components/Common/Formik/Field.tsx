@@ -1,4 +1,4 @@
-import { FieldArray, useField, Field as FormikField } from "formik";
+import { useField } from "formik";
 import { ReactNode, useCallback } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import { HelpTip } from "../HelpTip";
@@ -8,8 +8,10 @@ import { FileInput } from "../Inputs/FileInput";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import "bootstrap-daterangepicker/daterangepicker.css";
 import moment from "moment";
-import { Button } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { DatePicker } from "antd";
+import { RatesInput } from "../Inputs/RatesInput";
+import { ArrayInput } from "../Inputs/ArrayInput";
+import { AdditionalFeesInput } from "../Inputs/AdditionalFeesInput";
 
 type CustomInputProps = {
   label: string;
@@ -24,41 +26,19 @@ type CustomInputProps = {
     | "checkbox"
     | "array"
     | "file"
-    | "multi-select";
+    | "multi-select"
+    | "date-time"
+    | "rates"
+    | "additional-fee";
   children?: ReactNode;
   id?: string;
   type?: string;
   tip?: string;
   disabled?: boolean;
+  disabledName?: string;
+  propName?: string;
+  currencyOptions?: Array<any>;
   callback?: Function;
-};
-
-const customStyles = {
-  control: (base: any) => ({
-    ...base,
-
-    "min-height": "39px",
-  }),
-  dropdownIndicator: (base: any) => ({
-    ...base,
-    padding: 4,
-  }),
-  clearIndicator: (base: any) => ({
-    ...base,
-    padding: 4,
-  }),
-  multiValue: (base: any) => ({
-    ...base,
-  }),
-  valueContainer: (base: any) => ({
-    ...base,
-    padding: "0px 6px",
-  }),
-  input: (base: any) => ({
-    ...base,
-    margin: 0,
-    padding: 0,
-  }),
 };
 
 export const Field: React.FC<CustomInputProps> = ({
@@ -68,14 +48,18 @@ export const Field: React.FC<CustomInputProps> = ({
   inputType,
   children,
   callback,
+  disabledName, // for array input
+  propName, // for array input
+  currencyOptions, // for array input
   ...props
 }) => {
   const [field, meta, helpers] = useField(props.name);
 
   const onChangeCallback = useCallback(
     (value) => {
-      helpers.setTouched(true);
+      console.log(value);
       helpers.setValue(value);
+      // helpers.setTouched(true);
       callback && callback(value);
     },
     [helpers]
@@ -83,9 +67,18 @@ export const Field: React.FC<CustomInputProps> = ({
 
   const onChangeCallbackCheckbox = useCallback(
     (value) => {
-      helpers.setTouched(true);
       helpers.setValue(value.currentTarget.checked);
+      helpers.setTouched(true);
       callback && callback(value.currentTarget.checked);
+    },
+    [helpers]
+  );
+
+  const onChangeDateRangeCallback = useCallback(
+    (start, end) => {
+      helpers.setValue({ startDate: start, endDate: end });
+      helpers.setTouched(true);
+      callback && callback({ startDate: start, endDate: end });
     },
     [helpers]
   );
@@ -115,7 +108,6 @@ export const Field: React.FC<CustomInputProps> = ({
           <CustomSelect
             {...props}
             className="m-b-15"
-            styles={customStyles}
             options={options}
             onChange={onChangeCallback}
             value={field.value}
@@ -126,7 +118,6 @@ export const Field: React.FC<CustomInputProps> = ({
           <CustomSelect
             {...props}
             className="m-b-15"
-            styles={customStyles}
             options={options}
             onChange={onChangeCallback}
             value={field.value}
@@ -150,6 +141,18 @@ export const Field: React.FC<CustomInputProps> = ({
             <input type="text" className="form-control" />
           </DateRangePicker>
         );
+      case "date-time":
+        return (
+          <DatePicker
+            showTime={{
+              defaultValue: moment(field.value),
+              format: "HH:mm",
+            }}
+            onChange={onChangeCallback}
+            value={field.value ? moment(field.value) : undefined}
+            onOk={onChangeCallback}
+          />
+        );
       case "date-range":
         return (
           <DateRangePicker
@@ -157,10 +160,14 @@ export const Field: React.FC<CustomInputProps> = ({
               locale: {
                 format: "DD.MM.YYYY",
               },
-              // startDate: this.state.monthly_fee_date
-              //   ? moment(this.state.monthly_fee_date).format("DD.MM.YYYY")
-              //   : undefined,
+              startDate: field.value
+                ? moment(field.value.startDate).format("DD.MM.YYYY")
+                : undefined,
+              endDate: field.value
+                ? moment(field.value.endDate).format("DD.MM.YYYY")
+                : undefined,
             }}
+            onCallback={onChangeDateRangeCallback}
           >
             <input type="text" className="form-control" />
           </DateRangePicker>
@@ -196,63 +203,30 @@ export const Field: React.FC<CustomInputProps> = ({
         );
       case "file":
         return (
-          <>
-            <FileInput {...field} {...props} onChange={uploadFileCallback} />
-            {/* <Form.Control
-              className="form-control ant-input"
-              {...field}
-              {...props}
-              type="file"
-              onChange={uploadFileCallback}
-            /> */}
-          </>
+          <FileInput {...field} {...props} onChange={uploadFileCallback} />
         );
       case "array":
+        return <ArrayInput field={field} props={props} meta={meta} />;
+      case "rates":
         return (
-          <FieldArray
-            {...field}
-            {...props}
-            render={(arrayHelpers) => (
-              <>
-                {field.value && field.value.length > 0 ? (
-                  <>
-                    {field.value.map((value, index) => (
-                      <Row>
-                        <Col className="form-input">
-                          <div key={index} style={{ display: "flex" }}>
-                            <FormikField
-                              className="form-control ant-input"
-                              name={`${props.name}.${index}`}
-                            />
-                            <CloseOutlined
-                              onClick={() => arrayHelpers.remove(index)}
-                              style={{ marginLeft: "5px", marginTop: "5px" }}
-                            />
-                          </div>
-
-                          {meta.error && meta.error[index] && meta.touched ? (
-                            <span className="validate-error">
-                              {meta.error[index]}
-                            </span>
-                          ) : null}
-                        </Col>
-                      </Row>
-                    ))}
-                    <>
-                      <Button type="link" onClick={() => arrayHelpers.push("")}>
-                        Add value
-                      </Button>
-                    </>
-                  </>
-                ) : (
-                  <Button type="link" onClick={() => arrayHelpers.push("")}>
-                    Add value
-                  </Button>
-                )}
-              </>
-            )}
+          <RatesInput
+            field={field}
+            props={props}
+            meta={meta}
+            disabledName={disabledName}
           />
         );
+
+      // case "additional-fee":
+      //   return (
+      //     <AdditionalFeesInput
+      //       field={field}
+      //       props={props}
+      //       meta={meta}
+      //       options={options}
+      //       currencyOptions={currencyOptions}
+      //     />
+      //   );
 
       default:
         return (
@@ -266,17 +240,29 @@ export const Field: React.FC<CustomInputProps> = ({
   };
 
   return (
-    <Row>
-      <Col lg={4} md={4} sm={5} xs={6}>
-        <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
-        {tip && <HelpTip tip={tip} />}
-      </Col>
-      <Col lg={8} md={8} sm={7} xs={6} className="form-input">
-        {renderInput()}
-        {!Array.isArray(meta.error) && meta.touched && meta.error ? (
-          <span className="validate-error">{meta.error}</span>
-        ) : null}
-      </Col>
-    </Row>
+    <>
+      {inputType !== "additional-fee" ? (
+        <Row>
+          <Col lg={4} md={4} sm={5} xs={6}>
+            <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
+            {tip && <HelpTip tip={tip} />}
+          </Col>
+          <Col lg={8} md={8} sm={7} xs={6} className="form-input">
+            {renderInput()}
+            {!Array.isArray(meta.error) && meta.touched && meta.error ? (
+              <span className="validate-error">{meta.error}</span>
+            ) : null}
+          </Col>
+        </Row>
+      ) : (
+        <AdditionalFeesInput
+          field={field}
+          props={props}
+          meta={meta}
+          options={options}
+          currencyOptions={currencyOptions}
+        />
+      )}
+    </>
   );
 };

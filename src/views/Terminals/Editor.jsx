@@ -4,7 +4,7 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo, useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
-import { Button } from "antd";
+import { Button, Alert } from "antd";
 import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
 import { parseError } from "../../helpers/parseError";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
@@ -175,7 +175,14 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
     >
       {({ values, isSubmitting, setFieldValue }) => (
         <Form className="modal-form">
-          {console.log(values)}
+          {status === "error" && (
+            <Alert
+              message="Error"
+              description={error.message}
+              type="error"
+              showIcon
+            />
+          )}
           <Row>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
               <Field name="name" type="text" label="Name*" />

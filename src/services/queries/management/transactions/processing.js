@@ -32,4 +32,11 @@ export const transactionsAPI = {
     );
     return data;
   },
+  activeTransaction: async (body) => {
+    let { data } = await managementService.post(
+      `transactions/processing/active`,
+      body
+    );
+    return data;
+  },
 };
