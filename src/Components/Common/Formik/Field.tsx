@@ -12,6 +12,7 @@ import { DatePicker } from "antd";
 import { RatesInput } from "../Inputs/RatesInput";
 import { ArrayInput } from "../Inputs/ArrayInput";
 import { AdditionalFeesInput } from "../Inputs/AdditionalFeesInput";
+import { formatNumber } from "../../../helpers/formatNumber";
 
 type CustomInputProps = {
   label: string;
@@ -29,7 +30,8 @@ type CustomInputProps = {
     | "multi-select"
     | "date-time"
     | "rates"
-    | "additional-fee";
+    | "additional-fee"
+    | "number";
   children?: ReactNode;
   id?: string;
   type?: string;
@@ -78,6 +80,15 @@ export const Field: React.FC<CustomInputProps> = ({
       helpers.setValue({ startDate: start, endDate: end });
       helpers.setTouched(true);
       callback && callback({ startDate: start, endDate: end });
+    },
+    [helpers]
+  );
+
+  const onChangeNumber = useCallback(
+    (event) => {
+      helpers.setValue(formatNumber(event.currentTarget.value));
+      helpers.setTouched(true);
+      callback && callback(formatNumber(event.currentTarget.value));
     },
     [helpers]
   );
@@ -215,17 +226,16 @@ export const Field: React.FC<CustomInputProps> = ({
             disabledName={disabledName}
           />
         );
-
-      // case "additional-fee":
-      //   return (
-      //     <AdditionalFeesInput
-      //       field={field}
-      //       props={props}
-      //       meta={meta}
-      //       options={options}
-      //       currencyOptions={currencyOptions}
-      //     />
-      //   );
+      case "number":
+        return (
+          <Form.Control
+            className="form-control ant-input"
+            {...field}
+            {...props}
+            type="number"
+            onChange={onChangeNumber}
+          />
+        );
 
       default:
         return (

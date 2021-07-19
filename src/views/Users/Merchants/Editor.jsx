@@ -154,18 +154,22 @@ export default function Editor({ handleClose, guid }) {
                   />
                   <Field
                     name="custom_amount_limit"
-                    type="number"
+                    inputType="number"
                     label="Merchant amount limit*"
                   />
                 </Col>
                 <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                   <Field
                     name="monthly_amount_limit"
-                    type="number"
+                    inputType="number"
                     label="Monthly amount limit*"
                   />
 
-                  <Field name="monthly_fee" type="text" label="Monthly fee*" />
+                  <Field
+                    name="monthly_fee"
+                    inputType="number"
+                    label="Monthly fee*"
+                  />
                   <Field
                     name="monthly_fee_currency"
                     inputType="select"

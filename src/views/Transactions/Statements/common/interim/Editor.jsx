@@ -98,7 +98,6 @@ export default function StatementForm({ onSubmit, statement }) {
   );
 
   const modifiedTerminalsData = useMemo(() => {
-
     let data = [];
     if (terminals) {
       data = terminals.data.map((terminal) => ({
@@ -111,7 +110,7 @@ export default function StatementForm({ onSubmit, statement }) {
           data.filter((terminal) => {
             let flag = false;
             statement.shops.forEach((statementShop) => {
-              statementShop.terminals.forEach((statementTermimal)=> )
+              statementShop.terminals.forEach((statementTermimal) => {});
             });
             return flag;
           })

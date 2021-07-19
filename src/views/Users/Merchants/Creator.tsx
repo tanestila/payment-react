@@ -199,16 +199,20 @@ export default function Creator({ handleClose }: { handleClose: Function }) {
               />
               <Field
                 name="custom_amount_limit"
-                type="number"
+                inputType="number"
                 label="Merchant amount limit*"
               />
               <Field
                 name="monthly_amount_limit"
-                type="number"
+                inputType="number"
                 label="Monthly amount limit*"
               />
 
-              <Field name="monthly_fee" type="text" label="Monthly fee*" />
+              <Field
+                name="monthly_fee"
+                inputType="number"
+                label="Monthly fee*"
+              />
               <Field
                 name="monthly_fee_currency"
                 inputType="select"
