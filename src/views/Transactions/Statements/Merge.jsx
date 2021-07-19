@@ -1,14 +1,17 @@
 import { Card } from "antd";
-import MergeStatementForm from "./common/payable/MergeStatementForm";
+import MergeStatementForm from "./common/payable/Creator";
 import { statementsAPI } from "../../../services/queries/management/statements";
 import { useMutation, useQueryClient } from "react-query";
-import StatementTables from "./common/interim/StatementTables";
+import StatementTables from "./common/payable/StatementTables";
 import { useState } from "react";
 import { Loading } from "../../../Components/Common";
+import { useHistory } from "react-router-dom";
 
 const Merge = () => {
   const [statement, setStatement] = useState(null);
+
   const queryClient = useQueryClient();
+  let history = useHistory();
 
   const mutation = useMutation(statementsAPI.createStatement, {
     onSuccess: () => {
@@ -16,10 +19,18 @@ const Merge = () => {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, isSave) => {
     const statement = await mutation.mutateAsync(data);
-    console.log(statement);
-    setStatement(statement);
+    if (isSave) {
+      history.push("/transactions/statements");
+    } else {
+      let keys = Object.keys(statement.entityData)
+        .map((key) => (key.length === 3 || key === "Summary" ? key : null))
+        .filter((key) => key !== null)
+        .map((key) => ({ name: key }));
+      statement.currencies = keys;
+      setStatement(statement);
+    }
   };
 
   return (

@@ -57,7 +57,6 @@ export const Field: React.FC<CustomInputProps> = ({
 
   const onChangeCallback = useCallback(
     (value) => {
-      console.log(value);
       helpers.setValue(value);
       // helpers.setTouched(true);
       callback && callback(value);

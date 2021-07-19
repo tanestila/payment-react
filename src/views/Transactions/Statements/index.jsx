@@ -143,7 +143,6 @@ export default function Statements() {
       data={data}
       items={items}
       rowClassName={(record) => {
-        console.log(record);
         return record.merge_statement_flag ? "colored" : undefined;
       }}
       modalComponent={

@@ -1,5 +1,5 @@
 import { Card } from "antd";
-import StatementForm from "./common/interim/StatementForm";
+import StatementForm from "./common/interim/Creator";
 import { statementsAPI } from "../../../services/queries/management/statements";
 import { useMutation, useQueryClient } from "react-query";
 import StatementTables from "./common/interim/StatementTables";

@@ -5,10 +5,7 @@ const StatementTables = ({ statement }) => {
   return (
     <>
       <h5>Summary</h5>
-      <SummaryTable
-        currencies={statement.currencies}
-        statement_currency_code={statement.statement_currency_code}
-      />
+      <SummaryTable statement_data={statement.statementData} />
       <Divider />
       <h5>Rates</h5>
       <RatesTable

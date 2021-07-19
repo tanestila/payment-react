@@ -17,10 +17,13 @@ import { merchantsAPI } from "../../../../../services/queries/management/users/m
 import { terminalsAPI } from "../../../../../services/queries/management/terminals";
 import { currenciesAPI } from "../../../../../services/queries/management/currencies";
 import moment from "moment";
+import { Currency } from "../component/Currency";
 
 export default function StatementForm({ onSubmit }) {
   const [selected_merchant, setMerchant] = useState(null);
-  const [statement_currency, setCurrency] = useState(null);
+  const [selected_shops, setShops] = useState(null);
+  const [selected_currencies, setCurrencies] = useState(null);
+  const [isSave, setIsSave] = useState(0);
 
   const { data: merchants, isLoading: isLoadingMerchant } = useQuery(
     ["merchants"],
@@ -28,16 +31,63 @@ export default function StatementForm({ onSubmit }) {
   );
 
   const modifiedMerchantsData = useMemo(() => {
-    return merchants
-      ? merchants.data.map((mer) => ({
-          ...mer,
-          name: mer.merchant_name,
-          guid: mer.merchant_guid,
-          label: mer.merchant_name,
-          value: mer.merchant_guid,
+    let data = [];
+    if (merchants) {
+      data = merchants.data.map((mer) => ({
+        ...mer,
+        name: mer.merchant_name,
+        guid: mer.merchant_guid,
+        label: mer.merchant_name,
+        value: mer.merchant_guid,
+      }));
+      setMerchant(data[0]);
+      return data;
+    }
+  }, [merchants]);
+
+  const { data: shops } = useQuery(["shops", selected_merchant], () =>
+    shopsAPI.getShops({
+      merchant_guid: selected_merchant
+        ? selected_merchant.merchant_guid
+        : undefined,
+    })
+  );
+
+  const modifiedShopsData = useMemo(() => {
+    return shops
+      ? shops.data.map((shop) => ({
+          ...shop,
+          label: shop.name,
+          value: shop.guid,
         }))
       : [];
-  }, [merchants]);
+  }, [shops]);
+
+  const { data: terminals } = useQuery(
+    ["terminals", selected_shops, selected_currencies, selected_merchant],
+    () =>
+      terminalsAPI.getTerminals({
+        shop_guid_array: selected_shops
+          ? selected_shops.map((shop) => shop.guid)
+          : undefined,
+        currency_code_array: selected_currencies
+          ? selected_currencies.map((currency) => currency.code)
+          : undefined,
+        merchant_guid: selected_merchant
+          ? selected_merchant.merchant_guid
+          : undefined,
+      })
+  );
+
+  const modifiedTerminalsData = useMemo(() => {
+    return terminals
+      ? terminals.data.map((terminal) => ({
+          ...terminal,
+          label: terminal.name,
+          value: terminal.guid,
+        }))
+      : [];
+  }, [terminals]);
 
   const { data: currencies, isLoading: isLoadingCurrencies } = useQuery(
     ["currencies"],
@@ -56,23 +106,51 @@ export default function StatementForm({ onSubmit }) {
   }, [currencies]);
 
   const modifiedRatesData = useMemo(() => {
-    return modifiedCurrenciesData
-      ? modifiedCurrenciesData.map((cur: any) => ({
+    if (modifiedCurrenciesData) {
+      let result = modifiedCurrenciesData.map((cur: any) => {
+        let proc_rate = 0;
+        if (cur.code !== "EUR")
+          if (cur.isFlat)
+            proc_rate = cur.rate_to_eur + +cur.exchange_markup_value;
+          else
+            proc_rate = cur.rate_to_eur * (cur.exchange_markup_value / 100 + 1);
+        else proc_rate = cur.rate_to_eur;
+        return {
           guid: cur.guid,
           name: cur.code,
+          code: cur.code,
           bank_exchange_rate: cur.rate_to_eur,
-          processor_exchange_rate: cur.rate_to_eur,
+          processor_exchange_rate: proc_rate,
           exchange_markup_value: cur.exchange_markup_value,
           isFlat: cur.isFlat,
-        }))
-      : [];
+        };
+      });
+      return result;
+    } else return [];
   }, [modifiedCurrenciesData]);
 
-  if (isLoadingMerchant || isLoadingCurrencies) return <Loading />;
+  const { data: additionalFees, isLoading: isLoadingAdditionalFees } = useQuery(
+    ["additional-fees"],
+    () => additionalFeesAPI.getAdditionalFees({ enabled: true })
+  );
+
+  const modifiedAdditionalFeesData = useMemo(() => {
+    return additionalFees
+      ? additionalFees.data.map((fee: any) => ({
+          ...fee,
+          name: fee.fee_name,
+          label: fee.fee_name,
+          value: fee.fee_name,
+        }))
+      : [];
+  }, [additionalFees]);
+
+  if (isLoadingMerchant || isLoadingCurrencies || isLoadingAdditionalFees)
+    return <Loading />;
   return (
     <Formik
       initialValues={{
-        merchant: null,
+        merchant: selected_merchant,
         shops: [],
         terminals: [],
         date: {
@@ -90,9 +168,8 @@ export default function StatementForm({ onSubmit }) {
 
         //
         change_name: false,
+        change_rates: false,
         currencies_filter: "",
-        change_bank_currencies_rates: false,
-        change_processor_currencies_rates: false,
       }}
       validationSchema={Yup.object({
         merchant: Yup.object().typeError("Required"),
@@ -142,9 +219,7 @@ export default function StatementForm({ onSubmit }) {
         try {
           let data = {
             merchant_guid: values.merchant.guid,
-            terminals: values.terminals.map((element) => {
-              return element.guid;
-            }),
+            terminals: values.terminals.map((element) => element.guid),
             from_date: values.date.startDate,
             to_date: values.date.endDate,
             statement_currency: values.statement_currency.code,
@@ -155,10 +230,10 @@ export default function StatementForm({ onSubmit }) {
               currency: item.currency.code,
               name: item.name.fee_name,
             })),
-            save: 0,
+            save: isSave,
             is_payable_statement: 0,
           };
-          await onSubmit(data);
+          await onSubmit(data, isSave);
           SuccessModal("Terminal was created");
         } catch (error) {
           ErrorModal(parseError(error));
@@ -167,7 +242,7 @@ export default function StatementForm({ onSubmit }) {
         setSubmitting(false);
       }}
     >
-      {({ values, errors, isSubmitting, setFieldValue }) => (
+      {({ values, errors, isSubmitting, setFieldValue, submitForm }) => (
         <Form className="modal-form">
           <Row>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
@@ -182,9 +257,53 @@ export default function StatementForm({ onSubmit }) {
                   setFieldValue("terminals", []);
                 }}
               />
-              statements
+              <Field
+                name="shops"
+                inputType="multi-select"
+                label="Shop*"
+                options={modifiedShopsData}
+                callback={(value) => {
+                  setShops(value);
+                  setFieldValue("terminals", []);
+                }}
+              />
+              <Field
+                name="select_all_shops"
+                inputType="checkbox"
+                label="Select all shops"
+                callback={(value) => {
+                  if (value) setFieldValue("shops", modifiedShopsData);
+                  else setFieldValue("shops", []);
+                }}
+              />
+              <Field
+                name="terminals"
+                inputType="multi-select"
+                label="Terminals*"
+                options={modifiedTerminalsData}
+              />
+              <Field
+                name="select_all_terminals"
+                inputType="checkbox"
+                label="Select all terminals"
+                callback={(value) => {
+                  if (value) setFieldValue("terminals", modifiedTerminalsData);
+                  else setFieldValue("terminals", []);
+                }}
+              />
+              <Field
+                name="currencies_filter"
+                inputType="multi-select"
+                label="Filter terminals by currencies"
+                options={modifiedCurrenciesData}
+                callback={(value) => {
+                  setCurrencies(value);
+                  setFieldValue("terminals", []);
+                }}
+              />
             </Col>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
+              <Field name="date" inputType="date-range" label="Date range*" />
               <Field
                 name="change_name"
                 inputType="checkbox"
@@ -193,34 +312,20 @@ export default function StatementForm({ onSubmit }) {
               {values.change_name && (
                 <Field name="name" type="text" label="Name*" />
               )}
-              <Field
-                name="statement_currency"
-                inputType="select"
-                label="Statement currency*"
-                options={modifiedCurrenciesData}
-                callback={(value) => {
-                  setCurrency(value);
-                }}
-              />
-              <Field
-                name="change_bank_currencies_rates"
-                inputType="checkbox"
-                label="Set bank exchange currencies rates"
-              />
-              {values.change_bank_currencies_rates && (
-                <Field
-                  name="currencies_rates"
-                  inputType="rates"
-                  label=""
-                  disabledName={values.statement_currency?.name}
-                />
-              )}
-
+              <Currency />
               <Field
                 name="bank_wire_fee"
                 type="number"
                 label="Bank wire fee*"
               />
+              <Field
+                name="additional_fees"
+                inputType="additional-fee"
+                label=""
+                options={modifiedAdditionalFeesData}
+                currencyOptions={modifiedCurrenciesData}
+              />
+              {/* <Field name="reason" type="text" label="Reason*" /> */}
             </Col>
           </Row>
           <div>
@@ -228,10 +333,17 @@ export default function StatementForm({ onSubmit }) {
               <Loading />
             ) : (
               <Space>
-                <Button onClick={() => {}} type="primary" className="f-right">
+                <Button htmlType="submit" type="primary" className="f-right">
                   Calculate
                 </Button>
-                <Button htmlType="submit" type="primary" className="f-right">
+                <Button
+                  onClick={() => {
+                    setIsSave(1);
+                    submitForm();
+                  }}
+                  type="primary"
+                  className="f-right"
+                >
                   Save
                 </Button>
               </Space>

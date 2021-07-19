@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../../../Components/Common/Formik/Field";
 import { useQuery } from "react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button, Space } from "antd";
 import {
@@ -17,12 +17,13 @@ import { merchantsAPI } from "../../../../../services/queries/management/users/m
 import { terminalsAPI } from "../../../../../services/queries/management/terminals";
 import { currenciesAPI } from "../../../../../services/queries/management/currencies";
 import moment from "moment";
+import { Currency } from "../component/Currency";
 
-export default function StatementForm({ onSubmit }) {
+export default function StatementForm({ onSubmit, statement }) {
   const [selected_merchant, setMerchant] = useState(null);
   const [selected_shops, setShops] = useState(null);
+  const [selected_terminals, setTerminals] = useState(null);
   const [selected_currencies, setCurrencies] = useState(null);
-  const [statement_currency, setCurrency] = useState(null);
   const [isSave, setIsSave] = useState(0);
 
   const { data: merchants, isLoading: isLoadingMerchant } = useQuery(
@@ -40,9 +41,14 @@ export default function StatementForm({ onSubmit }) {
         label: mer.merchant_name,
         value: mer.merchant_guid,
       }));
-      setMerchant(data[0]);
-      return data;
+      if (!selected_merchant)
+        setMerchant(
+          data.filter(
+            (merchant) => merchant.guid === statement.merchant_guid
+          )[0]
+        );
     }
+    return data;
   }, [merchants]);
 
   const { data: shops } = useQuery(["shops", selected_merchant], () =>
@@ -54,13 +60,25 @@ export default function StatementForm({ onSubmit }) {
   );
 
   const modifiedShopsData = useMemo(() => {
-    return shops
-      ? shops.data.map((shop) => ({
-          ...shop,
-          label: shop.name,
-          value: shop.guid,
-        }))
-      : [];
+    let data = [];
+    if (shops) {
+      data = shops.data.map((shop) => ({
+        ...shop,
+        label: shop.name,
+        value: shop.guid,
+      }));
+      if (!selected_shops)
+        setShops(
+          data.filter((shop) => {
+            let flag = false;
+            statement.shops.forEach((statementShop) => {
+              if (statementShop.guid === shop.guid) flag = true;
+            });
+            return flag;
+          })
+        );
+    }
+    return data;
   }, [shops]);
 
   const { data: terminals } = useQuery(
@@ -80,6 +98,27 @@ export default function StatementForm({ onSubmit }) {
   );
 
   const modifiedTerminalsData = useMemo(() => {
+
+    let data = [];
+    if (terminals) {
+      data = terminals.data.map((terminal) => ({
+        ...terminal,
+        label: terminal.name,
+        value: terminal.guid,
+      }));
+      if (!selected_terminals)
+        setTerminals(
+          data.filter((terminal) => {
+            let flag = false;
+            statement.shops.forEach((statementShop) => {
+              statementShop.terminals.forEach((statementTermimal)=> )
+            });
+            return flag;
+          })
+        );
+    }
+    return data;
+
     return terminals
       ? terminals.data.map((terminal) => ({
           ...terminal,
@@ -106,17 +145,27 @@ export default function StatementForm({ onSubmit }) {
   }, [currencies]);
 
   const modifiedRatesData = useMemo(() => {
-    return modifiedCurrenciesData
-      ? modifiedCurrenciesData.map((cur: any) => ({
+    if (modifiedCurrenciesData) {
+      let result = modifiedCurrenciesData.map((cur: any) => {
+        let proc_rate = 0;
+        if (cur.code !== "EUR")
+          if (cur.isFlat)
+            proc_rate = cur.rate_to_eur + +cur.exchange_markup_value;
+          else
+            proc_rate = cur.rate_to_eur * (cur.exchange_markup_value / 100 + 1);
+        else proc_rate = cur.rate_to_eur;
+        return {
           guid: cur.guid,
           name: cur.code,
           code: cur.code,
           bank_exchange_rate: cur.rate_to_eur,
-          processor_exchange_rate: cur.rate_to_eur,
+          processor_exchange_rate: proc_rate,
           exchange_markup_value: cur.exchange_markup_value,
           isFlat: cur.isFlat,
-        }))
-      : [];
+        };
+      });
+      return result;
+    } else return [];
   }, [modifiedCurrenciesData]);
 
   const { data: additionalFees, isLoading: isLoadingAdditionalFees } = useQuery(
@@ -140,8 +189,8 @@ export default function StatementForm({ onSubmit }) {
   return (
     <Formik
       initialValues={{
-        merchant: null,
-        shops: [],
+        merchant: selected_merchant,
+        shops: selected_shops,
         terminals: [],
         date: {
           startDate: moment().startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
@@ -158,9 +207,8 @@ export default function StatementForm({ onSubmit }) {
 
         //
         change_name: false,
+        change_rates: false,
         currencies_filter: "",
-        change_bank_currencies_rates: false,
-        change_processor_currencies_rates: false,
       }}
       validationSchema={Yup.object({
         merchant: Yup.object().typeError("Required"),
@@ -210,9 +258,7 @@ export default function StatementForm({ onSubmit }) {
         try {
           let data = {
             merchant_guid: values.merchant.guid,
-            terminals: values.terminals.map((element) => {
-              return element.guid;
-            }),
+            terminals: values.terminals.map((element) => element.guid),
             from_date: values.date.startDate,
             to_date: values.date.endDate,
             statement_currency: values.statement_currency.code,
@@ -239,7 +285,6 @@ export default function StatementForm({ onSubmit }) {
         <Form className="modal-form">
           <Row>
             <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-              {console.log(values.merchant)}
               <Field
                 name="merchant"
                 inputType="select"
@@ -306,44 +351,7 @@ export default function StatementForm({ onSubmit }) {
               {values.change_name && (
                 <Field name="name" type="text" label="Name*" />
               )}
-              <Field
-                name="statement_currency"
-                inputType="select"
-                label="Statement currency*"
-                options={modifiedCurrenciesData}
-                callback={(value) => {
-                  setCurrency(value);
-                }}
-              />
-              <Field
-                name="change_bank_currencies_rates"
-                inputType="checkbox"
-                label="Set bank exchange currencies rates"
-              />
-              {values.change_bank_currencies_rates && (
-                <Field
-                  name="currencies_rates"
-                  inputType="rates"
-                  label=""
-                  disabledName={values.statement_currency?.name}
-                />
-              )}
-              {/* <Field
-                name="change_processor_currencies_rates"
-                inputType="checkbox"
-                label="Set processor exchange currencies rates"
-              />
-              {values.change_processor_currencies_rates && (
-                <>
-                  <Field
-                    name="currencies_rates"
-                    inputType="rates"
-                    label=""
-                    disabledName={values.statement_currency?.name}
-                    propName="processor_exchange_rate"
-                  />
-                </>
-              )} */}
+              <Currency />
               <Field
                 name="bank_wire_fee"
                 type="number"
