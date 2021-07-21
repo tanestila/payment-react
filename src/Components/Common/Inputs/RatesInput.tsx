@@ -6,9 +6,42 @@ import {
 } from "formik";
 import { Col, Form, Row } from "react-bootstrap";
 import { Button } from "antd";
+import { useCallback } from "react";
+import { formatNumber } from "../../../helpers/formatNumber";
 
-export const RatesInput = ({ field, props, meta, disabledName }) => {
+export const RatesInput = ({
+  field,
+  props,
+  meta,
+  disabledName,
+  precision = 4,
+}) => {
   const { setFieldValue } = useFormikContext();
+
+  const onChangeNumber = useCallback((event, index, value) => {
+    setFieldValue(
+      `${props.name}.${index}.bank_exchange_rate`,
+      formatNumber(event.currentTarget.value, precision)
+    );
+    if (value.isFlat) {
+      setFieldValue(
+        `${props.name}.${index}.processor_exchange_rate`,
+        formatNumber(
+          event.currentTarget.value + +value.exchange_markup_value,
+          precision
+        )
+      );
+    } else {
+      setFieldValue(
+        `${props.name}.${index}.processor_exchange_rate`,
+        formatNumber(
+          event.currentTarget.value * (value.exchange_markup_value / 100 + 1),
+          precision
+        )
+      );
+    }
+  }, []);
+
   return (
     <FieldArray
       {...field}
@@ -34,29 +67,16 @@ export const RatesInput = ({ field, props, meta, disabledName }) => {
                       className="form-control ant-input"
                       name={`${props.name}.${index}.bank_exchange_rate`}
                       disabled={value.name === disabledName}
-                      onChange={(e) => {
-                        setFieldValue(
-                          `${props.name}.${index}.bank_exchange_rate`,
-                          e.currentTarget.value
-                        );
-                        if (value.isFlat) {
-                          setFieldValue(
-                            `${props.name}.${index}.processor_exchange_rate`,
-                            e.currentTarget.value + +value.exchange_markup_value
-                          );
-                        } else {
-                          setFieldValue(
-                            `${props.name}.${index}.processor_exchange_rate`,
-                            e.currentTarget.value *
-                              (value.exchange_markup_value / 100 + 1)
-                          );
-                        }
-                      }}
+                      type="number"
+                      onChange={(e) => onChangeNumber(e, index, value)}
                     />
 
-                    {meta.error && meta.error[index] && meta.touched ? (
+                    {meta.error &&
+                    meta.error[index] &&
+                    meta.error[index].bank_exchange_rate &&
+                    meta.touched ? (
                       <span className="validate-error">
-                        {meta.error[index]}
+                        {meta.error[index].bank_exchange_rate}
                       </span>
                     ) : null}
                   </Col>
@@ -67,9 +87,12 @@ export const RatesInput = ({ field, props, meta, disabledName }) => {
                       disabled={value.name === disabledName}
                     />
 
-                    {meta.error && meta.error[index] && meta.touched ? (
+                    {meta.error &&
+                    meta.error[index] &&
+                    meta.error[index].processor_exchange_rate &&
+                    meta.touched ? (
                       <span className="validate-error">
-                        {meta.error[index]}
+                        {meta.error[index].processor_exchange_rate}
                       </span>
                     ) : null}
                   </Col>

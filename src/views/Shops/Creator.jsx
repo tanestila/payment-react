@@ -4,7 +4,12 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo } from "react";
 import { Button } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
+import {
+  Loading,
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../Components/Common";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { merchantsAPI } from "../../services/queries/management/users/merchnats";
 import { parseError } from "../../helpers/parseError";
@@ -112,7 +117,7 @@ export default function Creator({ handleClose }) {
           <Field name="note" type="text" label="Note" />
 
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

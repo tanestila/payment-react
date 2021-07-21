@@ -2,7 +2,7 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { Creator } from "./Creator";
+import Creator from "./Creator";
 import Modal from "../../../Components/Common/Modal";
 import { useRatesTemplatesColumns } from "../../../constants/columns";
 import { ratesAPI } from "../../../services/queries/management/rates";
@@ -37,10 +37,10 @@ export default function RatesTemplates() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          button={<Button type="primary">Create currency</Button>}
+          button={<Button type="primary">Create template</Button>}
           content={Creator}
-          header="Create currency"
-          dialogClassName="modal-creator"
+          header="Create template"
+          // dialogClassName="modal-creator"
         />
       }
     />

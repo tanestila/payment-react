@@ -4,7 +4,12 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo } from "react";
 import { Alert, Button } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
+import {
+  Loading,
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../Components/Common";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { merchantsAPI } from "../../services/queries/management/users/merchnats";
 import { parseError } from "../../helpers/parseError";
@@ -49,7 +54,7 @@ export default function Editor({ handleClose, guid }) {
   return (
     <>
       {status === "loading" || isFetching ? (
-        <Loading />
+        <FormLoading />
       ) : (
         <Formik
           initialValues={{
@@ -146,7 +151,7 @@ export default function Editor({ handleClose, guid }) {
               <Field name="note" type="text" label="Note" />
               <Field name="reason" type="text" label="Reason" />
               {isSubmitting ? (
-                <Loading />
+                <FormLoading />
               ) : (
                 <Button htmlType="submit" type="primary" className="f-right">
                   Submit

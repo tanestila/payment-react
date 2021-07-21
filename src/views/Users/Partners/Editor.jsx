@@ -4,7 +4,12 @@ import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Alert, Button } from "antd";
-import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import {
+  ErrorModal,
+  FormLoading,
+  Loading,
+  SuccessModal,
+} from "../../../Components/Common";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { parseError } from "../../../helpers/parseError";
 
@@ -26,7 +31,7 @@ export default function Editor({ handleClose, guid }) {
   return (
     <>
       {status === "loading" || isFetching ? (
-        <Loading />
+        <FormLoading />
       ) : (
         <Formik
           initialValues={{
@@ -75,7 +80,7 @@ export default function Editor({ handleClose, guid }) {
                 </Col>
               </Row>
               {isSubmitting ? (
-                <Loading />
+                <FormLoading />
               ) : (
                 <Button htmlType="submit" type="primary" className="f-right">
                   Submit

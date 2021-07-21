@@ -24,6 +24,7 @@ export default function StatementForm({ onSubmit, statement }) {
   const [selected_shops, setShops] = useState(null);
   const [selected_terminals, setTerminals] = useState(null);
   const [selected_currencies, setCurrencies] = useState(null);
+  const [selected_additional_fee, setAdditionalFee] = useState(null);
   const [isSave, setIsSave] = useState(0);
 
   const { data: merchants, isLoading: isLoadingMerchant } = useQuery(
@@ -105,26 +106,21 @@ export default function StatementForm({ onSubmit, statement }) {
         label: terminal.name,
         value: terminal.guid,
       }));
-      if (!selected_terminals)
+      if (!selected_terminals) {
         setTerminals(
           data.filter((terminal) => {
             let flag = false;
             statement.shops.forEach((statementShop) => {
-              statementShop.terminals.forEach((statementTermimal) => {});
+              statementShop.terminals.forEach((statementTermimal) => {
+                if (terminal.guid === statementTermimal.guid) flag = true;
+              });
             });
             return flag;
           })
         );
+      }
     }
     return data;
-
-    return terminals
-      ? terminals.data.map((terminal) => ({
-          ...terminal,
-          label: terminal.name,
-          value: terminal.guid,
-        }))
-      : [];
   }, [terminals]);
 
   const { data: currencies, isLoading: isLoadingCurrencies } = useQuery(
@@ -173,14 +169,42 @@ export default function StatementForm({ onSubmit, statement }) {
   );
 
   const modifiedAdditionalFeesData = useMemo(() => {
-    return additionalFees
-      ? additionalFees.data.map((fee: any) => ({
-          ...fee,
-          name: fee.fee_name,
-          label: fee.fee_name,
-          value: fee.fee_name,
-        }))
-      : [];
+    let data = [];
+    if (additionalFees) {
+      data = additionalFees.data.map((fee: any) => ({
+        ...fee,
+        name: fee.fee_name,
+        label: fee.fee_name,
+        value: fee.fee_name,
+      }));
+    }
+    if (!selected_additional_fee) {
+      let statementAdditionalFees = [];
+      statement.additional_fees_names.forEach((name) => {
+        statementAdditionalFees.push({ name, value: "", currency: "" });
+      });
+      let keys = Object.keys(statement.entityData);
+      keys = keys.filter(
+        (key) => !key.includes("Summary") && key.includes("processor")
+      );
+      statementAdditionalFees = statementAdditionalFees.map((item) => {
+        keys.forEach((cur) => {
+          if (statement.entityData[cur].additional_fees[item.name] !== 0) {
+            item = {
+              ...item,
+              value: statement.entityData[cur].additional_fees[item.name],
+              currency: modifiedCurrenciesData.filter(
+                (currency) => currency.name === cur.substring(0, 3)
+              )[0],
+            };
+          }
+        });
+        return item;
+      });
+      setAdditionalFee(statementAdditionalFees);
+    }
+
+    return data;
   }, [additionalFees]);
 
   if (isLoadingMerchant || isLoadingCurrencies || isLoadingAdditionalFees)
@@ -190,19 +214,35 @@ export default function StatementForm({ onSubmit, statement }) {
       initialValues={{
         merchant: selected_merchant,
         shops: selected_shops,
-        terminals: [],
+        terminals: selected_terminals,
         date: {
-          startDate: moment().startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
-          endDate: moment().endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
+          startDate: moment(statement.from_date)
+            .startOf("month")
+            .format("YYYY-MM-DDTHH:mm:ss"),
+          endDate: moment(statement.to_date)
+            .endOf("month")
+            .format("YYYY-MM-DDTHH:mm:ss"),
         },
         statement_currency: modifiedCurrenciesData.filter(
-          (cur) => cur.code === "EUR"
+          (cur) => cur.code === statement.statement_currency_code
         )[0],
-        bank_wire_fee: 0,
-        name: "",
-        additional_fees: [],
+        bank_wire_fee: statement.bank_wire_fee,
+        name: statement.name,
+        additional_fees: selected_additional_fee,
         // reason: "",
-        currencies_rates: modifiedRatesData,
+        currencies_rates: modifiedRatesData.map((currency) => {
+          let statementCurrency = statement.currency_rates.filter(
+            (c) => c.code === currency.code
+          )[0];
+          if (statementCurrency)
+            return {
+              ...currency,
+              bank_exchange_rate: statementCurrency.bank_exchange_rate,
+              processor_exchange_rate:
+                statementCurrency.processor_exchange_rate,
+            };
+          else return currency;
+        }),
 
         //
         change_name: false,

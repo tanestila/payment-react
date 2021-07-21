@@ -25,12 +25,15 @@ export const Currency = () => {
       : [];
   }, [currencies]);
 
-  const { data: currenciesRates, isLoading: isLoadingCurrenciesRates } =
-    useQuery(["currencies-rates", statement_currency], () =>
-      currenciesAPI.getCurrenciesRates({
-        currency_from: statement_currency ? statement_currency.code : undefined,
-      })
-    );
+  const {
+    data: currenciesRates,
+    isLoading: isLoadingCurrenciesRates,
+    isFetching: isFetchingCurrenciesRates,
+  } = useQuery(["currencies-rates", statement_currency], () =>
+    currenciesAPI.getCurrenciesRates({
+      currency_from: statement_currency ? statement_currency.code : undefined,
+    })
+  );
 
   useEffect(() => {
     if (currenciesRates) {
@@ -84,6 +87,7 @@ export const Currency = () => {
           inputType="rates"
           label=""
           disabledName={values.statement_currency?.name}
+          isLoading={isLoadingCurrenciesRates || isFetchingCurrenciesRates}
         />
       )}
     </>

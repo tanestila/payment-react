@@ -5,11 +5,17 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
+import {
+  Loading,
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../Components/Common";
 import { parseError } from "../../helpers/parseError";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { ratesAPI } from "../../services/queries/management/rates";
 import { terminalsAPI } from "../../services/queries/management/terminals";
+import { roundMultiplyNumber } from "../../helpers/formatNumber";
 
 export default function Creator({ shop_guid, handleClose }) {
   const queryClient = useQueryClient();
@@ -21,11 +27,15 @@ export default function Creator({ shop_guid, handleClose }) {
     },
   });
 
-  const { data: gateways } = useQuery(["gateways"], () =>
+  const { data: gateways, status: gatewayStatus } = useQuery(["gateways"], () =>
     gatewaysAPI.getGateways()
   );
 
-  const { data: rates } = useQuery(["rates", gateway], () =>
+  const {
+    data: rates,
+    status: ratesStatus,
+    isFetching: ratesIsFetching,
+  } = useQuery(["rates", gateway], () =>
     ratesAPI.getRates({ gateway_guid: gateway.guid })
   );
 
@@ -72,6 +82,7 @@ export default function Creator({ shop_guid, handleClose }) {
           .typeError("You must specify a number")
           .required("Required"),
         transaction_count_limit: Yup.number()
+          .integer("Value must be an integer")
           .typeError("You must specify a number")
           .required("Required"),
         supported_brands: Yup.string().required("Required"),
@@ -80,6 +91,7 @@ export default function Creator({ shop_guid, handleClose }) {
         rate: Yup.object().typeError("Required").required("Required"),
         checkout_method: Yup.string().required("Required"),
         antifraud_monitor_value: Yup.number()
+          .integer("Value must be an integer")
           .typeError("You must specify a number")
           .required("Required"),
       })}
@@ -90,8 +102,12 @@ export default function Creator({ shop_guid, handleClose }) {
             name: values.name,
             billing_descriptor: values.billing_descriptor,
             routing_string: values.routing_string,
-            payment_amount_limit: values.payment_amount_limit.toString(),
-            monthly_amount_limit: values.monthly_amount_limit.toString(),
+            payment_amount_limit: roundMultiplyNumber(
+              values.payment_amount_limit
+            ).toString(),
+            monthly_amount_limit: roundMultiplyNumber(
+              values.monthly_amount_limit
+            ).toString(),
             transaction_count_limit: values.transaction_count_limit,
             supported_brands: values.supported_brands,
             currency_guid: values.currency?.["guid"],
@@ -128,12 +144,14 @@ export default function Creator({ shop_guid, handleClose }) {
                   setGateway(value);
                   setFieldValue("currency", null);
                 }}
+                isLoading={gatewayStatus === "loading"}
               />
               <Field
                 name="rate"
                 inputType="select"
                 label="Rate*"
                 options={rates?.data}
+                isLoading={ratesStatus === "loading" || ratesIsFetching}
               />
               <Field
                 name="currency"
@@ -144,12 +162,12 @@ export default function Creator({ shop_guid, handleClose }) {
               <Field name="three_d" inputType="checkbox" label="3D" />
               <Field
                 name="payment_amount_limit"
-                type="number"
+                inputType="number"
                 label="Payment amount limit*"
               />
               <Field
                 name="monthly_amount_limit"
-                type="number"
+                inputType="number"
                 label="Monthly amount limit*"
               />
               <Field
@@ -199,7 +217,7 @@ export default function Creator({ shop_guid, handleClose }) {
             </Col>
           </Row>
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

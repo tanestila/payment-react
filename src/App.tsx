@@ -7,7 +7,7 @@ import Admin from "./layouts/Admin";
 import { initApp } from "./redux/modules/auth/actions";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ForgotPassword } from "./Components/Login/ForgotPassword";
-import Loading from "./Components/Common/Loading";
+import Loading from "./Components/Common/Loading/MainLoading";
 import * as allRoutes from "./routes";
 import { AbilityContext } from "./Components/Common/Can";
 

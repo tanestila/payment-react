@@ -18,6 +18,7 @@ import { terminalsAPI } from "../../../../../services/queries/management/termina
 import { currenciesAPI } from "../../../../../services/queries/management/currencies";
 import moment from "moment";
 import { Currency } from "../component/Currency";
+import { roundMultiplyNumber } from "../../../../../helpers/formatNumber";
 
 export default function StatementForm({ onSubmit }) {
   const [selected_merchant, setMerchant] = useState(null);
@@ -45,7 +46,11 @@ export default function StatementForm({ onSubmit }) {
     }
   }, [merchants]);
 
-  const { data: shops } = useQuery(["shops", selected_merchant], () =>
+  const {
+    data: shops,
+    isLoading: shopsIsLoading,
+    isFetching: shopsIsFetching,
+  } = useQuery(["shops", selected_merchant], () =>
     shopsAPI.getShops({
       merchant_guid: selected_merchant
         ? selected_merchant.merchant_guid
@@ -63,7 +68,11 @@ export default function StatementForm({ onSubmit }) {
       : [];
   }, [shops]);
 
-  const { data: terminals } = useQuery(
+  const {
+    data: terminals,
+    isLoading: terminalsIsLoading,
+    isFetching: terminalsIsFetching,
+  } = useQuery(
     ["terminals", selected_shops, selected_currencies, selected_merchant],
     () =>
       terminalsAPI.getTerminals({
@@ -224,7 +233,7 @@ export default function StatementForm({ onSubmit }) {
             to_date: values.date.endDate,
             statement_currency: values.statement_currency.code,
             currency_rates: values.currencies_rates,
-            bank_wire_fee: values.bank_wire_fee,
+            bank_wire_fee: roundMultiplyNumber(values.bank_wire_fee, 2),
             additional_fees: values.additional_fees.map((item) => ({
               ...item,
               currency: item.currency.code,
@@ -256,6 +265,7 @@ export default function StatementForm({ onSubmit }) {
                   setFieldValue("shops", []);
                   setFieldValue("terminals", []);
                 }}
+                isLoading={isLoadingMerchant}
               />
               <Field
                 name="shops"
@@ -266,6 +276,7 @@ export default function StatementForm({ onSubmit }) {
                   setShops(value);
                   setFieldValue("terminals", []);
                 }}
+                isLoading={shopsIsLoading || shopsIsFetching}
               />
               <Field
                 name="select_all_shops"
@@ -281,6 +292,7 @@ export default function StatementForm({ onSubmit }) {
                 inputType="multi-select"
                 label="Terminals*"
                 options={modifiedTerminalsData}
+                isLoading={terminalsIsLoading || terminalsIsFetching}
               />
               <Field
                 name="select_all_terminals"
@@ -315,7 +327,8 @@ export default function StatementForm({ onSubmit }) {
               <Currency />
               <Field
                 name="bank_wire_fee"
-                type="number"
+                inputType="number"
+                precision={2}
                 label="Bank wire fee*"
               />
               <Field

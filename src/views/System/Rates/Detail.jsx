@@ -1,13 +1,15 @@
-import { Card, Descriptions, Alert, Divider } from "antd";
+import { Card, Descriptions, Alert, Divider, Row, Button } from "antd";
 import Table from "../../../Components/TableFactory/Table";
 import { useQuery } from "react-query";
-import { terminalsAPI } from "../../../services/queries/management/terminals";
+import { ratesAPI } from "../../../services/queries/management/rates";
 import { useParams } from "react-router-dom";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { Loading } from "../../../Components/Common";
 import { formatDate } from "../../../helpers/formatDate";
+import CustomModal from "../../../Components/Common/Modal";
+import { RevisionCreator } from "./Revisions/Creator";
 
-const terminalsColumns = [
+const RateRevisionsColumns = [
   {
     title: "Currency",
     key: "name",
@@ -34,24 +36,22 @@ const RateDetail = () => {
   let history = useParams();
 
   const {
-    data: gateway,
+    data: rate,
     status,
     error,
-  } = useQuery(["gateway", history.id], () =>
-    terminalsAPI.getTerminal(history.id)
-  );
+  } = useQuery(["rate", history.id], () => ratesAPI.getRate(history.id));
 
   const {
-    isFetching: isFetchingTerminals,
-    isLoading: isLoadingTerminals,
-    isError: isErrorTerminals,
-    error: terminalsError,
-    data: terminals,
-    items: terminalsItems,
-    handleTableChange: handleTerminalsTableChange,
+    isFetching: isFetchingRateRevisions,
+    isLoading: isLoadingRateRevisions,
+    isError: isErrorRateRevisions,
+    error: RateRevisionsError,
+    data: RateRevisions,
+    items: RateRevisionsItems,
+    handleTableChange: handleRateRevisionsTableChange,
   } = useTableQuery(
-    "gateway-terminals",
-    () => terminalsAPI.getGatewayTerminals(history.id),
+    "rate-revisions",
+    (args) => ratesAPI.getRateRevisions(history.id, args),
     false,
     10,
     [history.id]
@@ -72,44 +72,40 @@ const RateDetail = () => {
     );
   }
   return (
-    <Card title={`Connected terminals`}>
+    <Card title={`Connected RateRevisions`}>
       <Descriptions
         column={{ xxl: 1, xl: 1, lg: 1, md: 1, sm: 1, xs: 1 }}
         bordered
         size="small"
       >
-        <Descriptions.Item span={3} label="GUID">
-          {gateway.guid}
-        </Descriptions.Item>
-        <Descriptions.Item label="Description">
-          {gateway.description}
-        </Descriptions.Item>
-        <Descriptions.Item label="Created at">
-          {formatDate(gateway.created_at)}
-        </Descriptions.Item>
-        <Descriptions.Item label="Created by">
-          {gateway.created_by_username}
-        </Descriptions.Item>
-        <Descriptions.Item label="Updated at">
-          {formatDate(gateway.updated_at) || "-"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Updated by">
-          {gateway.updated_by_username || "-"}
+        <Descriptions.Item label="name">{rate.name}</Descriptions.Item>
+        <Descriptions.Item label="Gateway">
+          {rate.gateway_name}
         </Descriptions.Item>
       </Descriptions>
 
       <Divider />
+      <h5>Revisions</h5>
       <Table
-        columns={terminalsColumns}
-        handleTableChange={handleTerminalsTableChange}
-        isFetching={isFetchingTerminals}
-        data={terminals}
-        items={terminalsItems}
-        isLoading={isLoadingTerminals}
-        isError={isErrorTerminals}
-        error={terminalsError}
-        isPaginated={false}
+        columns={RateRevisionsColumns}
+        handleTableChange={handleRateRevisionsTableChange}
+        isFetching={isFetchingRateRevisions}
+        data={RateRevisions}
+        items={RateRevisionsItems}
+        isLoading={isLoadingRateRevisions}
+        isError={isErrorRateRevisions}
+        error={RateRevisionsError}
+        // isPaginated={false}
       />
+      <Row justify="center">
+        <CustomModal
+          header="Create revisions"
+          content={RevisionCreator}
+          contentProps={{ guid: rate.guid }}
+          button={<Button>Create revisions</Button>}
+          // dialogClassName="modal-creator"
+        />
+      </Row>
     </Card>
   );
 };

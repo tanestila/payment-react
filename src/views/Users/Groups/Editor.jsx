@@ -6,9 +6,17 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo } from "react";
 import { Alert, Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
-import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import {
+  ErrorModal,
+  FormLoading,
+  SuccessModal,
+} from "../../../Components/Common";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { parseError } from "../../../helpers/parseError";
+import {
+  roundMultiplyNumber,
+  roundDivisionNumber,
+} from "../../../helpers/formatNumber";
 
 export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -44,13 +52,15 @@ export default function Editor({ handleClose, guid }) {
   return (
     <>
       {status === "loading" || isFetching ? (
-        <Loading />
+        <FormLoading />
       ) : (
         <Formik
           initialValues={{
             name: group.group_name,
             type: group.group_type,
-            monthly_amount_limit: group.monthly_amount_limit,
+            monthly_amount_limit: roundDivisionNumber(
+              group.monthly_amount_limit
+            ),
             partner: modifiedPartnersData.filter(
               (partner) => group.partner_guid === partner.partner_guid
             )[0],
@@ -70,8 +80,8 @@ export default function Editor({ handleClose, guid }) {
                 group_guid: guid,
                 group_name: values.name,
                 group_type: values.type,
-                monthly_amount_limit: (
-                  +values.monthly_amount_limit * 100
+                monthly_amount_limit: roundMultiplyNumber(
+                  values.monthly_amount_limit
                 ).toString(),
                 reason: values.reason,
                 partner_guid: values.partner?.["partner_guid"],
@@ -102,7 +112,7 @@ export default function Editor({ handleClose, guid }) {
                   <Field name="type" type="text" label="Merchant type*" />
                   <Field
                     name="monthly_amount_limit"
-                    type="number"
+                    inputType="number"
                     label="Monthly amount limit*"
                   />
                   <Field
@@ -115,7 +125,7 @@ export default function Editor({ handleClose, guid }) {
                 </Col>
               </Row>
               {isSubmitting ? (
-                <Loading />
+                <FormLoading />
               ) : (
                 <Button htmlType="submit" type="primary" className="f-right">
                   Submit

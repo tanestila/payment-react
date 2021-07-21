@@ -23,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
         <Nav className="mr-auto header-history">
           <Breadcrumb separator=">">
             {headerHistory.map((h, i) => (
-              <Breadcrumb.Item>
+              <Breadcrumb.Item key={h.name + i}>
                 {h.disabled ? (
                   <span key={`${i}${h.name}`}>{h.name}</span>
                 ) : (

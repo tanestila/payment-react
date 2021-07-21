@@ -5,11 +5,20 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo, useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button, Alert } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
+import {
+  Loading,
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../Components/Common";
 import { parseError } from "../../helpers/parseError";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { ratesAPI } from "../../services/queries/management/rates";
 import { terminalsAPI } from "../../services/queries/management/terminals";
+import {
+  roundDivisionNumber,
+  roundMultiplyNumber,
+} from "../../helpers/formatNumber";
 
 export default function Editor({ shop_guid, terminal_guid, handleClose }) {
   const queryClient = useQueryClient();
@@ -88,15 +97,19 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
     isGatewayLoading ||
     isGatewayFetching
   )
-    return <Loading />;
+    return <FormLoading />;
   return (
     <Formik
       initialValues={{
         name: terminal.name,
         billing_descriptor: terminal.billing_descriptor,
         routing_string: terminal.routing_string,
-        payment_amount_limit: terminal.payment_amount_limit,
-        monthly_amount_limit: terminal.monthly_amount_limit,
+        payment_amount_limit: roundDivisionNumber(
+          terminal.payment_amount_limit
+        ),
+        monthly_amount_limit: roundDivisionNumber(
+          terminal.monthly_amount_limit
+        ),
         transaction_count_limit: terminal.transaction_count_limit,
         supported_brands: terminal.supported_brands,
         gateway: modifiedGatewaysData.filter(
@@ -128,6 +141,7 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
           .typeError("You must specify a number")
           .required("Required"),
         transaction_count_limit: Yup.number()
+          .integer("Value must be an integer")
           .typeError("You must specify a number")
           .required("Required"),
         supported_brands: Yup.string().required("Required"),
@@ -136,6 +150,7 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
         rate: Yup.object().typeError("Required").required("Required"),
         checkout_method: Yup.string().required("Required"),
         antifraud_monitor_value: Yup.number()
+          .integer("Value must be an integer")
           .typeError("You must specify a number")
           .required("Required"),
         reason: Yup.string().required("Required"),
@@ -148,8 +163,12 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
             name: values.name,
             billing_descriptor: values.billing_descriptor,
             routing_string: values.routing_string,
-            payment_amount_limit: values.payment_amount_limit.toString(),
-            monthly_amount_limit: values.monthly_amount_limit.toString(),
+            payment_amount_limit: roundMultiplyNumber(
+              values.payment_amount_limit
+            ).toString(),
+            monthly_amount_limit: roundMultiplyNumber(
+              values.monthly_amount_limit
+            ).toString(),
             transaction_count_limit: values.transaction_count_limit,
             supported_brands: values.supported_brands,
             currency_guid: values.currency?.["guid"],
@@ -211,12 +230,12 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
               <Field name="three_d" inputType="checkbox" label="3D" />
               <Field
                 name="payment_amount_limit"
-                type="number"
+                inputType="number"
                 label="Payment amount limit*"
               />
               <Field
                 name="monthly_amount_limit"
-                type="number"
+                inputType="number"
                 label="Monthly amount limit*"
               />
               <Field
@@ -267,7 +286,7 @@ export default function Editor({ shop_guid, terminal_guid, handleClose }) {
             </Col>
           </Row>
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

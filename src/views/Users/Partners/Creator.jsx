@@ -7,7 +7,12 @@ import { rolesAPI } from "../../../services/queries/management/roles";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
-import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import {
+  ErrorModal,
+  FormLoading,
+  Loading,
+  SuccessModal,
+} from "../../../Components/Common";
 import { Button } from "antd";
 import { parseError } from "../../../helpers/parseError";
 
@@ -139,7 +144,7 @@ export default function Creator({ handleClose }) {
                 inputType="checkbox"
                 label="Send mail"
                 tip="We will send your generated username and password to your email."
-              />{" "}
+              />
               {!values.send_mail ? (
                 <Field name="password" type="text" label="Password" />
               ) : null}
@@ -156,7 +161,7 @@ export default function Creator({ handleClose }) {
           </Row>
 
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

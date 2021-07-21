@@ -7,7 +7,12 @@ import { rolesAPI } from "../../../services/queries/management/roles";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { Button } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
+import {
+  Loading,
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../../Components/Common";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
 
@@ -158,7 +163,7 @@ export default function Creator({ handleClose }) {
             </Col>
           </Row>
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

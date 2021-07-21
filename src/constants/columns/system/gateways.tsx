@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import CustomModal from "../../../Components/Common/Modal";
-import Editor from "../../../views/Users/Groups/Editor";
+import { Editor } from "../../../views/System/Gateways/Editor";
 import { Link } from "react-router-dom";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import { GroupType } from "../../../types/groups";
 import { AppAbility } from "../../../Components/Common/Can";
 
-export default function useGatewaysColumns(ability: AppAbility) {
+export default function useGatewaysColumns(ability: AppAbility, handleDelete) {
   return useMemo(
     () => [
       {
@@ -36,7 +36,7 @@ export default function useGatewaysColumns(ability: AppAbility) {
           <CustomModal
             header="Edit merchant"
             content={Editor}
-            contentProps={{ guid: record.group_guid }}
+            contentProps={{ guid: record.guid }}
             button={
               <i
                 className="icon-edit icon gray"
@@ -55,7 +55,7 @@ export default function useGatewaysColumns(ability: AppAbility) {
           <i
             className="far fa-trash-alt  icon red"
             style={{ cursor: "pointer" }}
-            onClick={() => DeleteModal(() => {}, record.group_guid)}
+            onClick={() => DeleteModal(handleDelete, { guid: record.guid })}
           />
         ),
       },

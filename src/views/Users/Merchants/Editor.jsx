@@ -8,8 +8,16 @@ import { useMemo } from "react";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { Alert, Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
-import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import {
+  ErrorModal,
+  FormLoading,
+  SuccessModal,
+} from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
+import {
+  roundMultiplyNumber,
+  roundDivisionNumber,
+} from "../../../helpers/formatNumber";
 
 export default function Editor({ handleClose, guid }) {
   const queryClient = useQueryClient();
@@ -56,13 +64,13 @@ export default function Editor({ handleClose, guid }) {
   return (
     <>
       {status === "loading" || isFetching ? (
-        <Loading />
+        <FormLoading />
       ) : (
         <Formik
           initialValues={{
             name: merchant.merchant_name,
             type: merchant.merchant_type,
-            monthly_fee: merchant.monthly_fee,
+            monthly_fee: roundDivisionNumber(merchant.monthly_fee),
             monthly_fee_currency: modifiedCurrenciesData.filter(
               (cur) => merchant.monthly_fee_currency === cur.code
             )[0],
@@ -105,13 +113,13 @@ export default function Editor({ handleClose, guid }) {
                 merchant_name: values.name,
                 merchant_type: values.type,
                 monthly_fee_currency: values.monthly_fee_currency?.["name"],
-                monthly_fee: +values.monthly_fee * 100,
+                monthly_fee: roundMultiplyNumber(values.monthly_fee),
                 monthly_fee_date: values.monthly_fee_date,
-                monthly_amount_limit: (
-                  +values.monthly_amount_limit * 100
+                monthly_amount_limit: roundMultiplyNumber(
+                  values.monthly_amount_limit
                 ).toString(),
-                custom_amount_limit: (
-                  +values.custom_amount_limit * 100
+                custom_amount_limit: roundMultiplyNumber(
+                  values.custom_amount_limit
                 ).toString(),
                 custom_days_limit: values.custom_days_limit,
                 group_guid: values.group?.["group_guid"],
@@ -188,7 +196,7 @@ export default function Editor({ handleClose, guid }) {
                 </Col>
               </Row>
               {isSubmitting ? (
-                <Loading />
+                <FormLoading />
               ) : (
                 <Button htmlType="submit" type="primary" className="f-right">
                   Submit

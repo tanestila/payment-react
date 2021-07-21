@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "antd";
 import "antd/dist/antd.css";
-import Loading from "../Common/Loading";
+import Loading from "../Common/Loading/MainLoading";
 
 type DataType = {
   data: Array<any>;

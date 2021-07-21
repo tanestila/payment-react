@@ -1,14 +1,16 @@
 import { FieldArray, useFormikContext, Field as FormikField } from "formik";
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { Button } from "antd";
 import { CustomSelect } from "./CustomSelect";
 import { useCallback, useState } from "react";
+import { formatNumber } from "../../../helpers/formatNumber";
 export const AdditionalFeesInput = ({
   field,
   props,
   meta,
   options: initOptions,
   currencyOptions,
+  precision = 2,
 }) => {
   const [options, setOptions] = useState<Array<any>>(initOptions);
   const [selected_names, setSelectedNames] = useState<Array<any>>([]);
@@ -24,6 +26,13 @@ export const AdditionalFeesInput = ({
     });
     setSelectedNames([...selected_namesTemp]);
     setOptions([...optionsTemp]);
+  }, []);
+
+  const onChangeNumber = useCallback((event, index, value) => {
+    setFieldValue(
+      `${value.name}.${index}.value`,
+      formatNumber(event.currentTarget.value, precision)
+    );
   }, []);
 
   return (
@@ -65,6 +74,8 @@ export const AdditionalFeesInput = ({
                     <FormikField
                       className="form-control ant-input"
                       name={`${props.name}.${index}.value`}
+                      type="number"
+                      onChange={(e) => onChangeNumber(e, index, props)}
                     />
 
                     {meta.error &&

@@ -1,12 +1,24 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { Col, Row } from "react-bootstrap";
-import { useMutation } from "react-query";
-import { currenciesAPI } from "../../../services/queries/management/currencies";
+import { Button } from "antd";
+import { useMutation, useQueryClient } from "react-query";
+import { gatewaysAPI } from "../../../services/queries/management/gateways";
+import {
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../../Components/Common";
+import { parseError } from "../../../helpers/parseError";
 
 export const Creator = ({ handleClose }) => {
-  const mutation = useMutation(currenciesAPI.addCurrency);
+  const queryClient = useQueryClient();
+  const mutation = useMutation(gatewaysAPI.addGateway, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("gateways");
+    },
+  });
+
   return (
     <Formik
       initialValues={{
@@ -19,26 +31,31 @@ export const Creator = ({ handleClose }) => {
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const todo = await mutation.mutateAsync(values);
-          console.log(todo);
+          let data = {
+            name: values.name,
+            description: values.description,
+          };
+          await mutation.mutateAsync(data);
+          SuccessModal("Gateway was created");
           handleClose();
         } catch (error) {
-          console.log(error.response.data.description.message);
-        } finally {
-          console.log("done");
+          ErrorModal(parseError(error));
+          console.log(error);
         }
+        setSubmitting(false);
       }}
     >
-      {(formik) => (
-        <Form onSubmit={formik.handleSubmit}>
-          <Row>
-            <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field name="name" type="text" label="Name" />
-              <Field name="description" type="text" label="Description" />
-            </Col>
-          </Row>
-          {mutation.isLoading && "loading"}
-          <button type="submit">Submit</button>
+      {({ isSubmitting }) => (
+        <Form>
+          <Field name="name" type="text" label="Name" />
+          <Field name="description" type="text" label="Description" />
+          {isSubmitting ? (
+            <FormLoading />
+          ) : (
+            <Button htmlType="submit" type="primary" className="f-right">
+              Submit
+            </Button>
+          )}
         </Form>
       )}
     </Formik>

@@ -143,12 +143,15 @@ fieldset[disabled] .form-control {
 
 .validate-error {
   color: #f06292;
-  float: right;
+  // float: right;
   // text-align: center;
   // font-style: normal;
   // font-weight: 400;
   font-size: 12px;
   line-height: 17px;
+  position: absolute;
+  top: 25px;
+  right: 20px;
 }
 
 .help-tip {

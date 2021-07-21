@@ -3,9 +3,10 @@ import { AppAbility } from "../../../Components/Common/Can";
 import CustomModal from "../../../Components/Common/Modal";
 import { Link } from "react-router-dom";
 import { ShopType } from "../../../types/shops";
-import Editor from "../../../views/Shops/Editor";
+import Editor from "../../../views/System/Rates/Editor";
+import { DeleteModal } from "../../../Components/Common/DeleteModal";
 
-export default function useRatesColumns(ability: AppAbility) {
+export default function useRatesColumns(ability: AppAbility, handleDelete) {
   return useMemo(
     () => [
       {
@@ -33,12 +34,11 @@ export default function useRatesColumns(ability: AppAbility) {
         ),
       },
       ability.can("EXECUTE", "RATES") && {
-        title: "Edit",
         key: "edit",
         align: "center",
         render: (text: string, record: ShopType) => (
           <CustomModal
-            header="Edit merchant"
+            header="Edit admin"
             content={Editor}
             contentProps={{ guid: record.guid }}
             button={
@@ -52,10 +52,16 @@ export default function useRatesColumns(ability: AppAbility) {
         ),
       },
       ability.can("DELETE", "USERMERCHANT") && {
-        title: "Delete",
+        title: "",
         key: "delete",
         align: "center",
-        render: () => <span>delete</span>,
+        render: (text: string, record: ShopType) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(handleDelete, { guid: record.guid })}
+          />
+        ),
       },
     ],
     [ability]

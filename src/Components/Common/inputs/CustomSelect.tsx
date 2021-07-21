@@ -15,7 +15,7 @@ const customStyles = {
   control: (base: any) => ({
     ...base,
 
-    "min-height": "39px",
+    minHeight: "39px",
   }),
   dropdownIndicator: (base: any) => ({
     ...base,

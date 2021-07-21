@@ -13,7 +13,7 @@ import { RatesInput } from "../Inputs/RatesInput";
 import { ArrayInput } from "../Inputs/ArrayInput";
 import { AdditionalFeesInput } from "../Inputs/AdditionalFeesInput";
 import { formatNumber } from "../../../helpers/formatNumber";
-
+import { InputLoading } from "../../../Components/Common";
 type CustomInputProps = {
   label: string;
   name: string;
@@ -39,8 +39,10 @@ type CustomInputProps = {
   disabled?: boolean;
   disabledName?: string;
   propName?: string;
+  precision?: number;
   currencyOptions?: Array<any>;
   callback?: Function;
+  isLoading?: boolean;
 };
 
 export const Field: React.FC<CustomInputProps> = ({
@@ -53,6 +55,8 @@ export const Field: React.FC<CustomInputProps> = ({
   disabledName, // for array input
   propName, // for array input
   currencyOptions, // for array input
+  precision,
+  isLoading,
   ...props
 }) => {
   const [field, meta, helpers] = useField(props.name);
@@ -85,10 +89,10 @@ export const Field: React.FC<CustomInputProps> = ({
   );
 
   const onChangeNumber = useCallback(
-    (event) => {
-      helpers.setValue(formatNumber(event.currentTarget.value));
+    (event, precision) => {
+      helpers.setValue(formatNumber(event.currentTarget.value, precision));
       helpers.setTouched(true);
-      callback && callback(formatNumber(event.currentTarget.value));
+      callback && callback(formatNumber(event.currentTarget.value, precision));
     },
     [helpers]
   );
@@ -224,6 +228,7 @@ export const Field: React.FC<CustomInputProps> = ({
             props={props}
             meta={meta}
             disabledName={disabledName}
+            precision={precision}
           />
         );
       case "number":
@@ -233,7 +238,7 @@ export const Field: React.FC<CustomInputProps> = ({
             {...field}
             {...props}
             type="number"
-            onChange={onChangeNumber}
+            onChange={(e) => onChangeNumber(e, precision)}
           />
         );
 
@@ -257,7 +262,7 @@ export const Field: React.FC<CustomInputProps> = ({
             {tip && <HelpTip tip={tip} />}
           </Col>
           <Col lg={8} md={8} sm={7} xs={6} className="form-input">
-            {renderInput()}
+            {isLoading ? <InputLoading /> : renderInput()}
             {!Array.isArray(meta.error) && meta.touched && meta.error ? (
               <span className="validate-error">{meta.error}</span>
             ) : null}

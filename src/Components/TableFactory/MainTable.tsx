@@ -4,7 +4,7 @@ import { SearchForm } from "./Form";
 import "antd/dist/antd.css";
 import { SearchOutlined } from "@ant-design/icons";
 import { ButtonFilter } from "./Button";
-import Loading from "../Common/Loading";
+import Loading from "../Common/Loading/MainLoading";
 import { useQuery } from "react-query";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { AbilityContext } from "../Common/Can";
@@ -54,7 +54,7 @@ export default function TableFactory({
   const ability = useContext(AbilityContext);
   const [isShowFrom, showForm] = useState(false);
   const { data: gateways } = useQuery(
-    ["gateways"],
+    ["gateways-for-table-search"], // bc if we load gateways with 'gateway' key, table will rerender after every load
     () => gatewaysAPI.getGateways(),
     {
       keepPreviousData: true,

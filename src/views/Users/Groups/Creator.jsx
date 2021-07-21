@@ -10,8 +10,13 @@ import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { useMemo } from "react";
 import { Button } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
+import {
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
+import { roundMultiplyNumber } from "../../../helpers/formatNumber";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
@@ -121,8 +126,8 @@ export default function Creator({ handleClose }) {
             language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
             partner_guid: values.partner?.["partner_guid"],
-            monthly_amount_limit: (
-              +values.monthly_amount_limit * 100
+            monthly_amount_limit: roundMultiplyNumber(
+              values.monthly_amount_limit
             ).toString(),
           };
           await mutation.mutateAsync(data);
@@ -161,7 +166,7 @@ export default function Creator({ handleClose }) {
             <Col xl={6} lg={12} md={12} sm={12} xs={12}>
               <Field
                 name="monthly_amount_limit"
-                type="text"
+                inputType="number"
                 label="Monthly amount limit"
               />
               <Field name="enabled" inputType="checkbox" label="Enable" />
@@ -192,7 +197,7 @@ export default function Creator({ handleClose }) {
             </Col>
           </Row>
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

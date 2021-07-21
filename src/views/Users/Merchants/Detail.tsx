@@ -26,7 +26,7 @@ import {
 import { formatDate } from "../../../helpers/formatDate";
 import CustomModal from "../../../Components/Common/Modal";
 import { LoginCreator } from "../Common/LoginCreator";
-import Loading from "../../../Components/Common/Loading";
+import Loading from "../../../Components/Common/Loading/MainLoading";
 import { useShopsColumnsForDetail } from "../../../constants/columns/shops";
 import { terminalsAPI } from "../../../services/queries/management/terminals";
 

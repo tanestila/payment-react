@@ -5,8 +5,17 @@ import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 import { Alert, Button } from "antd";
-import { ErrorModal, Loading, SuccessModal } from "../../../Components/Common";
+import {
+  ErrorModal,
+  FormLoading,
+  Loading,
+  SuccessModal,
+} from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
+import {
+  roundMultiplyNumber,
+  roundDivisionNumber,
+} from "../../../helpers/formatNumber";
 
 const statuses = [
   { name: "Success", guid: "1", label: "Success", value: "1" },
@@ -35,7 +44,7 @@ export default function Editor({ handleClose, guid }) {
   return (
     <>
       {status === "loading" || isFetching ? (
-        <Loading />
+        <FormLoading />
       ) : (
         <Formik
           initialValues={{
@@ -44,17 +53,21 @@ export default function Editor({ handleClose, guid }) {
             )[0],
             date: transaction.date_time,
             bin_country: transaction.bin_country,
-            amount: transaction.amount,
-            to_processor_pct: transaction.rate.to_processor_pct,
-            to_processor_fixed: transaction.rate.to_processor_fixed,
-            to_bank_pct: transaction.rate.to_bank_pct,
-            need_rates_changes: false,
-            to_bank_fixed: transaction.rate.to_bank_fixed,
-            to_client: transaction.rate.to_client,
-            hold: transaction.rate.hold,
+            amount: roundDivisionNumber(transaction.amount),
+            to_processor_pct: roundDivisionNumber(
+              transaction.rate.to_processor_pct
+            ),
+            to_processor_fixed: roundDivisionNumber(
+              transaction.rate.to_processor_fixed
+            ),
+            to_bank_pct: roundDivisionNumber(transaction.rate.to_bank_pct),
+            to_bank_fixed: roundDivisionNumber(transaction.rate.to_bank_fixed),
+            to_client: roundDivisionNumber(transaction.rate.to_client),
+            hold: roundDivisionNumber(transaction.rate.hold),
             hold_date: transaction.rate.hold_date,
             hold_flag: transaction.rate.hold_flag,
             reason: "",
+            need_rates_changes: false,
           }}
           validationSchema={() => {
             return Yup.lazy((values) => {
@@ -103,7 +116,7 @@ export default function Editor({ handleClose, guid }) {
                 status: values.status.name,
                 date: values.date,
                 bin_country: values.bin_country,
-                amount: values.amount.toString(),
+                amount: roundMultiplyNumber(values.amount).toString(),
                 to_processor_pct: values.to_processor_pct,
                 to_processor_fixed: values.to_processor_fixed,
                 to_bank_pct: values.to_bank_pct,
@@ -143,7 +156,7 @@ export default function Editor({ handleClose, guid }) {
                   />
                   <Field name="date" inputType="date-time" label="Date*" />
                   <Field name="bin_country" type="text" label="BIN country*" />
-                  <Field name="amount" type="number" label="Amount*" />
+                  <Field name="amount" inputType="number" label="Amount*" />
                   <Field name="reason" type="text" label="Reason*" />
                 </Col>
                 <Col xl={6} lg={6} md={6} sm={12} xs={12}>
@@ -154,7 +167,7 @@ export default function Editor({ handleClose, guid }) {
                   />
                   {values.need_rates_changes && (
                     <>
-                      <Field name="hold" type="number" label="Hold*" />
+                      <Field name="hold" inputType="number" label="Hold*" />
                       <Field
                         name="hold_date"
                         inputType="date-single"
@@ -167,22 +180,22 @@ export default function Editor({ handleClose, guid }) {
                       />
                       <Field
                         name="to_processor_pct"
-                        type="number"
+                        inputType="number"
                         label="To processor(%)*"
                       />
                       <Field
                         name="to_processor_fixed"
-                        type="number"
+                        inputType="number"
                         label="To processor(fixed)*"
                       />
                       <Field
                         name="to_bank_pct"
-                        type="number"
+                        inputType="number"
                         label="To bank(%)*"
                       />
                       <Field
                         name="to_bank_fixed"
-                        type="number"
+                        inputType="number"
                         label="To bank(fixed)*"
                       />
                     </>
@@ -190,7 +203,7 @@ export default function Editor({ handleClose, guid }) {
                 </Col>
               </Row>
               {isSubmitting ? (
-                <Loading />
+                <FormLoading />
               ) : (
                 <Button htmlType="submit" type="primary" className="f-right">
                   Submit

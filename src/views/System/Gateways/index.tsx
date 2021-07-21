@@ -7,9 +7,11 @@ import Modal from "../../../Components/Common/Modal";
 import { gatewaysAPI } from "../../../services/queries/management/gateways";
 import { useGatewaysColumns } from "../../../constants/columns";
 import { Button } from "antd";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Gateways() {
   const ability = useContext(AbilityContext);
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isError,
@@ -21,7 +23,13 @@ export default function Gateways() {
     onSearch,
   } = useTableQuery("gateways", gatewaysAPI.getGateways, true);
 
-  const columns = useGatewaysColumns(ability);
+  const deleteAdminMutation = useMutation(gatewaysAPI.deleteGateway, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("gateways");
+    },
+  });
+
+  const columns = useGatewaysColumns(ability, deleteAdminMutation);
 
   return (
     <Table
@@ -40,7 +48,7 @@ export default function Gateways() {
           button={<Button type="primary">Create gateway</Button>}
           content={Creator}
           header="Create gateway"
-          dialogClassName="modal-creator"
+          // dialogClassName="modal-creator"
         />
       }
     />

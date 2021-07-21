@@ -3,7 +3,12 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo } from "react";
 import { Button } from "antd";
-import { Loading, SuccessModal, ErrorModal } from "../../Components/Common";
+import {
+  Loading,
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../Components/Common";
 import { parseError } from "../../helpers/parseError";
 import { terminalsAPI } from "../../services/queries/management/terminals";
 
@@ -30,7 +35,7 @@ export default function Params({ terminal_guid, gateway_guid, handleClose }) {
       : {};
   }, [properties]);
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <FormLoading />;
   return (
     <Formik
       initialValues={initialValues}
@@ -73,7 +78,7 @@ export default function Params({ terminal_guid, gateway_guid, handleClose }) {
             );
           })}
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit

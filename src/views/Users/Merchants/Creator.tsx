@@ -12,8 +12,13 @@ import { Button } from "antd";
 import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
-import { Loading, SuccessModal, ErrorModal } from "../../../Components/Common";
+import {
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
+import { roundMultiplyNumber } from "../../../helpers/formatNumber";
 
 export default function Creator({ handleClose }: { handleClose: Function }) {
   const queryClient = useQueryClient();
@@ -150,12 +155,14 @@ export default function Creator({ handleClose }: { handleClose: Function }) {
             enabled: values.enabled === true ? 1 : 0,
             monthly_fee_currency: values.monthly_fee_currency?.["name"],
             group_guid: values.group?.["group_guid"],
-            monthly_fee: +values.monthly_fee * 100,
+            monthly_fee: roundMultiplyNumber(values.monthly_fee),
             monthly_fee_date: values.monthly_fee_date,
-            monthly_amount_limit: (
-              +values.monthly_amount_limit * 100
+            monthly_amount_limit: roundMultiplyNumber(
+              values.monthly_amount_limit
             ).toString(),
-            custom_amount_limit: (+values.custom_amount_limit * 100).toString(),
+            custom_amount_limit: roundMultiplyNumber(
+              values.custom_amount_limit
+            ).toString(),
             custom_days_limit: values.custom_days_limit,
           };
           await mutation.mutateAsync(data);
@@ -254,7 +261,7 @@ export default function Creator({ handleClose }: { handleClose: Function }) {
             </Col>
           </Row>
           {isSubmitting ? (
-            <Loading />
+            <FormLoading />
           ) : (
             <Button htmlType="submit" type="primary" className="f-right">
               Submit
