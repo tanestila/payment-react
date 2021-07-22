@@ -1,12 +1,25 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { Col, Row } from "react-bootstrap";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
+import { Button } from "antd";
+import {
+  SuccessModal,
+  ErrorModal,
+  FormLoading,
+} from "../../../Components/Common";
+import { adminsAPI } from "../../../services/queries/management/users/admins";
+import { parseError } from "../../../helpers/parseError";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 
-export const Creator = ({ handleClose }) => {
-  const mutation = useMutation(currenciesAPI.addCurrency);
+export default function Creator({ handleClose }) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation(currenciesAPI.addCurrency, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("currencies");
+    },
+  });
+
   return (
     <Formik
       initialValues={{
@@ -35,36 +48,45 @@ export const Creator = ({ handleClose }) => {
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const todo = await mutation.mutateAsync(values);
-          console.log(todo);
+          let data = {
+            name: values.name,
+            code: values.code,
+            number: values.number,
+            rate_to_eur: values.rate_to_eur,
+            exchange_markup_value: values.exchange_markup_value,
+            isFlat: values.isFlat,
+          };
+          await mutation.mutateAsync(data);
+          SuccessModal("Currency was created");
           handleClose();
         } catch (error) {
-          console.log(error.response.data.description.message);
-        } finally {
-          console.log("done");
+          ErrorModal(parseError(error));
+          console.log(error);
         }
+        setSubmitting(false);
       }}
     >
-      {(formik) => (
-        <Form onSubmit={formik.handleSubmit}>
-          <Row>
-            <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field name="name" type="text" label="name" />
-              <Field name="code" type="text" label="code" />
-              <Field name="number" type="text" label="number" />
-              <Field name="rate_to_eur" type="text" label="Rate to eur" />
-              <Field
-                name="exchange_markup_value"
-                type="number"
-                label="exchange_markup_value"
-              />
-              <Field name="isFlat" type="checkbox" label="isFlat" />
-            </Col>
-          </Row>
-          {mutation.isLoading && "loading"}
-          <button type="submit">Submit</button>
+      {({ values, isSubmitting }) => (
+        <Form>
+          <Field name="name" type="text" label="name" />
+          <Field name="code" type="text" label="code" />
+          <Field name="number" type="text" label="number" />
+          <Field name="rate_to_eur" type="text" label="Rate to eur" />
+          <Field
+            name="exchange_markup_value"
+            type="number"
+            label="exchange_markup_value"
+          />
+          <Field name="isFlat" type="checkbox" label="isFlat" />
+          {isSubmitting ? (
+            <FormLoading />
+          ) : (
+            <Button htmlType="submit" type="primary" className="f-right">
+              Submit
+            </Button>
+          )}
         </Form>
       )}
     </Formik>
   );
-};
+}

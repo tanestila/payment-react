@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AppAbility } from "../../../Components/Common/Can";
 import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import CustomModal from "../../../Components/Common/Modal";
-import { Creator } from "../../../views/System/Currencies/Creator";
+import Editor from "../../../views/System/Currencies/Editor";
 
 export default function useCurrenciesColumns(ability: AppAbility) {
   return useMemo(
@@ -63,7 +63,7 @@ export default function useCurrenciesColumns(ability: AppAbility) {
         render: (text: string, record: PartnerType) => (
           <CustomModal
             header="Edit merchant"
-            content={Creator}
+            content={Editor}
             contentProps={{ guid: record.partner_guid }}
             button={
               <i

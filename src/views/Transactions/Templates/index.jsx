@@ -4,17 +4,8 @@ import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useTransactionTemplatesColumns } from "../../../constants/columns";
 
 export default function Templates() {
-  const {
-    isLoading,
-    isError,
-    error,
-    data,
-    items,
-    search,
-    isFetching,
-    handleTableChange,
-    onSearch,
-  } = useTableQuery("templates", templatesAPI.getTemplates);
+  const { data, items, search, isFetching, handleTableChange, onSearch } =
+    useTableQuery("templates", templatesAPI.getTemplates);
 
   const columns = useTransactionTemplatesColumns();
 

@@ -1,10 +1,7 @@
 import { ordersAPI } from "../../../services/queries/report/orders";
-import { Link } from "react-router-dom";
 import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { Space } from "antd";
-import { cutGuid } from "../../../helpers/cutGuid";
-import { Copy } from "../../../Components/Common/CopyToClipboard";
+
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
 import { useOrdersColumns } from "../../../constants/columns";

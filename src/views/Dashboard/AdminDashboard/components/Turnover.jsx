@@ -1,51 +1,39 @@
+import { LineChart } from "../../../../Components/Common/Charts/LineChart";
 import { useEffect, useState } from "react";
-import { HorizontalBar } from "../../../Components/Common/Charts/HorizontalBar";
 import { useQuery } from "react-query";
-import { adminDashboardAPI } from "../../../services/queries/report/adminDashboard";
+import { adminDashboardAPI } from "../../../../services/queries/report/adminDashboard";
 
-export const MerchantsLimits = () => {
+export const Turnover = () => {
   const [labels, setLabels] = useState([]);
   const [datasets, setDatasets] = useState([]);
-
+  const [date, setDate] = useState(null);
+  const [last_days, setLastDays] = useState(null);
   const {
     data: response,
     isLoading,
     status,
     isFetching,
   } = useQuery(
-    ["merchants-limits-bar"],
-    () => adminDashboardAPI.getMerchantLimitsData(),
-    { refetchOnWindowFocus: false }
+    ["turnover-line-chart", date?.date_from, date?.date_till, last_days],
+    () => adminDashboardAPI.getTurnoverData()
   );
 
   useEffect(() => {
-    console.log("re");
     if (status === "success") {
       let labels = [];
       let data = [];
-      let backgroundColors = [];
-      let borderColors = [];
-      let hoverBackgroundColors = [];
-
-      response.limits.forEach((element) => {
-        labels.push(element.merchant_name);
-        data.push(element.used_percent);
-      });
-      data.forEach((item, index) => {
-        let red = (item / 100) * 255;
-        let green = 255 - (item / 100) * 255;
-        backgroundColors.push("rgba(" + red + "," + green + ",0,0.2)");
-        borderColors.push("rgba(" + red + "," + green + ",0,1)");
-        hoverBackgroundColors.push("rgba(" + red + "," + green + ",0,0.4)");
+      response?.forEach((element) => {
+        // labels.push(element.merchant_name);
+        // data.push(element.merchant_amount);
       });
       setDatasets([
         {
-          label: labels,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
+          label: "Total",
+          backgroundColor: "rgba(255,99,132,0.2)",
+          borderColor: "rgba(255,99,132,1)",
           borderWidth: 1,
-          hoverBackgroundColor: hoverBackgroundColors,
-          hoverBorderColor: borderColors,
+          hoverBackgroundColor: "rgba(255,99,132,0.4)",
+          hoverBorderColor: "rgba(255,99,132,1)",
           data: data,
         },
       ]);
@@ -58,7 +46,7 @@ export const MerchantsLimits = () => {
       {isLoading || status === "loading" || isFetching ? (
         <>loading</>
       ) : (
-        <HorizontalBar
+        <LineChart
           labels={labels}
           datasets={datasets}
           options={{

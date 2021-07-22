@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { HorizontalBar } from "../../../Components/Common/Charts/HorizontalBar";
+import { HorizontalBar } from "../../../../Components/Common/Charts/HorizontalBar";
 import { useQuery } from "react-query";
-import { adminDashboardAPI } from "../../../services/queries/report/adminDashboard";
+import { adminDashboardAPI } from "../../../../services/queries/report/adminDashboard";
 import Checkbox from "antd/lib/checkbox/Checkbox";
 
 export const MerchantsLimits = () => {
@@ -94,20 +94,3 @@ export const MerchantsLimits = () => {
     </div>
   );
 };
-
-// const options = {
-//   indexAxis: "y",
-//   // Elements options apply to all of the options unless overridden in a dataset
-//   // In this case, we are setting the border of each horizontal bar to be 2px wide
-//   elements: {
-//     bar: {
-//       borderWidth: 2,
-//     },
-//   },
-//   responsive: true,
-//   plugins: {
-//     legend: {
-//       position: "top",
-//     },
-//   },
-// };

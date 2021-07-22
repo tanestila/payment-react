@@ -1,12 +1,8 @@
-import { Card, Divider, Button, Descriptions } from "antd";
-import StatementForm from "./common/interim/Creator";
-import StatementTables from "./common/interim/StatementTables";
 import { useQuery } from "react-query";
 import { statementsAPI } from "../../../services/queries/management/statements";
 import { useParams } from "react-router-dom";
 import { Loading } from "../../../Components/Common";
-import { useMemo, useState } from "react";
-import { formatDate } from "../../../helpers/formatDate";
+import { useMemo } from "react";
 import InterimDetail from "./common/interim/Detail";
 import PayableDetail from "./common/payable/Detail";
 

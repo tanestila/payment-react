@@ -1,9 +1,7 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { partnersAPI } from "../../services/queries/management/users/partners";
 import { ErrorModal, Loading, SuccessModal } from "../../Components/Common";
 import { Button } from "antd";
 import { shopsAPI } from "../../services/queries/management/shops";

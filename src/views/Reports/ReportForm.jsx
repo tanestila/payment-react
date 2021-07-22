@@ -1,427 +1,239 @@
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
-import { Card, Col, Form, Row } from "react-bootstrap";
-import Can from "../../Can";
-import CustomButton from "components/UI/Button";
-import DateRangePicker from "react-bootstrap-daterangepicker";
-import CustomSelect from "components/UI/MultiSelect";
-import { getAllMerchants } from "actions/merchants";
-import { getAllPartners } from "actions/partners";
-import { getAllGroups } from "actions/groups";
-import { getTerminalsAction } from "actions/terminals";
-import { getAllCurrencies } from "actions/currencies";
-import { getAllShops } from "actions/shops";
-import { useDispatch } from "react-redux";
+import { useEffect, useMemo, useState } from "react";
+import { Form, Formik } from "formik";
+import { groupsAPI } from "../../services/queries/management/users/groups";
+import { partnersAPI } from "../../services/queries/management/users/partners";
+import { merchantsAPI } from "../../services/queries/management/users/merchnats";
+import { currenciesAPI } from "../../services/queries/management/currencies";
+import { shopsAPI } from "../../services/queries/management/shops";
+import { terminalsAPI } from "../../services/queries/management/terminals";
+import { useQuery } from "react-query";
+import { Col, Row } from "react-bootstrap";
+import { Field } from "../../Components/Common/Formik/Field";
+import { Button } from "antd";
+import { ErrorModal } from "../../Components/Common";
+import { parseError } from "../../helpers/parseError";
 
-function ReportForm({
+export const ReportForm = ({
   handleSubmit,
-  errors,
   isSelectCurrency = true,
-  button,
-  onButtonClick,
-}) {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [merchants, setMerchants] = useState([]);
-  const [groups, setGroups] = useState([]);
-  const [partners, setPartners] = useState([]);
-  const [shops, setShops] = useState([]);
-  const [terminals, setTerminals] = useState([]);
-  const [currencies, setCurrencies] = useState([]);
-  const [selectedMerchants, setSelectedMerchants] = useState([]);
-  const [selectedGroups, setSelectedGroups] = useState([]);
-  const [selectedPartners, setSelectedPartners] = useState([]);
-  const [selectedShops, setSelectedShops] = useState([]);
-  const [selectedTerminals, setSelectedTerminals] = useState([]);
-  const [selectedCurrencies, setSelectedCurrencies] = useState([]);
-  const [dates, setDates] = useState({
-    fromDate: moment()
-      .format("YYYY-MM-DDTHH:mm:ss")
-      .replace(/\D\d{2}\w/, "-01T"),
-    toDate: moment().format("YYYY-MM-DDTHH:mm:ss"),
-  });
-  const { merchantsList } = useSelector((state) => state.merchants);
-  const { partnersList } = useSelector((state) => state.partners);
-  const { groupsList } = useSelector((state) => state.groups);
-  const { shopsList } = useSelector((state) => state.shops);
-  const { currenciesList } = useSelector((state) => state.currencies);
-  const { terminals: terminalsList } = useSelector((state) => state.terminals);
+  isSelectDate = true,
+  isExport = false,
+}) => {
+  const [selected_merchants, setMerchants] = useState(null);
+  const [selected_groups, setGroups] = useState(null);
+  const [selected_partners, setPartners] = useState(null);
+  const [selected_shops, setShops] = useState(null);
+  const [export_type, setExportType] = useState(null);
 
-  useEffect(() => {
-    dispatch(getAllMerchants());
-    dispatch(getAllShops());
-    dispatch(getAllPartners());
-    dispatch(getAllGroups());
-    dispatch(getTerminalsAction());
-    dispatch(getAllCurrencies());
-  }, []);
+  const { data: partners, isLoading: isLoadingPartners } = useQuery(
+    ["partners"],
+    () => partnersAPI.getPartners()
+  );
 
-  useEffect(() => {
-    setMerchants(
-      merchantsList.map((m) => ({
-        ...m,
-        name: m.merchant_name,
-        guid: m.merchant_guid,
-      }))
-    );
-  }, [merchantsList]);
+  const modifiedPartnersData = useMemo(() => {
+    return partners
+      ? partners.data.map((partner: any) => ({
+          ...partner,
+          name: partner.partner_name,
+          guid: partner.partner_guid,
+        }))
+      : [];
+  }, [partners]);
 
-  useEffect(() => {
-    setGroups(
-      groupsList.map((m) => ({
-        ...m,
-        name: m.group_name,
-        guid: m.group_guid,
-      }))
-    );
-  }, [groupsList]);
+  const { data: groups, isLoading: isLoadingGroups } = useQuery(
+    ["groups", selected_partners],
+    () => groupsAPI.getGroups()
+  );
 
-  useEffect(() => {
-    setPartners(
-      partnersList.map((m) => ({
-        ...m,
-        name: m.partner_name,
-        guid: m.partner_guid,
-      }))
-    );
-  }, [partnersList]);
+  const modifiedGroupsData = useMemo(() => {
+    return groups
+      ? groups.data.map((group: any) => ({
+          ...group,
+          name: group.group_name,
+          guid: group.group_guid,
+        }))
+      : [];
+  }, [groups]);
 
-  useEffect(() => {
-    setShops(shopsList);
-  }, [shopsList]);
+  const { data: merchants, isLoading: isLoadingMerchants } = useQuery(
+    ["merchants", selected_partners, selected_groups],
+    () => merchantsAPI.getMerchants()
+  );
 
-  useEffect(() => {
-    setTerminals(terminalsList);
-  }, [terminalsList]);
+  const modifiedMerchantsData = useMemo(() => {
+    return merchants
+      ? merchants.data.map((merchant: any) => ({
+          ...merchant,
+          name: merchant.merchant_name,
+          guid: merchant.merchant_guid,
+        }))
+      : [];
+  }, [merchants]);
 
-  useEffect(() => {
-    setCurrencies(
-      currenciesList.map((m) => ({
-        ...m,
-        name: m.code,
-      }))
-    );
-  }, [currenciesList]);
+  const { data: currencies, isLoading: isLoadingCurrencies } = useQuery(
+    ["currencies"],
+    () => currenciesAPI.getCurrencies()
+  );
 
-  const handleSelectPartners = (options) => {
-    setSelectedPartners(options);
-    dispatch(
-      getAllGroups({
-        partner_guid_array: options.map((p) => p.partner_guid),
-      })
-    );
-    dispatch(
-      getAllMerchants({
-        partner_guid_array: options.map((p) => p.partner_guid),
-      })
-    );
-    dispatch(
-      getAllShops({
-        partner_guid_array: options.map((p) => p.partner_guid),
-      })
-    );
-    dispatch(
-      getTerminalsAction({
-        partner_guid_array: options.map((p) => p.partner_guid),
-      })
-    );
-    setSelectedGroups([]);
-    setSelectedMerchants([]);
-    setSelectedShops([]);
-    setSelectedTerminals([]);
-  };
+  const modifiedCurrenciesData = useMemo(() => {
+    return currencies
+      ? currencies.data.map((cur: any) => ({ ...cur, name: cur.code }))
+      : [];
+  }, [currencies]);
 
-  const handleSelectGroups = (options) => {
-    setSelectedGroups(options);
-    dispatch(
-      getAllMerchants({
-        group_guid_array: options.map((p) => p.group_guid),
-      })
-    );
-    dispatch(
-      getAllShops({
-        group_guid_array: options.map((p) => p.group_guid),
-      })
-    );
-    dispatch(
-      getTerminalsAction({
-        group_guid_array: options.map((p) => p.group_guid),
-      })
-    );
-    setSelectedMerchants([]);
-    setSelectedShops([]);
-    setSelectedTerminals([]);
-  };
+  const { data: shops, isLoading: isLoadingShops } = useQuery(
+    ["shops", selected_partners, selected_groups, selected_merchants],
+    () => shopsAPI.getShops()
+  );
 
-  const handleSelectMerchants = (options) => {
-    setSelectedMerchants(options);
-    dispatch(
-      getAllShops({
-        merchant_guid_array: options.map((p) => p.merchant_guid),
-      })
-    );
-    dispatch(
-      getTerminalsAction({
-        merchant_guid_array: options.map((p) => p.merchant_guid),
-      })
-    );
-    setSelectedShops([]);
-    setSelectedTerminals([]);
-  };
+  const { data: terminals, isLoading: isLoadingTerminals } = useQuery(
+    [
+      "terminals",
+      selected_partners,
+      selected_groups,
+      selected_merchants,
+      selected_shops,
+    ],
+    () => terminalsAPI.getShops()
+  );
 
-  const handleSelectShops = (options) => {
-    setSelectedShops(options);
-    dispatch(
-      getTerminalsAction({
-        shop_guid_array: options.map((p) => p.guid),
-      })
-    );
-    setSelectedTerminals([]);
-  };
-
-  const handleSelectTerminals = (options) => {
-    setSelectedTerminals(options);
-  };
-
-  const onDateChange = (start, end) => {
-    setDates({
-      toDate: moment(end).format("YYYY-MM-DDTHH:mm:ss"),
-      fromDate: moment(start).format("YYYY-MM-DDTHH:mm:ss"),
-    });
-  };
-
-  const handleSelectCurrencies = (options) => {
-    setSelectedCurrencies(options);
-  };
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    handleSubmit({
-      merchant_guid_array: selectedMerchants.map((p) => p.merchant_guid),
-      group_guid_array: selectedGroups.map((p) => p.group_guid),
-      partner_guid_array: selectedPartners.map((p) => p.partner_guid),
-      terminal_guid_array: selectedTerminals.map((p) => p.guid),
-      shop_guid_array: selectedShops.map((p) => p.guid),
-      from_date: dates.fromDate,
-      to_date: dates.toDate,
-      currency_code: selectedCurrencies.map((p) => p.guid),
-    });
-  };
-
-  const handleCustomButtonClick = () => {
-    onButtonClick({
-      merchant_guid_array: selectedMerchants.map((p) => p.merchant_guid),
-      group_guid_array: selectedGroups.map((p) => p.group_guid),
-      partner_guid_array: selectedPartners.map((p) => p.partner_guid),
-      terminal_guid_array: selectedTerminals.map((p) => p.guid),
-      shop_guid_array: selectedShops.map((p) => p.guid),
-      from_date: dates.fromDate,
-      to_date: dates.toDate,
-      currency_code: selectedCurrencies.map((p) => p.guid),
-    });
-  };
-
-  const Select = ({
-    label,
-    name,
-    multi = true,
-    options = [],
-    value = [],
-    onSelect,
-  }) => {
-    return (
-      <>
-        <Col md={3} sm={4} xs={4} className="form-label">
-          <Form.Label>{label}</Form.Label>
-        </Col>
-        <Col md={8} sm={7} xs={7}>
-          <Form.Group>
-            <CustomSelect
-              multi={multi}
-              name={name}
-              options={options}
-              value={value}
-              onSelect={onSelect}
-              placeholder={`Search all`}
-            />
-          </Form.Group>
-        </Col>
-      </>
-    );
-  };
+  // const modifiedShopsData = useMemo(() => {
+  //   return shops
+  //     ? shops.data.map((cur: any) => ({ ...cur, name: cur.code }))
+  //     : [];
+  // }, [shops]);
 
   return (
-    <>
-      <Card>
-        <Card.Body style={{ overflow: "visible" }}>
-          {loading ? (
-            <p>loading</p>
-          ) : (
-            <>
-              <Row>
-                <Col md={6} sm={6} xs={6}>
-                  <Row>
-                    <Can do="READ" on="USERPARTNER">
-                      <Select
-                        label="Partners"
-                        name="partners"
-                        multi={true}
-                        options={partners}
-                        value={selectedPartners}
-                        onSelect={handleSelectPartners}
-                      />
-                    </Can>
-                  </Row>
-                </Col>
-                <Col md={6} sm={6} xs={6}>
-                  <Row>
-                    <Can do="READ" on="USERGROUP">
-                      <Select
-                        label="Groups"
-                        name="groups"
-                        multi={true}
-                        options={groups}
-                        value={selectedGroups}
-                        onSelect={handleSelectGroups}
-                      />
-                    </Can>
-                  </Row>
-                </Col>
-              </Row>
+    <Formik
+      initialValues={{
+        merchants: [],
+        groups: [],
+        partners: [],
+        shops: [],
+        terminals: [],
+        currencies: [],
+        dates: {
+          startDate: moment().startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
+          endDate: moment().endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
+        },
+      }}
+      // validationSchema={Yup.object({
 
-              <Row>
-                <Col md={6} sm={6} xs={6}>
-                  <Row>
-                    <Can do="READ" on="USERMERCHANT">
-                      <Select
-                        label="Merchant"
-                        name="merchant"
-                        multi={true}
-                        options={merchants}
-                        value={selectedMerchants}
-                        onSelect={handleSelectMerchants}
-                      />
-                    </Can>
-                  </Row>
-                </Col>
-                <Col md={6} sm={6} xs={6}>
-                  <Row>
-                    <Select
-                      label="Shops"
-                      name="shops"
-                      multi={true}
-                      options={shops}
-                      value={selectedShops}
-                      onSelect={handleSelectShops}
-                    />
-                  </Row>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md={6} sm={6} xs={6}>
-                  <Row>
-                    <Select
-                      label="Terminal"
-                      name="terminal"
-                      multi={true}
-                      options={terminals}
-                      value={selectedTerminals}
-                      onSelect={handleSelectTerminals}
-                      placeholder="All terminals selected"
-                    />
-                  </Row>
-                </Col>
-                <Col md={6} sm={6} xs={6}>
-                  <Row>
-                    <Col md={3} sm={4} xs={4} className="form-label">
-                      <Form.Label>Date range</Form.Label>
-                    </Col>
-                    <Col md={8} sm={7} xs={7}>
-                      <Form.Group>
-                        <DateRangePicker
-                          onCallback={onDateChange}
-                          initialSettings={{
-                            startDate: dates.fromDate
-                              ? moment(dates.fromDate).format("DD.MM.YYYY")
-                              : undefined,
-                            endDate: dates.toDate
-                              ? moment(dates.toDate).format("DD.MM.YYYY")
-                              : undefined,
-                            locale: {
-                              format: "DD.MM.YYYY",
-                            },
-                          }}
-                        >
-                          <input
-                            type="text"
-                            className="text-input daterange-input form-control"
-                          />
-                        </DateRangePicker>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              {isSelectCurrency && (
-                <Row>
-                  <Col md={6} sm={6} xs={6}>
-                    <Row>
-                      <Select
-                        label="Currency"
-                        name="currencies"
-                        multi={true}
-                        options={currencies}
-                        value={selectedCurrencies}
-                        onSelect={handleSelectCurrencies}
-                        placeholder="All currencies selected"
-                      />
-                    </Row>
-                  </Col>
-                </Row>
-              )}
-            </>
-          )}
+      // })}
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          let data = {
+            merchants: values.merchants.map((e) => e.guid),
+            groups: values.groups.map((e) => e.guid),
+            partners: values.partners.map((e) => e.guid),
+            shops: values.shops.map((e) => e.guid),
+            terminals: values.terminals.map((e) => e.guid),
+            currencies: values.currencies.map((e) => e.guid),
+            dates: values.dates,
+            exportType: export_type,
+          };
+          await handleSubmit(data);
+        } catch (error) {
+          ErrorModal(parseError(error));
+          console.log(error);
+        }
+        setSubmitting(false);
+      }}
+    >
+      {({ values, errors, isSubmitting, setFieldValue, submitForm }) => (
+        <Form className="modal-form">
           <Row>
-            <Col md={2} sm={2} xs={2}>
-              <CustomButton className="btn" onClick={handleClick}>
-                Find
-              </CustomButton>
+            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
+              <Field
+                name="partners"
+                inputType="multi-select"
+                label="Partners*"
+                options={modifiedPartnersData}
+                callback={(value) => {
+                  setPartners(value);
+                  setFieldValue("groups", []);
+                  setFieldValue("merchants", []);
+                  setFieldValue("shops", []);
+                  setFieldValue("terminals", []);
+                }}
+                isLoading={isLoadingPartners}
+              />
+              <Field
+                name="groups"
+                inputType="multi-select"
+                label="Groups*"
+                options={modifiedGroupsData}
+                callback={(value) => {
+                  setGroups(value);
+                  setFieldValue("merchants", []);
+                  setFieldValue("shops", []);
+                  setFieldValue("terminals", []);
+                }}
+                isLoading={isLoadingGroups}
+              />
+              <Field
+                name="merchant"
+                inputType="multi-select"
+                label="Merchants*"
+                options={modifiedMerchantsData}
+                callback={(value) => {
+                  setMerchants(value);
+                  setFieldValue("shops", []);
+                  setFieldValue("terminals", []);
+                }}
+                isLoading={isLoadingMerchants}
+              />
+
+              <Field
+                name="shops"
+                inputType="multi-select"
+                label="Shops*"
+                options={shops?.data}
+                callback={(value) => {
+                  setShops(value);
+                  setFieldValue("terminals", []);
+                }}
+                isLoading={isLoadingShops}
+              />
+
+              <Field
+                name="terminals"
+                inputType="multi-select"
+                label="Terminals*"
+                options={terminals?.data}
+                isLoading={isLoadingTerminals}
+              />
             </Col>
-            <Col md={8} sm={8} xs={8}></Col>
-            {button && (
-              <Col md={2} sm={2} xs={2}>
-                <CustomButton
-                  className="btn"
-                  onClick={() => handleCustomButtonClick()}
-                >
-                  {button}
-                </CustomButton>
-              </Col>
-            )}
+            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
+              {isSelectCurrency && (
+                <Field
+                  name="currencies"
+                  inputType="multi-select"
+                  label="Currencies*"
+                  options={modifiedCurrenciesData}
+                  isLoading={isLoadingCurrencies}
+                />
+              )}
+              {isSelectDate && (
+                <Field
+                  name="dates"
+                  inputType="date-range"
+                  label="Date range*"
+                />
+              )}
+            </Col>
           </Row>
-          {errors && errors}
-        </Card.Body>
-      </Card>
-    </>
+          <Row>
+            <Col>
+              <Button htmlType="submit" type="primary" className="f-right">
+                Calculate
+              </Button>
+            </Col>
+            {isExport && <Col>download</Col>}
+          </Row>
+        </Form>
+      )}
+    </Formik>
   );
-}
-
-// const mapStateToProps = (state) => {
-//   return {
-//     merchants: state.merchants.merchantsList,
-//     groups: state.groups.groupsList,
-//     partners: state.partners.partnersList,
-//     shops: state.shops.shopsList,
-//     terminals: state.shops.shopTerminals,
-//   };
-// };
-
-export default ReportForm;
-// connect(mapStateToProps, {
-//   getAllMerchants,
-//   getAllShops,
-//   getAllPartners,
-//   getAllGroups,
-// })(ReportForm);
+};

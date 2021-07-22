@@ -7,7 +7,6 @@ import { Alert, Button } from "antd";
 import {
   ErrorModal,
   FormLoading,
-  Loading,
   SuccessModal,
 } from "../../../Components/Common";
 import { partnersAPI } from "../../../services/queries/management/users/partners";

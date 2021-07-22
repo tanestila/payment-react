@@ -1,4 +1,4 @@
-import { Bar } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
 export const HorizontalBar = ({ labels, datasets, options }) => {
   const data = {
@@ -8,7 +8,7 @@ export const HorizontalBar = ({ labels, datasets, options }) => {
 
   return (
     <div>
-      <Bar data={data} options={options} />
+      <Pie data={data} options={options} />
     </div>
   );
 };

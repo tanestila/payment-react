@@ -2,7 +2,7 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { Creator } from "./Creator";
+import Creator from "./Creator";
 import Modal from "../../../Components/Common/Modal";
 import { useAdditionalFees } from "../../../constants/columns";
 import { additionalFeesAPI } from "../../../services/queries/management/rates/additionalFees";

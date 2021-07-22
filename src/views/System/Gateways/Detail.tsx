@@ -1,8 +1,6 @@
 import { Card, Descriptions, Alert } from "antd";
-import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { AbilityContext } from "../../../Components/Common/Can";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { gatewaysAPI } from "../../../services/queries/management/gateways";
 import { terminalsAPI } from "../../../services/queries/management/terminals";
@@ -35,7 +33,6 @@ const terminalsColumns = [
 ];
 
 export default function GatewayDetail() {
-  const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
   const {
@@ -77,22 +74,6 @@ export default function GatewayDetail() {
     10,
     [history.id]
   );
-
-  // const {
-  //   isFetching: isFetchingCurrencies,
-  //   isLoading: isLoadingCurrencies,
-  //   isError: isErrorCurrencies,
-  //   error: currenciesError,
-  //   data: currencies,
-  //   items: currenciesItems,
-  //   handleTableChange: handleCurrenciesTableChange,
-  // } = useTableQuery(
-  //   "gateway-currencies",
-  //   () => terminalsAPI.getTerminals(history.id, {}),
-  //   false,
-  //   10,
-  //   [history.id]
-  // );
 
   if (status === "loading") {
     return <Loading />;

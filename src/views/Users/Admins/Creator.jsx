@@ -8,7 +8,6 @@ import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { Button } from "antd";
 import {
-  Loading,
   SuccessModal,
   ErrorModal,
   FormLoading,

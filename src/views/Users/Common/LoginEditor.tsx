@@ -82,6 +82,7 @@ export const LoginEditor: React.FC<LoginEditorProps> = ({
         setPrivilege(false);
         break;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -10,7 +10,6 @@ import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import {
   ErrorModal,
   FormLoading,
-  Loading,
   SuccessModal,
 } from "../../../Components/Common";
 import { Button } from "antd";

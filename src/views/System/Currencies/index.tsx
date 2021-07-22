@@ -2,7 +2,7 @@ import Table from "../../../Components/TableFactory/MainTable";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
-import { Creator } from "./Creator";
+import Creator from "./Creator";
 import Modal from "../../../Components/Common/Modal";
 import { currenciesAPI } from "../../../services/queries/management/currencies";
 import { useCurrenciesColumns } from "../../../constants/columns";
@@ -15,8 +15,7 @@ export default function Currencies() {
     isError,
     error,
     data,
-    items,
-    search,
+    status,
     isFetching,
     handleTableChange,
     onSearch,
@@ -29,17 +28,15 @@ export default function Currencies() {
       columns={columns}
       handleTableChange={handleTableChange}
       onSearch={onSearch}
-      search={search}
       isFetching={isFetching}
       data={data}
-      items={items}
+      status={status}
       isLoading={isLoading}
       isError={isError}
       error={error}
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERMERCHANT")}
-          // allowed={true}
           button={<Button type="primary">Create currency</Button>}
           content={Creator}
           header="Create currency"

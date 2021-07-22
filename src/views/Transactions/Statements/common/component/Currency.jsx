@@ -9,9 +9,8 @@ export const Currency = () => {
 
   const { values, setFieldValue } = useFormikContext();
 
-  const { data: currencies, isLoading: isLoadingCurrencies } = useQuery(
-    ["currencies"],
-    () => currenciesAPI.getCurrencies()
+  const { data: currencies } = useQuery(["currencies"], () =>
+    currenciesAPI.getCurrencies()
   );
 
   const modifiedCurrenciesData = useMemo(() => {

@@ -1,16 +1,9 @@
-import { useQuery } from "react-query";
 import Table from "../../../Components/TableFactory/Table";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { useShopsColumns } from "../../../constants/columns";
 import useTemplateStepsColumns from "../../../constants/columns/transactions/templateSteps";
 import { templatesAPI } from "../../../services/queries/management/transactions/templates";
 
 export const TemplateSteps = ({ template_guid, gateway_guid }) => {
-  // const { data } = useQuery(
-  //   ["template-steps", template_guid, gateway_guid],
-  //   () => templatesAPI.getTemplateSteps(template_guid, { gateway_guid })
-  // );
-
   const { isFetching, isLoading, isError, error, data, handleTableChange } =
     useTableQuery(
       "template-steps",

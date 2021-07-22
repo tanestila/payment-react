@@ -1,4 +1,4 @@
-import { Table, Typography } from "antd";
+import { Table } from "antd";
 import { useState, useEffect } from "react";
 
 const colors = [

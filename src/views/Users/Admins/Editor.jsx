@@ -8,7 +8,6 @@ import { adminsAPI } from "../../../services/queries/management/users/admins";
 import {
   ErrorModal,
   FormLoading,
-  Loading,
   SuccessModal,
 } from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";

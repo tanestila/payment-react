@@ -10,4 +10,11 @@ export const additionalFeesAPI = {
     );
     return data;
   },
+  addAdditionalFee: async (body) => {
+    let { data } = await managementService.post(
+      "statements/additionalFeesNames",
+      body
+    );
+    return data;
+  },
 };

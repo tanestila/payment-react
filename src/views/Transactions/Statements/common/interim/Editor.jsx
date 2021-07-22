@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../../../Components/Common/Formik/Field";
 import { useQuery } from "react-query";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button, Space } from "antd";
 import {

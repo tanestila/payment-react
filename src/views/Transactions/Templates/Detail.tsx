@@ -1,27 +1,10 @@
-import {
-  Card,
-  Descriptions,
-  Divider,
-  Typography,
-  Button,
-  Row,
-  Tabs,
-} from "antd";
-import { useContext } from "react";
+import { Card, Descriptions, Divider, Tabs } from "antd";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { Loading } from "../../../Components/Common";
-import { AbilityContext } from "../../../Components/Common/Can";
-import {
-  useLoginColumns,
-  useShopsColumns,
-  useMerchantAuditColumns,
-  useGroupMerchantsColumns,
-} from "../../../constants/columns";
 import { gatewaysAPI } from "../../../services/queries/management/gateways";
 import { templatesAPI } from "../../../services/queries/management/transactions/templates";
 import { TemplateSteps } from "./TemplateSteps";
-const { Text } = Typography;
 
 export default function TemplatesDetail() {
   let history = useParams<{ id: string }>();
