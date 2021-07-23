@@ -47,4 +47,18 @@ export const ratesAPI = {
     });
     return data;
   },
+  addRevision: async (guid, body) => {
+    let { data } = await managementService.post(
+      `rates_v1/${guid}/revisions`,
+      body
+    );
+    return data;
+  },
+  deleteRevision: async (rate_guid, { guid, reason }) => {
+    let { data } = await managementService.post(
+      `rates_v1/${rate_guid}/revisions`,
+      { guid, reason, delete: true }
+    );
+    return data;
+  },
 };

@@ -14,6 +14,8 @@ import { ArrayInput } from "../Inputs/ArrayInput";
 import { AdditionalFeesInput } from "../Inputs/AdditionalFeesInput";
 import { formatNumber } from "../../../helpers/formatNumber";
 import { InputLoading } from "../../../Components/Common";
+import Checkbox from "antd/lib/checkbox/Checkbox";
+
 type CustomInputProps = {
   label: string;
   name: string;
@@ -25,6 +27,7 @@ type CustomInputProps = {
     | "input"
     | "phone"
     | "checkbox"
+    | "checkbox-inverse"
     | "array"
     | "file"
     | "multi-select"
@@ -72,9 +75,15 @@ export const Field: React.FC<CustomInputProps> = ({
 
   const onChangeCallbackCheckbox = useCallback(
     (value) => {
-      helpers.setValue(value.currentTarget.checked);
-      helpers.setTouched(true);
-      callback && callback(value.currentTarget.checked);
+      if (value.currentTarget) {
+        helpers.setValue(value.currentTarget.checked);
+        helpers.setTouched(true);
+        callback && callback(value.currentTarget.checked);
+      } else {
+        helpers.setValue(value.target.checked);
+        helpers.setTouched(true);
+        callback && callback(value.target.checked);
+      }
     },
     [helpers]
   );
@@ -207,6 +216,7 @@ export const Field: React.FC<CustomInputProps> = ({
             onChange={onChangeCallbackCheckbox}
           />
         );
+
       case "input":
         return (
           <Form.Control
@@ -253,30 +263,39 @@ export const Field: React.FC<CustomInputProps> = ({
     }
   };
 
+  if (inputType === "checkbox-inverse")
+    return (
+      <Checkbox
+        checked={field.value}
+        {...field}
+        {...props}
+        onChange={onChangeCallbackCheckbox}
+      >
+        {label}
+      </Checkbox>
+    );
+  if (inputType === "additional-fee")
+    return (
+      <AdditionalFeesInput
+        field={field}
+        props={props}
+        meta={meta}
+        options={options}
+        currencyOptions={currencyOptions}
+      />
+    );
   return (
-    <>
-      {inputType !== "additional-fee" ? (
-        <Row>
-          <Col lg={4} md={4} sm={5} xs={6}>
-            <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
-            {tip && <HelpTip tip={tip} />}
-          </Col>
-          <Col lg={8} md={8} sm={7} xs={6} className="form-input">
-            {isLoading ? <InputLoading /> : renderInput()}
-            {!Array.isArray(meta.error) && meta.touched && meta.error ? (
-              <span className="validate-error">{meta.error}</span>
-            ) : null}
-          </Col>
-        </Row>
-      ) : (
-        <AdditionalFeesInput
-          field={field}
-          props={props}
-          meta={meta}
-          options={options}
-          currencyOptions={currencyOptions}
-        />
-      )}
-    </>
+    <Row>
+      <Col lg={4} md={4} sm={5} xs={6}>
+        <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
+        {tip && <HelpTip tip={tip} />}
+      </Col>
+      <Col lg={8} md={8} sm={7} xs={6} className="form-input">
+        {isLoading ? <InputLoading /> : renderInput()}
+        {!Array.isArray(meta.error) && meta.touched && meta.error ? (
+          <span className="validate-error">{meta.error}</span>
+        ) : null}
+      </Col>
+    </Row>
   );
 };

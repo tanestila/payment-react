@@ -5,6 +5,7 @@ import { LineChart } from "../../../../Components/Common/Charts/LineChart";
 import { backgroundColors, borderColors } from "../../../../constants/colors";
 import { daysForLabels } from "../../../../helpers/formatDate";
 import { basicReportAPI } from "../../../../services/queries/report/basicReport";
+import { Loading } from "../../../../Components/Common";
 
 export const TransactionHistoryLineChart = ({ data }) => {
   const [labels, setLabels] = useState([]);
@@ -16,14 +17,23 @@ export const TransactionHistoryLineChart = ({ data }) => {
     isLoading,
     status,
     isFetching,
-  } = useQuery(["transaction-types", data], () =>
-    basicReportAPI.getTransactionTypes(data)
+  } = useQuery(
+    [
+      "transaction-types",
+      data.partners,
+      data.groups,
+      data.merchants,
+      data.from_date,
+      data.to_date,
+    ],
+    () => basicReportAPI.getTransactionTypes({ ...data })
   );
 
   useEffect(() => {
     if (status === "success") {
-      setLabels(daysForLabels(data.dates.startDate, data.dates.endDate));
+      setLabels(daysForLabels(moment(data.from_date), moment(data.to_date)));
       let datasets = [];
+      console.log(response);
       let transactionTypes = Object.keys(response);
       transactionTypes.forEach((transactionType, index) => {
         datasets[index] = [];
@@ -32,7 +42,8 @@ export const TransactionHistoryLineChart = ({ data }) => {
             const findIndex = labels.findIndex(
               (itemD) => itemD === moment(item.date).format("DD.MM")
             );
-            if (findIndex !== -1) datasets[index][findIndex] = item.success;
+            if (findIndex !== -1)
+              datasets[index][findIndex] = parseInt(item.success, 10);
           });
         } else {
           response[transactionType].forEach((item) => {
@@ -43,7 +54,7 @@ export const TransactionHistoryLineChart = ({ data }) => {
           });
         }
 
-        for (let i = 0; i < this.state.labels.length; i++) {
+        for (let i = 0; i < labels.length; i++) {
           if (!datasets[index][i]) datasets[index][i] = 0;
         }
       });
@@ -70,11 +81,13 @@ export const TransactionHistoryLineChart = ({ data }) => {
           data: dataset,
         };
       });
-      setLabels(labels);
+
+      console.log(datasetsChart);
       setDatasets(datasetsChart);
     }
   }, [response]);
 
+  if (status === "loading" || isFetching) return <Loading />;
   return (
     <>
       <LineChart labels={labels} datasets={datasets} />

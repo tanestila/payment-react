@@ -9,7 +9,7 @@ import { formatDate } from "../../../helpers/formatDate";
 import CustomModal from "../../../Components/Common/Modal";
 import RevisionCreator from "./Revisions/Creator";
 
-const RateRevisionsColumns = [
+const columns = [
   {
     title: "Guid",
     key: "guid",
@@ -52,7 +52,7 @@ const RateRevisionsColumns = [
   },
 ];
 
-const RateDetail = () => {
+const RevisionDetail = () => {
   let history = useParams();
 
   const {
@@ -107,7 +107,7 @@ const RateDetail = () => {
       <Divider />
       <h5>Revisions</h5>
       <Table
-        columns={RateRevisionsColumns}
+        columns={columns}
         handleTableChange={handleRateRevisionsTableChange}
         isFetching={isFetchingRateRevisions}
         data={RateRevisions}
@@ -129,4 +129,4 @@ const RateDetail = () => {
     </Card>
   );
 };
-export default RateDetail;
+export default RevisionDetail;

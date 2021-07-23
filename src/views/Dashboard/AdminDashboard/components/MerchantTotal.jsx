@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Card } from "antd";
 import { HorizontalBar } from "../../../../Components/Common/Charts/HorizontalBar";
 import { useQuery } from "react-query";
 import { adminDashboardAPI } from "../../../../services/queries/report/adminDashboard";
@@ -42,7 +43,7 @@ export const MerchantsTotal = () => {
   }, [response]);
 
   return (
-    <div>
+    <Card title="Merchant total (Turnover)">
       {isLoading || status === "loading" || isFetching ? (
         <>loading</>
       ) : (
@@ -55,24 +56,10 @@ export const MerchantsTotal = () => {
               legend: {
                 display: false,
               },
-              tooltip: {
-                display: false,
-                callbacks: {
-                  label: function (context) {
-                    return context.raw + "%";
-                  },
-                },
-              },
-            },
-            scales: {
-              x: {
-                max: 100,
-                beginAtZero: true,
-              },
             },
           }}
         />
       )}
-    </div>
+    </Card>
   );
 };

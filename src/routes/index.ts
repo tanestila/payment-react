@@ -1,5 +1,4 @@
 import {
-  Dashboard,
   Groups,
   Merchants,
   Partners,

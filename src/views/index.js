@@ -1,5 +1,5 @@
 export { default as Dashboard } from "./Dashboard";
-export { default as AdminDashboard } from "./Dashboard";
+export { default as AdminDashboard } from "./Dashboard/AdminDashboard";
 export { default as Merchants } from "./Users/Merchants";
 export { default as MerchantDetail } from "./Users/Merchants/Detail";
 export { default as Groups } from "./Users/Groups";

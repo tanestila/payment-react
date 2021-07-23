@@ -124,13 +124,16 @@ export const ReportForm = ({
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
-            merchants: values.merchants.map((e) => e.guid),
-            groups: values.groups.map((e) => e.guid),
-            partners: values.partners.map((e) => e.guid),
-            shops: values.shops.map((e) => e.guid),
-            terminals: values.terminals.map((e) => e.guid),
+            merchant_guid_array: values.merchants.map((e) => e.guid),
+            group_guid_array: values.groups.map((e) => e.guid),
+            partner_guid_array: values.partners.map((e) => e.guid),
+            shop_guid_array: values.shops.map((e) => e.guid),
+            terminal_guid_array: values.terminals.map((e) => e.guid),
             currencies: values.currencies.map((e) => e.guid),
-            dates: values.dates,
+            from_date: moment(values.dates.startDate).format(
+              "YYYY-MM-DDTHH:mm:ss"
+            ),
+            to_date: moment(values.dates.endDate).format("YYYY-MM-DDTHH:mm:ss"),
             exportType: export_type,
           };
           await handleSubmit(data);

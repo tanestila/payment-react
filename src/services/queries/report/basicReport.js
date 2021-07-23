@@ -7,8 +7,10 @@ export const basicReportAPI = {
     });
     return data;
   },
-  getTransactionTypes: async (guid) => {
-    let { data } = await reportService.get("transaction_types");
+  getTransactionTypes: async (args) => {
+    let { data } = await reportService.get("transaction_types", {
+      params: { ...args },
+    });
     return data;
   },
   getCardTypes: async (args) => {

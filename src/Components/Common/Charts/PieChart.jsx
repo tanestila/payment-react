@@ -1,4 +1,4 @@
-import { Line } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
 export const PieChart = ({ labels, datasets, options }) => {
   const data = {
@@ -8,7 +8,7 @@ export const PieChart = ({ labels, datasets, options }) => {
 
   return (
     <div>
-      <Line data={data} options={options} />
+      <Pie data={data} options={options} />
     </div>
   );
 };

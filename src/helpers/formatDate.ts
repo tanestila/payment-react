@@ -16,13 +16,18 @@ export const formatDateForLabels = (date: Date) => {
   return moment(date).format("DD.MM");
 };
 
-export const daysForLabels = (since: Date, to: Date) => {
+export const daysForLabels = (since: moment.Moment, to: moment.Moment) => {
   let result = [moment(to).format("DD.MM")];
-  let N = daysBetweenTwoDates(since.setHours(0), to.setHours(0));
+  let N = to.diff(since, "days");
+
+  console.log(N);
+
   let d = to;
   for (let i = 0; i < Math.floor(N); i++) {
-    d.setDate(d.getDate() - 1);
-    result.unshift(formatDateForLabels(d));
+    d = moment(d).subtract(1, "days");
+    result.unshift(moment(d).format("DD.MM"));
   }
+  console.log(result);
+
   return result;
 };

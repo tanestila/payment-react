@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Card } from "antd";
 import { HorizontalBar } from "../../../../Components/Common/Charts/HorizontalBar";
 import { useQuery } from "react-query";
 import { adminDashboardAPI } from "../../../../services/queries/report/adminDashboard";
@@ -59,7 +60,7 @@ export const MerchantsLimits = () => {
   };
 
   return (
-    <div>
+    <Card title="Merchant limits">
       <Checkbox onChange={onChange}>Show all</Checkbox>
       {isLoading || status === "loading" || isFetching ? (
         <>loading</>
@@ -91,6 +92,6 @@ export const MerchantsLimits = () => {
           }}
         />
       )}
-    </div>
+    </Card>
   );
 };
