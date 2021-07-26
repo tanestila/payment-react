@@ -50,6 +50,11 @@ import {
   RateDetail,
   TerminalDetail,
   StatementMerge,
+  DailyReport,
+  TransactionAndCommission,
+  HistogramReport,
+  GeographicReport,
+  ErrorReport,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
@@ -203,7 +208,7 @@ export const adminRoutes = [
         path: "/report/daily",
         name: "Daily Report",
         privilege: "REPORT_GATEWAYS",
-        component: Currencies,
+        component: DailyReport,
       },
       {
         path: "/report/basic",
@@ -215,25 +220,25 @@ export const adminRoutes = [
         path: "/report/transaction_and_commission",
         name: "Transaction & Commission",
         alias: "REPORT_TRANSACTIONANDCOMISSION",
-        component: Currencies,
+        component: TransactionAndCommission,
       },
       {
         path: "/report/error",
         name: "Error Report",
         privilege: "REPORT_TRANSACTIONERRORS",
-        component: Currencies,
+        component: ErrorReport,
       },
       {
         path: "/report/transaction_histogram",
         name: "Histogram Report",
         alias: "REPORT_TRANSACTIONHISTOGRAM",
-        component: Currencies,
+        component: HistogramReport,
       },
       {
         path: "/report/geographic",
         name: "Geographic Report",
         alias: "REPORT_TRANSACTIONGEO",
-        component: Currencies,
+        component: GeographicReport,
       },
     ],
   },

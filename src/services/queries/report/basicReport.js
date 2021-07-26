@@ -1,12 +1,6 @@
 import reportService from "../../report";
 
 export const basicReportAPI = {
-  getTransactionHistory: async (args) => {
-    let { data } = await reportService.get("transaction_history", {
-      params: { ...args },
-    });
-    return data;
-  },
   getTransactionTypes: async (args) => {
     let { data } = await reportService.get("transaction_types", {
       params: { ...args },
@@ -15,6 +9,24 @@ export const basicReportAPI = {
   },
   getCardTypes: async (args) => {
     let { data } = await reportService.get("card_types", {
+      params: { ...args },
+    });
+    return data;
+  },
+  getCurrencies: async (args) => {
+    let { data } = await reportService.get("currencies", {
+      params: { ...args },
+    });
+    return data;
+  },
+  getTotals: async (args) => {
+    let { data } = await reportService.get("totals", {
+      params: { ...args },
+    });
+    return data;
+  },
+  getShopTotals: async (args) => {
+    let { data } = await reportService.get("shop_totals", {
       params: { ...args },
     });
     return data;

@@ -1,10 +1,35 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { LineChart } from "../../../../Components/Common/Charts/LineChart";
 import { backgroundColors, borderColors } from "../../../../constants/colors";
-import { daysForLabels } from "../../../../helpers/formatDate";
 import { Loading } from "../../../../Components/Common";
 import { Card } from "antd";
+
+const labels = [
+  "1:00",
+  "2:00",
+  "3:00",
+  "4:00",
+  "5:00",
+  "6:00",
+  "7:00",
+  "8:00",
+  "9:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+  "19:00",
+  "20:00",
+  "21:00",
+  "22:00",
+  "23:00",
+  "00:00",
+];
 
 export const TransactionHistoryLineChart = ({
   response,
@@ -12,39 +37,22 @@ export const TransactionHistoryLineChart = ({
   status,
   isFetching,
 }) => {
-  const [labels, setLabels] = useState([]);
   const [datasets, setDatasets] = useState([]);
-  const [type, setType] = useState("Count");
 
   useEffect(() => {
     if (status === "success") {
-      let labels = daysForLabels(moment(data.from_date), moment(data.to_date));
-      setLabels(labels);
       let datasets = [];
-      let transactionTypes = Object.keys(response);
-      transactionTypes.forEach((transactionType, index) => {
-        datasets[index] = [];
-        if (type === "Count") {
-          response[transactionType].forEach((item) => {
-            const findIndex = labels.findIndex(
-              (itemD) => itemD === moment(item.date).format("DD.MM")
-            );
-            if (findIndex !== -1)
-              datasets[index][findIndex] = parseInt(item.success, 10);
-          });
-        } else {
-          response[transactionType].forEach((item) => {
-            const findIndex = labels.findIndex(
-              (itemD) => itemD === moment(item.date).format("DD.MM")
-            );
-            if (findIndex !== -1) datasets[index][findIndex] = item.amount;
-          });
-        }
 
-        for (let i = 0; i < labels.length; i++) {
-          if (!datasets[index][i]) datasets[index][i] = 0;
-        }
+      let transactionTypes = [];
+      console.log(response);
+      response.data.forEach((transaction, index) => {
+        datasets[index] = [];
+        transactionTypes.push(transaction.type);
+        if (transaction.time === 0 || transaction.time === "0")
+          datasets[index][0] += transaction.success;
+        else datasets[index][transaction.time - 1] += transaction.success;
       });
+
       const datasetsChart = datasets.map((dataset, index) => {
         return {
           label: transactionTypes[index],
@@ -70,7 +78,7 @@ export const TransactionHistoryLineChart = ({
       });
       setDatasets(datasetsChart);
     }
-  }, [response, data.from_date, data.to_date, type]);
+  }, [response, data.from_date, data.to_date]);
 
   if (status === "loading" || isFetching) return <Loading />;
   return (

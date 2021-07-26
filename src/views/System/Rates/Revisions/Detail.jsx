@@ -1,54 +1,55 @@
 import { Card, Descriptions, Alert, Divider, Row, Button } from "antd";
-import Table from "../../../Components/TableFactory/Table";
+import Table from "../../../../Components/TableFactory/Table";
 import { useQuery } from "react-query";
-import { ratesAPI } from "../../../services/queries/management/rates";
+import { ratesAPI } from "../../../../services/queries/management/rates";
 import { useParams } from "react-router-dom";
-import useTableQuery from "../../../Components/TableFactory/useTableQuery";
-import { Loading } from "../../../Components/Common";
-import { formatDate } from "../../../helpers/formatDate";
-import CustomModal from "../../../Components/Common/Modal";
+import useTableQuery from "../../../../Components/TableFactory/useTableQuery";
+import { Loading } from "../../../../Components/Common";
+import { formatDate } from "../../../../helpers/formatDate";
+import CustomModal from "../../../../Components/Common/Modal";
 import RevisionCreator from "./Revisions/Creator";
 
 const columns = [
   {
-    title: "Guid",
-    key: "guid",
-    dataIndex: "guid",
+    title: "Transaction type",
+    key: "transaction_type",
+    dataIndex: "transaction_type",
   },
   {
-    title: "activation date",
-    key: "activation_date",
-    dataIndex: "activation_date",
+    title: "Transaction status",
+    key: "transaction_status",
+    dataIndex: "transaction_status",
   },
   {
-    title: "Currency",
-    key: "currency_code",
-    dataIndex: "currency_code",
+    title: "card_schema",
+    key: "card_schema",
+    dataIndex: "card_schema",
   },
   {
-    title: "Hold Percent",
-    key: "hold_percent",
-    dataIndex: "hold_percent",
+    title: "card_region",
+    key: "card_region",
+    dataIndex: "card_region",
   },
   {
-    title: "Hold days",
-    key: "hold_days",
-    dataIndex: "hold_days",
+    title: "card_type",
+    key: "card_type",
+    dataIndex: "card_type",
   },
   {
-    title: "Connection fee",
-    key: "connection_fee",
-    dataIndex: "connection_fee",
+    title: "plain fee",
+    key: "plain",
+    dataIndex: "plain",
+    render: (plain) => (plain ? "fixed" : "%"),
   },
   {
-    title: "Terminal registration fee",
-    key: "terminal_registration_fee",
-    dataIndex: "terminal_registration_fee",
+    title: "buy",
+    key: "buy",
+    dataIndex: "buy",
   },
   {
-    title: "Delete",
-    key: "terminal_registration_fee",
-    dataIndex: "terminal_registration_fee",
+    title: "sell",
+    key: "sell",
+    dataIndex: "sell",
   },
 ];
 
@@ -56,19 +57,14 @@ const RevisionDetail = () => {
   let history = useParams();
 
   const {
-    data: rate,
+    isFetching,
+    isLoading,
+    isError,
     status,
     error,
-  } = useQuery(["rate", history.id], () => ratesAPI.getRate(history.id));
-
-  const {
-    isFetching: isFetchingRateRevisions,
-    isLoading: isLoadingRateRevisions,
-    isError: isErrorRateRevisions,
-    error: RateRevisionsError,
-    data: RateRevisions,
-    items: RateRevisionsItems,
-    handleTableChange: handleRateRevisionsTableChange,
+    data,
+    items,
+    handleTableChange,
   } = useTableQuery(
     "rate-revisions",
     (args) => ratesAPI.getRateRevisions(history.id, args),
@@ -92,40 +88,18 @@ const RevisionDetail = () => {
     );
   }
   return (
-    <Card title={`Connected RateRevisions`}>
-      <Descriptions
-        column={{ xxl: 1, xl: 1, lg: 1, md: 1, sm: 1, xs: 1 }}
-        bordered
-        size="small"
-      >
-        <Descriptions.Item label="name">{rate.name}</Descriptions.Item>
-        <Descriptions.Item label="Gateway">
-          {rate.gateway_name}
-        </Descriptions.Item>
-      </Descriptions>
-
-      <Divider />
-      <h5>Revisions</h5>
+    <Card title={`Revision ${history.id}`}>
       <Table
         columns={columns}
-        handleTableChange={handleRateRevisionsTableChange}
-        isFetching={isFetchingRateRevisions}
-        data={RateRevisions}
-        items={RateRevisionsItems}
-        isLoading={isLoadingRateRevisions}
-        isError={isErrorRateRevisions}
-        error={RateRevisionsError}
-        // isPaginated={false}
+        handleTableChange={handleTableChange}
+        isFetching={isFetching}
+        data={data}
+        items={items}
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        isPaginated={false}
       />
-      <Row justify="center">
-        <CustomModal
-          header="Create revisions"
-          content={RevisionCreator}
-          contentProps={{ guid: rate.guid }}
-          button={<Button>Create revisions</Button>}
-          // dialogClassName="modal-creator"
-        />
-      </Row>
     </Card>
   );
 };

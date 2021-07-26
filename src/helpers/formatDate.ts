@@ -1,15 +1,11 @@
 import moment from "moment";
 
 export const formatDateForTable = (date: string) => {
-  return moment(date).utcOffset(0).format("DD.MM.YYYY  |  HH:mm");
+  return moment(date).format("DD.MM.YYYY  |  HH:mm");
 };
 
 export const formatDate = (date: string) => {
-  return moment(date).utcOffset(0).format("D MMM YYYY");
-};
-
-const daysBetweenTwoDates = (date1: number, date2: number) => {
-  return Math.abs((date2 - date1) / (1000 * 60 * 60 * 24));
+  return moment(date).format("D MMM YYYY");
 };
 
 export const formatDateForLabels = (date: Date) => {
@@ -19,15 +15,10 @@ export const formatDateForLabels = (date: Date) => {
 export const daysForLabels = (since: moment.Moment, to: moment.Moment) => {
   let result = [moment(to).format("DD.MM")];
   let N = to.diff(since, "days");
-
-  console.log(N);
-
   let d = to;
   for (let i = 0; i < Math.floor(N); i++) {
     d = moment(d).subtract(1, "days");
     result.unshift(moment(d).format("DD.MM"));
   }
-  console.log(result);
-
   return result;
 };

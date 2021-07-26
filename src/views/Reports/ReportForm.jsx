@@ -13,6 +13,7 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { Button } from "antd";
 import { ErrorModal } from "../../Components/Common";
 import { parseError } from "../../helpers/parseError";
+import { Card } from "antd";
 
 export const ReportForm = ({
   handleSubmit,
@@ -95,7 +96,7 @@ export const ReportForm = ({
       selected_merchants,
       selected_shops,
     ],
-    () => terminalsAPI.getShops()
+    () => terminalsAPI.getTerminals()
   );
 
   // const modifiedShopsData = useMemo(() => {
@@ -105,138 +106,142 @@ export const ReportForm = ({
   // }, [shops]);
 
   return (
-    <Formik
-      initialValues={{
-        merchants: [],
-        groups: [],
-        partners: [],
-        shops: [],
-        terminals: [],
-        currencies: [],
-        dates: {
-          startDate: moment().startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
-          endDate: moment().endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
-        },
-      }}
-      // validationSchema={Yup.object({
+    <Card>
+      <Formik
+        initialValues={{
+          merchants: [],
+          groups: [],
+          partners: [],
+          shops: [],
+          terminals: [],
+          currencies: [],
+          dates: {
+            startDate: moment().startOf("month").format("YYYY-MM-DDTHH:mm:ss"),
+            endDate: moment().endOf("month").format("YYYY-MM-DDTHH:mm:ss"),
+          },
+        }}
+        // validationSchema={Yup.object({
 
-      // })}
-      onSubmit={async (values, { setSubmitting }) => {
-        try {
-          let data = {
-            merchant_guid_array: values.merchants.map((e) => e.guid),
-            group_guid_array: values.groups.map((e) => e.guid),
-            partner_guid_array: values.partners.map((e) => e.guid),
-            shop_guid_array: values.shops.map((e) => e.guid),
-            terminal_guid_array: values.terminals.map((e) => e.guid),
-            currencies: values.currencies.map((e) => e.guid),
-            from_date: moment(values.dates.startDate).format(
-              "YYYY-MM-DDTHH:mm:ss"
-            ),
-            to_date: moment(values.dates.endDate).format("YYYY-MM-DDTHH:mm:ss"),
-            exportType: export_type,
-          };
-          await handleSubmit(data);
-        } catch (error) {
-          ErrorModal(parseError(error));
-          console.log(error);
-        }
-        setSubmitting(false);
-      }}
-    >
-      {({ values, errors, isSubmitting, setFieldValue, submitForm }) => (
-        <Form className="modal-form">
-          <Row>
-            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-              <Field
-                name="partners"
-                inputType="multi-select"
-                label="Partners*"
-                options={modifiedPartnersData}
-                callback={(value) => {
-                  setPartners(value);
-                  setFieldValue("groups", []);
-                  setFieldValue("merchants", []);
-                  setFieldValue("shops", []);
-                  setFieldValue("terminals", []);
-                }}
-                isLoading={isLoadingPartners}
-              />
-              <Field
-                name="groups"
-                inputType="multi-select"
-                label="Groups*"
-                options={modifiedGroupsData}
-                callback={(value) => {
-                  setGroups(value);
-                  setFieldValue("merchants", []);
-                  setFieldValue("shops", []);
-                  setFieldValue("terminals", []);
-                }}
-                isLoading={isLoadingGroups}
-              />
-              <Field
-                name="merchant"
-                inputType="multi-select"
-                label="Merchants*"
-                options={modifiedMerchantsData}
-                callback={(value) => {
-                  setMerchants(value);
-                  setFieldValue("shops", []);
-                  setFieldValue("terminals", []);
-                }}
-                isLoading={isLoadingMerchants}
-              />
-
-              <Field
-                name="shops"
-                inputType="multi-select"
-                label="Shops*"
-                options={shops?.data}
-                callback={(value) => {
-                  setShops(value);
-                  setFieldValue("terminals", []);
-                }}
-                isLoading={isLoadingShops}
-              />
-
-              <Field
-                name="terminals"
-                inputType="multi-select"
-                label="Terminals*"
-                options={terminals?.data}
-                isLoading={isLoadingTerminals}
-              />
-            </Col>
-            <Col xl={6} lg={6} md={6} sm={12} xs={12}>
-              {isSelectCurrency && (
+        // })}
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            let data = {
+              merchant_guid_array: values.merchants.map((e) => e.guid),
+              group_guid_array: values.groups.map((e) => e.guid),
+              partner_guid_array: values.partners.map((e) => e.guid),
+              shop_guid_array: values.shops.map((e) => e.guid),
+              terminal_guid_array: values.terminals.map((e) => e.guid),
+              currencies: values.currencies.map((e) => e.guid),
+              from_date: moment(values.dates.startDate).format(
+                "YYYY-MM-DDTHH:mm:ss"
+              ),
+              to_date: moment(values.dates.endDate).format(
+                "YYYY-MM-DDTHH:mm:ss"
+              ),
+              exportType: export_type,
+            };
+            await handleSubmit(data);
+          } catch (error) {
+            ErrorModal(parseError(error));
+            console.log(error);
+          }
+          setSubmitting(false);
+        }}
+      >
+        {({ values, errors, isSubmitting, setFieldValue, submitForm }) => (
+          <Form className="modal-form">
+            <Row>
+              <Col xl={6} lg={6} md={6} sm={12} xs={12}>
                 <Field
-                  name="currencies"
+                  name="partners"
                   inputType="multi-select"
-                  label="Currencies*"
-                  options={modifiedCurrenciesData}
-                  isLoading={isLoadingCurrencies}
+                  label="Partners*"
+                  options={modifiedPartnersData}
+                  callback={(value) => {
+                    setPartners(value);
+                    setFieldValue("groups", []);
+                    setFieldValue("merchants", []);
+                    setFieldValue("shops", []);
+                    setFieldValue("terminals", []);
+                  }}
+                  isLoading={isLoadingPartners}
                 />
-              )}
-              {isSelectDate && (
                 <Field
-                  name="dates"
-                  inputType="date-range"
-                  label="Date range*"
+                  name="groups"
+                  inputType="multi-select"
+                  label="Groups*"
+                  options={modifiedGroupsData}
+                  callback={(value) => {
+                    setGroups(value);
+                    setFieldValue("merchants", []);
+                    setFieldValue("shops", []);
+                    setFieldValue("terminals", []);
+                  }}
+                  isLoading={isLoadingGroups}
                 />
-              )}
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Button htmlType="submit" type="primary" className="f-right">
-                Calculate
-              </Button>
-            </Col>
-            {isExport && <Col>download</Col>}
-          </Row>
-        </Form>
-      )}
-    </Formik>
+                <Field
+                  name="merchant"
+                  inputType="multi-select"
+                  label="Merchants*"
+                  options={modifiedMerchantsData}
+                  callback={(value) => {
+                    setMerchants(value);
+                    setFieldValue("shops", []);
+                    setFieldValue("terminals", []);
+                  }}
+                  isLoading={isLoadingMerchants}
+                />
+
+                <Field
+                  name="shops"
+                  inputType="multi-select"
+                  label="Shops*"
+                  options={shops?.data}
+                  callback={(value) => {
+                    setShops(value);
+                    setFieldValue("terminals", []);
+                  }}
+                  isLoading={isLoadingShops}
+                />
+
+                <Field
+                  name="terminals"
+                  inputType="multi-select"
+                  label="Terminals*"
+                  options={terminals?.data}
+                  isLoading={isLoadingTerminals}
+                />
+              </Col>
+              <Col xl={6} lg={6} md={6} sm={12} xs={12}>
+                {isSelectCurrency && (
+                  <Field
+                    name="currencies"
+                    inputType="multi-select"
+                    label="Currencies*"
+                    options={modifiedCurrenciesData}
+                    isLoading={isLoadingCurrencies}
+                  />
+                )}
+                {isSelectDate && (
+                  <Field
+                    name="dates"
+                    inputType="date-range"
+                    label="Date range*"
+                  />
+                )}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Button htmlType="submit" type="primary" className="f-right">
+                  Calculate
+                </Button>
+              </Col>
+              {isExport && <Col>download</Col>}
+            </Row>
+          </Form>
+        )}
+      </Formik>
+    </Card>
   );
 };
