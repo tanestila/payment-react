@@ -14,6 +14,16 @@ import {
 } from "../../../Components/Common";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
+import valid from "card-validator";
+
+const types = [
+  { name: "ip", guid: "ip", label: "ip", value: "ip" },
+  { name: "card", guid: "card", label: "card", value: "card" },
+  { name: "country", guid: "country", label: "Country", value: "country" },
+  { name: "mask", guid: "mask", label: "Credit card mask", value: "mask" },
+  { name: "bin", guid: "bin", label: "Credit card BIN", value: "bin" },
+  { name: "email", guid: "email", label: "email", value: "email" },
+];
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
@@ -24,150 +34,223 @@ export default function Creator({ handleClose }) {
     },
   });
 
-  const { run: checkEmail } = useCheckEmailExist();
-  const { run: checkPhone } = useCheckPhoneExist();
-
-  const { data: roles } = useQuery(["roles"], () =>
-    rolesAPI.getRoles({ type: "admin" })
-  );
-
   return (
     <Formik
       initialValues={{
-        email: "",
-        first_name: "",
-        last_name: "",
-        company_name: "",
-        company_address: "",
         name: "",
-        type: "",
-        phone: "",
-        role: null,
-        language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
-        enabled: true,
-        send_mail: true,
-        password: "",
+        type: types[0],
+        description: "",
+        values: [],
+        textValues: "",
+        valueInputType: false,
+        separator: ",",
       }}
-      validationSchema={Yup.object({
-        email: Yup.string()
-          .email("Invalid email address")
-          .required("Required")
-          .test("emailExist", "Email exists", async (value) => {
-            if (
-              value &&
-              value?.length > 8 &&
-              value?.indexOf(".") !== -1 &&
-              value?.indexOf("@") !== -1
-            ) {
-              const res = await checkEmail(value);
-              return !!res;
-            }
-            return true;
-          }),
-        first_name: Yup.string()
-          .max(15, "Must be 15 characters or less")
-          .required("Required"),
-        last_name: Yup.string()
-          .max(20, "Must be 20 characters or less")
-          .required("Required"),
-        company_name: Yup.string().required("Required"),
-        company_address: Yup.string().required("Required"),
-        name: Yup.string().required("Required"),
-        type: Yup.string().required("Required"),
-        phone: Yup.string()
-          .required()
-          .min(5)
-          .required("Required")
-          .test("phoneExist", "Phone exists", async (value) => {
-            if (value && value?.length > 5) {
-              const res = await checkPhone(value);
-              return !!res;
-            }
-            return true;
-          }),
-        role: Yup.object().typeError("Required").required("Required"),
-        language: Yup.object().required("Required"),
-      })}
+      validationSchema={() => {
+        return Yup.lazy((values) => {
+          let ruleValues = Yup.string();
+          switch (values.type.name) {
+            case "card":
+              ruleValues = Yup.string().test(
+                "test-number",
+                "Credit Card number is invalid",
+                (value) => valid.number(value).isValid
+              );
+              break;
+            case "ip":
+              ruleValues = Yup.string()
+                .matches(/(^(\d{1,3}\.){3}(\d{1,3})$)/, {
+                  message: "Invalid IP address",
+                  excludeEmptyString: true,
+                })
+                .test("ip", "Invalid IP address", (value) => {
+                  return value === undefined || value.trim() === ""
+                    ? true
+                    : value.split(".").find((i) => parseInt(i, 10) > 255) ===
+                        undefined;
+                });
+              break;
+            case "country":
+              ruleValues = Yup.string().matches(
+                /^[A-Z]{2}$/,
+                "Country must be Alpha-2 code"
+              );
+              break;
+            case "mask":
+              ruleValues = Yup.string().matches(
+                /\d{6}\*{4,}\d{4}/,
+                "Card mask is invalid"
+              );
+              break;
+            case "bin":
+              ruleValues = Yup.string().matches(
+                /^[0-9]{6}$/,
+                "Card BIN is invalid"
+              );
+              break;
+            case "email":
+              ruleValues = Yup.string().email("Email is invalid");
+              break;
+          }
+          return Yup.object().shape({
+            name: Yup.string().required("Required"),
+            type: Yup.object().required("Required"),
+            description: Yup.string().required("Required"),
+            values: Yup.array()
+              .of(ruleValues.required("Required"))
+              // .test(
+              //   "values",
+              //   "Must contain at least one element",
+              //   (value, context) => value.length !== 0
+              // )
+              .required("Required"),
+            valueInputType: Yup.bool(),
+            textValues: Yup.string(),
+            separator: Yup.string(),
+          });
+        });
+      }}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          let data = {
-            group_name: values.name,
-            group_type: values.type,
-            email: values.email,
-            phone: values.phone,
-            first_name: values.first_name,
-            last_name: values.last_name,
-            company_name: values.company_name,
-            company_address: values.company_address,
-            role_guid: values.role?.["guid"],
-            password: values.send_mail ? undefined : values.password,
-            send_mail: values.send_mail ? 1 : 0,
-            language: values.language.guid,
-            enabled: values.enabled === true ? 1 : 0,
-            partner_guid: values.partner?.["partner_guid"],
+          const data = {
+            name: values.name,
+            type: values.type.name,
+            description: values.description,
           };
-          await mutation.mutateAsync(data);
-          SuccessModal("Group was created");
-          handleClose();
+          let valuesArray = [];
+          if (values.valueInputType) {
+            if (values.separator === ",")
+              valuesArray = values.textValues.split(",");
+            else valuesArray = values.textValues.split(/\n/);
+          } else {
+            valuesArray = values.values;
+          }
+          console.log(valuesArray);
+          await dispatch(
+            addBlackListItemAction(
+              { ...data, values: valuesArray },
+              currentPage,
+              pageSize
+            )
+          );
+          swal({
+            title: "Record is created",
+            icon: "success",
+            button: false,
+            timer: 2000,
+          });
+          setSubmitting(false);
         } catch (error) {
-          ErrorModal(parseError(error));
-          console.log(error);
+          const parsedError = parseResponse(error);
+          Alert({ type: "error", message: parsedError.message });
         }
-        setSubmitting(false);
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ isSubmitting, values, errors, touched }) => (
         <Form>
-          <Row>
-            <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field name="email" type="email" label="Email*" />
-              <Field name="first_name" type="text" label="First Name*" />
-              <Field name="last_name" type="text" label="Last Name*" />
-              <Field name="phone" inputType="phone" label="Phone*" />
-              <Field name="company_name" type="text" label="Company name*" />
-              <Field
-                name="company_address"
-                type="text"
-                label="Company address*"
-              />
-              <Field
-                name="role"
-                label="Role*"
-                inputType="select"
-                options={roles?.data}
-              />
-              <Field name="name" type="text" label="Group name" />
-              <Field name="type" type="text" label="Group type" />
-            </Col>
-            <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field name="enabled" inputType="checkbox" label="Enable" />
-              <Field
-                name="send_mail"
-                inputType="checkbox"
-                label="Send mail"
-                tip="We will send your generated username and password to your email."
-              />
-              {!values.send_mail ? (
-                <Field name="password" type="text" label="Password" />
-              ) : null}
-              <Field
-                name="language"
-                label="Language*"
-                inputType="select"
-                options={[
-                  { name: "ENG", guid: "en" },
-                  { name: "RU", guid: "ru" },
-                ]}
-              />
-            </Col>
-          </Row>
-          {isSubmitting ? (
-            <FormLoading />
+          <div
+            style={{
+              marginBottom: "15px",
+            }}
+          >
+            <BSForm.Label htmlFor="values">Advanced form </BSForm.Label>
+
+            <Field
+              type="radio"
+              name="valueInputType"
+              type="checkbox"
+              style={{
+                textAlign: "left",
+                marginTop: "5px",
+                marginLeft: "5px",
+              }}
+            />
+          </div>
+
+          <FormField name="name" label="Name" />
+          <Field
+            name="type"
+            component={FormSelect}
+            options={types}
+            label={"Type"}
+          />
+          <FormField name="description" label="Description" />
+          {values.valueInputType ? (
+            <>
+              <Row>
+                <Col md={3} sm={4} xs={4} className="form-label">
+                  <BSForm.Label htmlFor="values">Separator</BSForm.Label>
+                </Col>
+                <Col md={8}>
+                  <Field type="radio" name="separator" value="," /> Comma{" "}
+                  <Field type="radio" name="separator" value="\n" /> Enter
+                </Col>
+              </Row>
+              <FormField name="textValues" label="Values" as="textarea" />
+            </>
           ) : (
-            <Button htmlType="submit" type="primary" className="f-right">
-              Submit
-            </Button>
+            <Row>
+              <Col md={3} sm={4} xs={4} className="form-label">
+                <BSForm.Label htmlFor="values">Values</BSForm.Label>
+              </Col>
+              <Col md={8}>
+                <BSForm.Group>
+                  <FieldArray
+                    name="values"
+                    render={(arrayHelpers) => (
+                      <div>
+                        {values.values.map((friend, index) => (
+                          <div>
+                            <div
+                              className="d-flex"
+                              style={{ marginBottom: "5px" }}
+                              key={index}
+                            >
+                              <Field
+                                name={`values.${index}`}
+                                className="form-control"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => arrayHelpers.remove(index)}
+                              >
+                                -
+                              </button>
+                            </div>
+
+                            {errors.values &&
+                            errors.values[index] &&
+                            touched.values &&
+                            touched.values[index]
+                              ? errors.values[index]
+                              : null}
+                          </div>
+                        ))}
+                        {errors.values &&
+                        !Array.isArray(errors.values) &&
+                        touched.values
+                          ? errors.values
+                          : null}
+                        <button
+                          type="button"
+                          onClick={() => arrayHelpers.push("")}
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                  />
+                </BSForm.Group>
+              </Col>
+            </Row>
           )}
+
+          <Button
+            className="btn btn-fill btn-success"
+            type="submit"
+            // onClick={this.doSubmit}
+          >
+            Add
+          </Button>
         </Form>
       )}
     </Formik>
