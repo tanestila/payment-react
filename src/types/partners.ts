@@ -7,3 +7,10 @@ export type PartnerType = {
   partner_type: string;
   username: string;
 };
+
+export type PartnerForSelectType = PartnerType & {
+  name?: string;
+  label?: string;
+  value?: string;
+  guid?: string;
+};

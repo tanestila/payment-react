@@ -9,3 +9,10 @@ export type GroupType = {
   partner_name: string | null;
   username: string;
 };
+
+export type GroupForSelectType = GroupType & {
+  name?: string;
+  label?: string;
+  value?: string;
+  guid?: string;
+};

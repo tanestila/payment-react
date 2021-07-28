@@ -1,53 +1,72 @@
-import { Card, Button, Alert, Divider } from "antd";
+import { Card, Button, Alert } from "antd";
+import { useContext } from "react";
 import Table from "../../../Components/TableFactory/Table";
-import { useQuery } from "react-query";
-import { terminalsAPI } from "../../../services/queries/management/terminals";
 import { useParams } from "react-router-dom";
 import useTableQuery from "../../../Components/TableFactory/useTableQuery";
 import { Loading } from "../../../Components/Common";
-import { formatDate } from "../../../helpers/formatDate";
-
-const terminalsColumns = [
-  {
-    title: "Currency",
-    key: "name",
-    dataIndex: "guid",
-  },
-  {
-    title: "Shop",
-    key: "shop_name",
-    dataIndex: "shop_name",
-  },
-  {
-    title: "Currency",
-    key: "currency_code",
-    dataIndex: "currency_code",
-  },
-  {
-    title: "Enabled",
-    key: "enabled",
-    dataIndex: "enabled",
-  },
-];
+import { ratesAPI } from "../../../services/queries/management/rates";
+import CustomModal from "../../../Components/Common/Modal";
+import FeeCreator from "./Fee/Creator";
+import { AbilityContext } from "../../../Components/Common/Can";
 
 const RateTemplateDetail = () => {
   let history = useParams();
-
+  const ability = useContext(AbilityContext);
   const {
-    isFetching: isFetchingTerminals,
-    isLoading: isLoadingTerminals,
-    isError: isErrorTerminals,
-    error: terminalsError,
-    data: terminals,
-    items: terminalsItems,
-    handleTableChange: handleTerminalsTableChange,
+    isFetching,
+    isLoading,
+    isError,
+    error,
+    status,
+    data,
+    items,
+    handleTableChange,
   } = useTableQuery(
-    "gateway-terminals",
-    () => terminalsAPI.getGatewayTerminals(history.id),
-    false,
-    10,
+    "rate-template-fees",
+    () => ratesAPI.getRateTemplateFees(history.id),
+    true,
+    100,
     [history.id]
   );
+
+  const terminalsColumns = [
+    {
+      title: "transaction_type",
+      key: "transaction_type",
+      dataIndex: "transaction_type",
+    },
+    {
+      title: "transaction_status",
+      key: "transaction_status",
+      dataIndex: "transaction_status",
+    },
+    {
+      title: "card_schema",
+      key: "card_schema",
+      dataIndex: "card_schema",
+    },
+    {
+      title: "card_region",
+      key: "card_region",
+      dataIndex: "card_region",
+    },
+    {
+      title: "card_type",
+      key: "card_type",
+      dataIndex: "card_type",
+    },
+    {
+      title: "plain",
+      key: "plain",
+      dataIndex: "plain",
+    },
+    ability.can("DELETE", "RATES") && {
+      title: "delete",
+      key: "delete",
+      dataIndex: "delete",
+    },
+  ];
+
   if (status === "loading") {
     return <Loading />;
   }
@@ -64,20 +83,23 @@ const RateTemplateDetail = () => {
     );
   }
   return (
-    <Card title={`Connected terminals`}>
-      <Button>Create</Button>
-
-      <Divider />
+    <Card title={`Template fees`}>
+      <CustomModal
+        header="Create fee"
+        content={FeeCreator}
+        contentProps={{ guid: history.id }}
+        button={<Button>Create fee</Button>}
+        // dialogClassName="modal-creator"
+      />
       <Table
         columns={terminalsColumns}
-        handleTableChange={handleTerminalsTableChange}
-        isFetching={isFetchingTerminals}
-        data={terminals}
-        items={terminalsItems}
-        isLoading={isLoadingTerminals}
-        isError={isErrorTerminals}
-        error={terminalsError}
-        isPaginated={false}
+        handleTableChange={handleTableChange}
+        isFetching={isFetching}
+        data={data}
+        items={items}
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
       />
     </Card>
   );

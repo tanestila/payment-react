@@ -8,8 +8,16 @@ import { Field } from "../../../Components/Common/Formik/Field";
 import { rolesAPI } from "../../../services/queries/management/roles";
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
-
-export const RowAddRole = ({ type, guid, adminRoles }) => {
+import { RoleType } from "../../../types/roles";
+export const RowAddRole = ({
+  type,
+  guid,
+  adminRoles,
+}: {
+  type: string;
+  guid: string;
+  adminRoles: Array<any>;
+}) => {
   const [isShow, setIsShow] = useState(false);
   const queryClient = useQueryClient();
   const mutation = useMutation(adminsAPI.addAdminRole, {
@@ -29,13 +37,13 @@ export const RowAddRole = ({ type, guid, adminRoles }) => {
   const modifiedRolesData = useMemo(() => {
     return roles
       ? roles.data
-          .map((role: any) => ({
+          .map((role: RoleType) => ({
             ...role,
             value: role.guid,
             label: role.name,
           }))
           .filter(
-            (x) =>
+            (x: RoleType) =>
               !adminRoles.includes(
                 adminRoles.filter((y) => y.guid === x.guid)[0]
               )
@@ -64,7 +72,7 @@ export const RowAddRole = ({ type, guid, adminRoles }) => {
             onSubmit={async (values, { setSubmitting }) => {
               try {
                 let data = {
-                  guid: values.role.guid,
+                  guid: values.role!["guid"],
                   reason: values.reason,
                 };
                 await mutation.mutateAsync({ guid, body: data });

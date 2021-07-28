@@ -102,7 +102,7 @@ export default function TableFactory({
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
           }
-          onPressEnter={() => handleSearch(selectedKeys, dataIndex, confirm)}
+          onPressEnter={() => handleSearch(selectedKeys[0], dataIndex, confirm)}
           style={{ width: 188, marginBottom: 8, display: "block" }}
         />
         <Space>

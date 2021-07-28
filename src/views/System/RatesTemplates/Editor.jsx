@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient, useQuery } from "react-query";
 import { Button } from "antd";
 import {
   SuccessModal,
@@ -11,32 +11,42 @@ import {
 import { parseError } from "../../../helpers/parseError";
 import { ratesAPI } from "../../../services/queries/management/rates";
 
-export default function Creator({ handleClose }) {
+export default function Creator({ handleClose, guid }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(ratesAPI.addRate, {
+  const {
+    data: template,
+    status,
+    isFetching,
+    error,
+  } = useQuery(["rate-template", guid], () => ratesAPI.getRatesTemplate(guid));
+
+  const mutation = useMutation(ratesAPI.addRateTemplate, {
     onSuccess: () => {
-      queryClient.invalidateQueries("rates");
+      queryClient.invalidateQueries("rate-templates");
     },
   });
 
+  if (status === "loading") return <FormLoading />;
   return (
     <Formik
       initialValues={{
-        name: "",
+        name: template.name,
+        reason: "",
       }}
       validationSchema={Yup.object({
-        name: Yup.string()
-          .max(15, "Must be 15 characters or less")
-          .required("Required"),
+        name: Yup.string().required("Required"),
+        reason: Yup.string().required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
+            guid,
             name: values.name,
+            reason: values.reason,
           };
           await mutation.mutateAsync(data);
-          SuccessModal("Rate was created");
+          SuccessModal("Rate templates was updated");
           handleClose();
         } catch (error) {
           ErrorModal(parseError(error));
@@ -48,6 +58,7 @@ export default function Creator({ handleClose }) {
       {({ values, isSubmitting }) => (
         <Form>
           <Field name="name" type="text" label="Name*" />
+          <Field name="reason" type="text" label="Reason*" />
 
           {isSubmitting ? (
             <FormLoading />

@@ -12,7 +12,13 @@ import {
 import { partnersAPI } from "../../../services/queries/management/users/partners";
 import { parseError } from "../../../helpers/parseError";
 
-export default function Editor({ handleClose, guid }) {
+export default function Editor({
+  handleClose,
+  guid,
+}: {
+  handleClose: () => {};
+  guid: string;
+}) {
   const queryClient = useQueryClient();
   const {
     data: partner,

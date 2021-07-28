@@ -39,7 +39,7 @@ export default function AdminDetail() {
     handleTableChange: handleAdminRolesTableChange,
   } = useTableQuery(
     "admin-roles",
-    (params: any) => adminsAPI.getAdminRoles(history.id),
+    () => adminsAPI.getAdminRoles(history.id),
     false,
     10,
     [history.id]

@@ -41,6 +41,10 @@ export const ratesAPI = {
     });
     return data;
   },
+  getRatesTemplate: async (guid) => {
+    let { data } = await managementService.get(`rates_v1/templates/${guid}`);
+    return data;
+  },
   getRateRevisions: async (guid, { args }) => {
     let { data } = await managementService.get(`rates_v1/${guid}/revisions`, {
       params: { ...args },
@@ -58,6 +62,40 @@ export const ratesAPI = {
     let { data } = await managementService.post(
       `rates_v1/${rate_guid}/revisions`,
       { guid, reason, delete: true }
+    );
+    return data;
+  },
+  getRateRevisionFees: async (guid, revision_guid, args) => {
+    console.log(args);
+    let { data } = await managementService.get(
+      `rates_v1/${guid}/revisions/${revision_guid}/fees`,
+      {
+        params: { ...args },
+      }
+    );
+    return data;
+  },
+  getRateTemplateFees: async (guid, args) => {
+    console.log(args);
+    let { data } = await managementService.get(
+      `rates_v1/templates/${guid}/fees`,
+      {
+        params: { ...args },
+      }
+    );
+    return data;
+  },
+  updateRevisionFees: async (rate_guid, guid, body) => {
+    let { data } = await managementService.post(
+      `rates_v1/${rate_guid}/revisions/${guid}/fees`,
+      body
+    );
+    return data;
+  },
+  addTemplateFees: async (guid, body) => {
+    let { data } = await managementService.post(
+      `rates_v1/templates/${guid}/fees`,
+      body
     );
     return data;
   },

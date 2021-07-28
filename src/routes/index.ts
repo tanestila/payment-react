@@ -55,6 +55,8 @@ import {
   HistogramReport,
   GeographicReport,
   ErrorReport,
+  RevisionDetail,
+  RateTemplateDetail,
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
@@ -514,6 +516,23 @@ export const adminNonNav = [
     path: "/about/rate/:id",
     privilege: "READ_TRANSACTIONSHISTORY",
     component: RateDetail,
+  },
+  {
+    nonNav: true,
+    mainName: "Systems",
+    name: "Template detail",
+    path: "/about/rate-template/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: RateTemplateDetail,
+  },
+
+  {
+    nonNav: true,
+    mainName: "Systems",
+    name: "Revision detail",
+    path: "/about/rates/:rate_id/revision/:id",
+    privilege: "READ_TRANSACTIONSHISTORY",
+    component: RevisionDetail,
   },
   {
     nonNav: true,

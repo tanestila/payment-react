@@ -19,7 +19,7 @@ export default function useRatesTemplatesColumns(
         sorter: true,
         search: "text",
         render: (text: string, record: ShopType) => (
-          <Link className="link" to={`/about/rate/template/${record.guid}`}>
+          <Link className="link" to={`/about/rate-template/${record.guid}`}>
             {text}
           </Link>
         ),

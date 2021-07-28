@@ -8,12 +8,21 @@ import { Loading } from "../../../Components/Common";
 import { formatDate } from "../../../helpers/formatDate";
 import CustomModal from "../../../Components/Common/Modal";
 import RevisionCreator from "./Revisions/Creator";
+import { Link } from "react-router-dom";
 
 const RateRevisionsColumns = [
   {
     title: "Guid",
     key: "guid",
     dataIndex: "guid",
+    render: (text, record) => (
+      <Link
+        className="link"
+        to={`/about/rates/${record.rate_guid}/revision/${record.guid}`}
+      >
+        {text}
+      </Link>
+    ),
   },
   {
     title: "activation date",

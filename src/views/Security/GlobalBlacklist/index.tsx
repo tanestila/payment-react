@@ -4,6 +4,9 @@ import { useContext } from "react";
 import { AbilityContext } from "../../../Components/Common/Can";
 import { useBacklistGlobalColumns } from "../../../constants/columns";
 import { GlobalBlackListAPI } from "../../../services/queries/management/blacklist/global";
+import Modal from "../../../Components/Common/Modal";
+import { Button } from "antd/lib/radio";
+import Creator from "./Creator";
 
 export default function GlobalBlacklist() {
   const ability = useContext(AbilityContext);
@@ -35,6 +38,15 @@ export default function GlobalBlacklist() {
       isError={isError}
       error={error}
       status={status}
+      modalComponent={
+        <Modal
+          allowed={ability.can("EXECUTE", "USERADMIN")}
+          button={<Button type="primary">Create admin</Button>}
+          content={Creator}
+          header="Create admin"
+          dialogClassName="modal-creator"
+        />
+      }
     />
   );
 }

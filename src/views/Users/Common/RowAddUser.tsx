@@ -8,8 +8,10 @@ import { merchantsAPI } from "../../../services/queries/management/users/merchna
 import * as Yup from "yup";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { parseError } from "../../../helpers/parseError";
+import { MerchantType } from "../../../types/merchants";
+import { GroupType } from "../../../types/groups";
 
-export const RowAddUser = ({ type, guid }) => {
+export const RowAddUser = ({ type, guid }: { type: string; guid: string }) => {
   const [isShow, setIsShow] = useState(false);
   const queryClient = useQueryClient();
   const addMerchantMutation = useMutation(merchantsAPI.addMerchant, {
@@ -39,27 +41,26 @@ export const RowAddUser = ({ type, guid }) => {
   });
 
   const modifiedMerchantsData = useMemo(() => {
-    console.log(merchants);
     return merchants
       ? merchants.data
-          .map((merchant) => ({
+          .map((merchant: MerchantType) => ({
             ...merchant,
             name: merchant.group_name,
             guid: merchant.group_guid,
           }))
-          .filter((merchant) => merchant.group_guid === null)
+          .filter((merchant: MerchantType) => merchant.group_guid === null)
       : [];
   }, [merchants]);
 
   const modifiedGroupsData = useMemo(() => {
     return groups
       ? groups.data
-          .map((group) => ({
+          .map((group: GroupType) => ({
             ...group,
             name: group.group_name,
             guid: group.group_guid,
           }))
-          .filter((group) => group.partner_guid === null)
+          .filter((group: GroupType) => group.partner_guid === null)
       : [];
   }, [groups]);
 
@@ -87,7 +88,7 @@ export const RowAddUser = ({ type, guid }) => {
                 switch (type) {
                   case "group":
                     data = {
-                      merchant_guid: values.user.merchant_guid,
+                      merchant_guid: values.user!["merchant_guid"],
                       group_guid: guid,
                       reason: values.reason,
                     };
@@ -95,7 +96,7 @@ export const RowAddUser = ({ type, guid }) => {
                     break;
                   case "partner":
                     data = {
-                      group_guid: values.user.group_guid,
+                      group_guid: values.user!["group_guid"],
                       partner_guid: guid,
                       reason: values.reason,
                     };

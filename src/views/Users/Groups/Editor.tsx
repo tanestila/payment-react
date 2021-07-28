@@ -17,8 +17,15 @@ import {
   roundMultiplyNumber,
   roundDivisionNumber,
 } from "../../../helpers/formatNumber";
+import { PartnerType } from "../../../types/partners";
 
-export default function Editor({ handleClose, guid }) {
+export default function Editor({
+  handleClose,
+  guid,
+}: {
+  handleClose: () => {};
+  guid: string;
+}) {
   const queryClient = useQueryClient();
   const {
     data: group,
@@ -39,7 +46,7 @@ export default function Editor({ handleClose, guid }) {
 
   const modifiedPartnersData = useMemo(() => {
     return partners
-      ? partners.data.map((partner) => ({
+      ? partners.data.map((partner: PartnerType) => ({
           ...partner,
           name: partner.partner_name,
           guid: partner.partner_guid,
@@ -62,7 +69,8 @@ export default function Editor({ handleClose, guid }) {
               group.monthly_amount_limit
             ),
             partner: modifiedPartnersData.filter(
-              (partner) => group.partner_guid === partner.partner_guid
+              (partner: PartnerForSelectType) =>
+                group.partner_guid === partner.partner_guid
             )[0],
             reason: "",
           }}

@@ -18,8 +18,17 @@ import {
   roundMultiplyNumber,
   roundDivisionNumber,
 } from "../../../helpers/formatNumber";
+import { UseMutationResult } from "react-query";
+import { CurrencyForSelectType, CurrencyType } from "../../../types/currencies";
+import { GroupForSelectType, GroupType } from "../../../types/groups";
 
-export default function Editor({ handleClose, guid }) {
+export default function Editor({
+  handleClose,
+  guid,
+}: {
+  handleClose: () => {};
+  guid: string;
+}) {
   const queryClient = useQueryClient();
   const {
     data: merchant,
@@ -41,7 +50,7 @@ export default function Editor({ handleClose, guid }) {
 
   const modifiedCurrenciesData = useMemo(() => {
     return currencies
-      ? currencies.data.map((cur) => ({
+      ? currencies.data.map((cur: CurrencyType) => ({
           ...cur,
           name: cur.code,
           label: cur.code,
@@ -51,7 +60,7 @@ export default function Editor({ handleClose, guid }) {
   }, [currencies]);
   const modifiedGroupsData = useMemo(() => {
     return groups
-      ? groups.data.map((group) => ({
+      ? groups.data.map((group: GroupType) => ({
           ...group,
           name: group.group_name,
           guid: group.group_guid,
@@ -72,14 +81,16 @@ export default function Editor({ handleClose, guid }) {
             type: merchant.merchant_type,
             monthly_fee: roundDivisionNumber(merchant.monthly_fee),
             monthly_fee_currency: modifiedCurrenciesData.filter(
-              (cur) => merchant.monthly_fee_currency === cur.code
+              (cur: CurrencyForSelectType) =>
+                merchant.monthly_fee_currency === cur.code
             )[0],
             monthly_fee_date: merchant.monthly_fee_date,
             monthly_amount_limit: merchant.monthly_amount_limit,
             custom_amount_limit: merchant.custom_amount_limit,
             custom_days_limit: merchant.custom_days_limit,
             group: modifiedGroupsData.filter(
-              (group) => merchant.group_guid === group.group_guid
+              (group: GroupForSelectType) =>
+                merchant.group_guid === group.group_guid
             )[0],
             reason: "",
           }}

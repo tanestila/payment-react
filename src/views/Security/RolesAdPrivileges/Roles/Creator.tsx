@@ -1,29 +1,26 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
-import { Field } from "../../../Components/Common/Formik/Field";
+import { Field } from "../../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { rolesAPI } from "../../../services/queries/management/roles";
-import { groupsAPI } from "../../../services/queries/management/users/groups";
-import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
-import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
-import { partnersAPI } from "../../../services/queries/management/users/partners";
-import { useMemo } from "react";
+import { rolesAPI } from "../../../../services/queries/management/roles";
+import { useCheckEmailExist } from "../../../../customHooks/checkEmailExist";
+import { useCheckPhoneExist } from "../../../../customHooks/checkPhoneExist";
 import { Button } from "antd";
 import {
   SuccessModal,
   ErrorModal,
   FormLoading,
-} from "../../../Components/Common";
-import { parseError } from "../../../helpers/parseError";
-import { roundMultiplyNumber } from "../../../helpers/formatNumber";
+} from "../../../../Components/Common";
+import { adminsAPI } from "../../../../services/queries/management/users/admins";
+import { parseError } from "../../../../helpers/parseError";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(groupsAPI.addGroup, {
+  const mutation = useMutation(adminsAPI.addAdmin, {
     onSuccess: () => {
-      queryClient.invalidateQueries("groups");
+      queryClient.invalidateQueries("admins");
     },
   });
 
@@ -31,21 +28,8 @@ export default function Creator({ handleClose }) {
   const { run: checkPhone } = useCheckPhoneExist();
 
   const { data: roles } = useQuery(["roles"], () =>
-    rolesAPI.getRoles({ type: "group" })
+    rolesAPI.getRoles({ type: "admin" })
   );
-  const { data: partners } = useQuery(["partners"], () =>
-    partnersAPI.getPartners()
-  );
-
-  const modifiedPartnersData = useMemo(() => {
-    return partners
-      ? partners.data.map((group) => ({
-          ...group,
-          name: group.group_name,
-          guid: group.group_guid,
-        }))
-      : [];
-  }, [partners]);
 
   return (
     <Formik
@@ -57,14 +41,12 @@ export default function Creator({ handleClose }) {
         company_address: "",
         name: "",
         type: "",
-        monthly_amount_limit: "",
         phone: "",
         role: null,
         language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
         enabled: true,
         send_mail: true,
         password: "",
-        partner: "",
       }}
       validationSchema={Yup.object({
         email: Yup.string()
@@ -92,9 +74,6 @@ export default function Creator({ handleClose }) {
         company_address: Yup.string().required("Required"),
         name: Yup.string().required("Required"),
         type: Yup.string().required("Required"),
-        monthly_amount_limit: Yup.number()
-          .typeError("You must specify a number")
-          .required("Required"),
         phone: Yup.string()
           .required()
           .min(5)
@@ -126,9 +105,6 @@ export default function Creator({ handleClose }) {
             language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
             partner_guid: values.partner?.["partner_guid"],
-            monthly_amount_limit: roundMultiplyNumber(
-              values.monthly_amount_limit
-            ).toString(),
           };
           await mutation.mutateAsync(data);
           SuccessModal("Group was created");
@@ -164,11 +140,6 @@ export default function Creator({ handleClose }) {
               <Field name="type" type="text" label="Group type" />
             </Col>
             <Col xl={6} lg={12} md={12} sm={12} xs={12}>
-              <Field
-                name="monthly_amount_limit"
-                inputType="number"
-                label="Monthly amount limit"
-              />
               <Field name="enabled" inputType="checkbox" label="Enable" />
               <Field
                 name="send_mail"
@@ -187,12 +158,6 @@ export default function Creator({ handleClose }) {
                   { name: "ENG", guid: "en" },
                   { name: "RU", guid: "ru" },
                 ]}
-              />
-              <Field
-                name="partner"
-                inputType="select"
-                options={modifiedPartnersData}
-                label="Partner"
               />
             </Col>
           </Row>

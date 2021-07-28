@@ -4,12 +4,7 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMemo } from "react";
 import { Alert, Button } from "antd";
-import {
-  Loading,
-  SuccessModal,
-  ErrorModal,
-  FormLoading,
-} from "../../Components/Common";
+import { SuccessModal, ErrorModal, FormLoading } from "../../Components/Common";
 import { shopsAPI } from "../../services/queries/management/shops";
 import { merchantsAPI } from "../../services/queries/management/users/merchnats";
 import { parseError } from "../../helpers/parseError";

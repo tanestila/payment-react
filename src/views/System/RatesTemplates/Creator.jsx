@@ -14,9 +14,9 @@ import { ratesAPI } from "../../../services/queries/management/rates";
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(ratesAPI.addRate, {
+  const mutation = useMutation(ratesAPI.addRateTemplate, {
     onSuccess: () => {
-      queryClient.invalidateQueries("rates");
+      queryClient.invalidateQueries("rate-templates");
     },
   });
 
@@ -74,7 +74,6 @@ export default function Creator({ handleClose }) {
         name: "",
         transaction_statuses: null,
         transaction_types: null,
-        card_currencies: null,
         card_types: null,
         card_schema: null,
         card_region: null,
@@ -84,27 +83,31 @@ export default function Creator({ handleClose }) {
         name: Yup.string()
           .max(15, "Must be 15 characters or less")
           .required("Required"),
-        gateway: Yup.object().typeError("Required").required("Required"),
-        currency: Yup.object().typeError("Required").required("Required"),
-        template: Yup.object().typeError("Required").required("Required"),
-        activation_date: Yup.string().required("Required"),
-        hold_percent: Yup.string().required("Required"),
-        hold_days: Yup.string().required("Required"),
-        connection_fee: Yup.string().required("Required"),
-        terminal_registration_fee: Yup.string().required("Required"),
+        transaction_statuses: Yup.array()
+          .typeError("Required")
+          .required("Required"),
+        transaction_types: Yup.array()
+          .typeError("Required")
+          .required("Required"),
+        card_types: Yup.array().typeError("Required").required("Required"),
+        card_schema: Yup.array().typeError("Required").required("Required"),
+        card_region: Yup.array().typeError("Required").required("Required"),
+        is_plain: Yup.boolean().typeError("Required").required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
-            gateway_guid: values.gateway.guid,
             name: values.name,
-            activation_date: values.activation_date,
-            template_guid: values.template.guid,
-            currency_guid: values.currency.guid,
-            hold_percent: values.hold_percent,
-            hold_days: values.hold_days,
-            connection_fee: values.connection_fee,
-            terminal_registration_fee: values.terminal_registration_fee,
+            transaction_status: values.transaction_statuses.map(
+              (value) => value.name
+            ),
+            transaction_type: values.transaction_types.map(
+              (value) => value.name
+            ),
+            card_type: values.card_types.map((value) => value.name),
+            card_schema: values.card_schema.map((value) => value.name),
+            card_region: values.card_region.map((value) => value.name),
+            is_plain: values.is_plain,
           };
           await mutation.mutateAsync(data);
           SuccessModal("Rate was created");
@@ -116,8 +119,9 @@ export default function Creator({ handleClose }) {
         setSubmitting(false);
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ values, isSubmitting, errors }) => (
         <Form>
+          {console.log(errors)}
           <Field name="name" type="text" label="Name*" />
           <Field
             name="transaction_statuses"

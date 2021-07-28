@@ -58,3 +58,5 @@ export { default as GatewayDetail } from "./System/Gateways/Detail";
 export { default as RateDetail } from "./System/Rates/Detail";
 export { default as TerminalDetail } from "./Terminals/Detail";
 export { default as StatementMerge } from "./Transactions/Statements/Merge";
+export { default as RevisionDetail } from "./System/Rates/Revisions/Detail";
+export { default as RateTemplateDetail } from "./System/RatesTemplates/Detail";

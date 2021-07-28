@@ -4,22 +4,27 @@ import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { rolesAPI } from "../../../services/queries/management/roles";
-import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { groupsAPI } from "../../../services/queries/management/users/groups";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
+import { partnersAPI } from "../../../services/queries/management/users/partners";
+import { useMemo } from "react";
+import { Button } from "antd";
 import {
+  SuccessModal,
   ErrorModal,
   FormLoading,
-  SuccessModal,
 } from "../../../Components/Common";
-import { Button } from "antd";
 import { parseError } from "../../../helpers/parseError";
+import { roundMultiplyNumber } from "../../../helpers/formatNumber";
+import { PartnerType } from "../../../types/partners";
 
-export default function Creator({ handleClose }) {
+export default function Creator({ handleClose }: { handleClose: () => {} }) {
   const queryClient = useQueryClient();
-  const mutation = useMutation(partnersAPI.addPartner, {
+
+  const mutation = useMutation(groupsAPI.addGroup, {
     onSuccess: () => {
-      queryClient.invalidateQueries("partners");
+      queryClient.invalidateQueries("groups");
     },
   });
 
@@ -27,8 +32,21 @@ export default function Creator({ handleClose }) {
   const { run: checkPhone } = useCheckPhoneExist();
 
   const { data: roles } = useQuery(["roles"], () =>
-    rolesAPI.getRoles({ type: "partner" })
+    rolesAPI.getRoles({ type: "group" })
   );
+  const { data: partners } = useQuery(["partners"], () =>
+    partnersAPI.getPartners()
+  );
+
+  const modifiedPartnersData = useMemo(() => {
+    return partners
+      ? partners.data.map((partner: PartnerType) => ({
+          ...partner,
+          name: partner.partner_name,
+          guid: partner.partner_guid,
+        }))
+      : [];
+  }, [partners]);
 
   return (
     <Formik
@@ -40,12 +58,14 @@ export default function Creator({ handleClose }) {
         company_address: "",
         name: "",
         type: "",
+        monthly_amount_limit: "",
         phone: "",
         role: null,
         language: { name: "ENG", label: "ENG", value: "en", guid: "en" },
         enabled: true,
         send_mail: true,
         password: "",
+        partner: null,
       }}
       validationSchema={Yup.object({
         email: Yup.string()
@@ -73,9 +93,12 @@ export default function Creator({ handleClose }) {
         company_address: Yup.string().required("Required"),
         name: Yup.string().required("Required"),
         type: Yup.string().required("Required"),
-        phone: Yup.string().required().min(5).required("Required"),
-        role: Yup.object()
-          .typeError("Required")
+        monthly_amount_limit: Yup.number()
+          .typeError("You must specify a number")
+          .required("Required"),
+        phone: Yup.string()
+          .required()
+          .min(5)
           .required("Required")
           .test("phoneExist", "Phone exists", async (value) => {
             if (value && value?.length > 5) {
@@ -84,13 +107,14 @@ export default function Creator({ handleClose }) {
             }
             return true;
           }),
+        role: Yup.object().typeError("Required").required("Required"),
         language: Yup.object().required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
-            partner_name: values.name,
-            partner_type: values.type,
+            group_name: values.name,
+            group_type: values.type,
             email: values.email,
             phone: values.phone,
             first_name: values.first_name,
@@ -102,9 +126,13 @@ export default function Creator({ handleClose }) {
             send_mail: values.send_mail ? 1 : 0,
             language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
+            partner_guid: values.partner?.["partner_guid"],
+            monthly_amount_limit: roundMultiplyNumber(
+              values.monthly_amount_limit
+            ).toString(),
           };
           await mutation.mutateAsync(data);
-          SuccessModal("Partner was created");
+          SuccessModal("Group was created");
           handleClose();
         } catch (error) {
           ErrorModal(parseError(error));
@@ -133,10 +161,15 @@ export default function Creator({ handleClose }) {
                 inputType="select"
                 options={roles?.data}
               />
-              <Field name="name" type="text" label="Partner name" />
-              <Field name="type" type="text" label="Partner type" />
+              <Field name="name" type="text" label="Group name" />
+              <Field name="type" type="text" label="Group type" />
             </Col>
             <Col xl={6} lg={12} md={12} sm={12} xs={12}>
+              <Field
+                name="monthly_amount_limit"
+                inputType="number"
+                label="Monthly amount limit"
+              />
               <Field name="enabled" inputType="checkbox" label="Enable" />
               <Field
                 name="send_mail"
@@ -156,9 +189,14 @@ export default function Creator({ handleClose }) {
                   { name: "RU", guid: "ru" },
                 ]}
               />
+              <Field
+                name="partner"
+                inputType="select"
+                options={modifiedPartnersData}
+                label="Partner"
+              />
             </Col>
           </Row>
-
           {isSubmitting ? (
             <FormLoading />
           ) : (
