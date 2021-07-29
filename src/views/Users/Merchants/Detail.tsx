@@ -212,10 +212,7 @@ export default function MerchantDetail() {
           size="small"
         >
           <Descriptions.Item label="Used amount limit">
-            <Row>
-              {merchant.used_amount}
-              {/* {` (${merchant.used_percent}%)`} */}
-            </Row>
+            <Row>{merchant.used_amount}</Row>
             {merchant.used_percent !== "Disabled" && (
               <Row>
                 <Progress percent={merchant.used_percent} size="small" />
@@ -228,10 +225,7 @@ export default function MerchantDetail() {
           </Descriptions.Item>
 
           <Descriptions.Item label="Used custom amount limit">
-            <Row>
-              {merchant.used_custom_amount}
-              {/* {` (${merchant.used_custom_percent}%)`} */}
-            </Row>
+            <Row>{merchant.used_custom_amount}</Row>
             {merchant.used_custom_percent !== "Disabled" && (
               <Row>
                 <Progress percent={merchant.used_custom_percent} size="small" />
@@ -262,7 +256,6 @@ export default function MerchantDetail() {
             content={LoginCreator}
             contentProps={{ guid: merchant.merchant_guid, type: "merchant" }}
             button={<Button>Add login</Button>}
-            // dialogClassName="modal-creator"
           />
         </Row>
         <Divider />
@@ -284,7 +277,6 @@ export default function MerchantDetail() {
             content={LoginCreator}
             contentProps={{ guid: merchant.merchant_guid, type: "merchant" }}
             button={<Button>Add account</Button>}
-            // dialogClassName="modal-creator"
           />
         </Row>
         <Divider />

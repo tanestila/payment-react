@@ -1,8 +1,6 @@
 import { Card, Alert } from "antd";
-import { useContext } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { AbilityContext } from "../../../Components/Common/Can";
 import { Loading } from "../../../Components/Common";
 import { Table } from "react-bootstrap";
 import { mismatchAPI } from "../../../services/queries/management/transactions/mismatch";
@@ -24,7 +22,6 @@ const parameters = [
 ];
 
 export default function MismatchDetail() {
-  const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
   const {

@@ -1,9 +1,8 @@
 import { Card, Button, Alert } from "antd";
 import { Row, Col, Badge } from "react-bootstrap";
-import { useContext, useMemo } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useMemo } from "react";
+import { useQuery } from "react-query";
 import { Link, useParams } from "react-router-dom";
-import { AbilityContext } from "../../../Components/Common/Can";
 import { ordersAPI } from "../../../services/queries/report/orders";
 import { Loading } from "../../../Components/Common";
 import { Table } from "react-bootstrap";
@@ -11,7 +10,6 @@ import { formatDateForTable } from "../../../helpers/formatDate";
 import BLButton from "./BLButton";
 
 export default function OrderDetail() {
-  const ability = useContext(AbilityContext);
   let history = useParams<{ id: string }>();
 
   const {
@@ -20,11 +18,6 @@ export default function OrderDetail() {
     error,
   } = useQuery(["order", history.id], () => ordersAPI.getOrder(history.id));
 
-  // const deleteGroupLoginMutation = useMutation(groupsAPI.deleteGroupLogin, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("group-logins");
-  //   },
-  // });
   const countryClasses = useMemo(() => {
     return {
       ipFlagClasses: order
@@ -37,7 +30,7 @@ export default function OrderDetail() {
         ? ` flag ${order.billing_address.country.toLowerCase()}`
         : "",
     };
-  }, order);
+  }, [order]);
 
   if (status === "loading") {
     return <Loading />;

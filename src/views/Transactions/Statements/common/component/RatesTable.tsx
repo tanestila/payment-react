@@ -10,7 +10,15 @@ const colors = [
   "LightYellow",
 ];
 
-export const columnsRatesDefault = [
+type columnsRatesDefaultType = {
+  dataIndex?: string;
+  title: string;
+  key: string;
+  style?: any;
+  children?: Array<any>;
+};
+
+export const columnsRatesDefault: Array<columnsRatesDefaultType> = [
   {
     dataIndex: "label",
     title: "",
@@ -19,7 +27,13 @@ export const columnsRatesDefault = [
   },
 ];
 
-const defaultRatesRows = [
+type defaultRatesRowsType = {
+  name: string;
+  label: string;
+  colored?: boolean;
+};
+
+const defaultRatesRows: Array<defaultRatesRowsType> = [
   { name: "turnover_amount", label: "Turnover amount" },
   { name: "reverse_amount", label: "Reversal amount" },
   { name: "refund_amount", label: "Refund amount" },
@@ -46,12 +60,19 @@ const defaultRatesRows = [
   { name: "for_payout", label: "For payout" },
 ];
 
+type RatesTableProps = {
+  additional_fees_names: Array<any>;
+  currencies: Array<any>;
+  statement_currency_code: string;
+  entityData: any;
+};
+
 export const RatesTable = ({
   additional_fees_names,
   currencies,
   statement_currency_code,
   entityData,
-}) => {
+}: RatesTableProps) => {
   let [columnsRates, setColumnsRates] = useState([...columnsRatesDefault]);
   // let [collapsedHeader, setCollapsedHeader] = useState([
   //   { name: "", collapse: [""] },
@@ -80,6 +101,7 @@ export const RatesTable = ({
         let currency = currencies[index];
         columns.push({
           title: currency.name,
+          key: currency.name,
           children: [
             {
               title: "Merchant",

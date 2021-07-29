@@ -72,7 +72,7 @@ export default function Editor({
               {status === "error" && (
                 <Alert
                   message="Error"
-                  description={error.message}
+                  description={parseError(error)}
                   type="error"
                   showIcon
                 />

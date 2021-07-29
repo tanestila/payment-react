@@ -15,7 +15,7 @@ import {
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
 
-export default function Creator({ handleClose }) {
+export default function Creator({ handleClose }: { handleClose: () => {} }) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation(adminsAPI.addAdmin, {
@@ -104,7 +104,6 @@ export default function Creator({ handleClose }) {
             send_mail: values.send_mail ? 1 : 0,
             language: values.language.guid,
             enabled: values.enabled === true ? 1 : 0,
-            partner_guid: values.partner?.["partner_guid"],
           };
           await mutation.mutateAsync(data);
           SuccessModal("Group was created");

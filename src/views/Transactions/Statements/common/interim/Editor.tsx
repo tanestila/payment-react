@@ -18,13 +18,27 @@ import { terminalsAPI } from "../../../../../services/queries/management/termina
 import { currenciesAPI } from "../../../../../services/queries/management/currencies";
 import moment from "moment";
 import { Currency } from "../component/Currency";
+import { MerchantForSelectType } from "../../../../../types/merchants";
+import { CurrencyForSelectType } from "../../../../../types/currencies";
+import { ShopForSelectType } from "../../../../../types/shops";
+import { TerminalForSelectType } from "../../../../../types/terminals";
 
 export default function StatementForm({ onSubmit, statement }) {
-  const [selected_merchant, setMerchant] = useState(null);
-  const [selected_shops, setShops] = useState(null);
-  const [selected_terminals, setTerminals] = useState(null);
-  const [selected_currencies, setCurrencies] = useState(null);
-  const [selected_additional_fee, setAdditionalFee] = useState(null);
+  const [selected_merchant, setMerchant] =
+    useState<MerchantForSelectType | null>(null);
+  const [selected_shops, setShops] = useState<Array<ShopForSelectType> | null>(
+    null
+  );
+  const [selected_terminals, setTerminals] =
+    useState<Array<TerminalForSelectType> | null>(null);
+  const [selected_currencies, setCurrencies] =
+    useState<Array<CurrencyForSelectType> | null>(null);
+  const [selected_additional_fee, setAdditionalFee] = useState<Array<{
+    name: string;
+    value: string;
+    currency: any;
+    fee_name?: string;
+  }> | null>(null);
   const [isSave, setIsSave] = useState(0);
 
   const { data: merchants, isLoading: isLoadingMerchant } = useQuery(
@@ -35,7 +49,7 @@ export default function StatementForm({ onSubmit, statement }) {
   const modifiedMerchantsData = useMemo(() => {
     let data = [];
     if (merchants) {
-      data = merchants.data.map((mer) => ({
+      data = merchants.data.map((mer: MerchantForSelectType) => ({
         ...mer,
         name: mer.merchant_name,
         guid: mer.merchant_guid,
@@ -45,7 +59,8 @@ export default function StatementForm({ onSubmit, statement }) {
       if (!selected_merchant)
         setMerchant(
           data.filter(
-            (merchant) => merchant.guid === statement.merchant_guid
+            (merchant: MerchantForSelectType) =>
+              merchant.guid === statement.merchant_guid
           )[0]
         );
     }
@@ -63,16 +78,16 @@ export default function StatementForm({ onSubmit, statement }) {
   const modifiedShopsData = useMemo(() => {
     let data = [];
     if (shops) {
-      data = shops.data.map((shop) => ({
+      data = shops.data.map((shop: ShopForSelectType) => ({
         ...shop,
         label: shop.name,
         value: shop.guid,
       }));
       if (!selected_shops)
         setShops(
-          data.filter((shop) => {
+          data.filter((shop: ShopForSelectType) => {
             let flag = false;
-            statement.shops.forEach((statementShop) => {
+            statement.shops.forEach((statementShop: any) => {
               if (statementShop.guid === shop.guid) flag = true;
             });
             return flag;
@@ -101,19 +116,21 @@ export default function StatementForm({ onSubmit, statement }) {
   const modifiedTerminalsData = useMemo(() => {
     let data = [];
     if (terminals) {
-      data = terminals.data.map((terminal) => ({
+      data = terminals.data.map((terminal: TerminalForSelectType) => ({
         ...terminal,
         label: terminal.name,
         value: terminal.guid,
       }));
       if (!selected_terminals) {
         setTerminals(
-          data.filter((terminal) => {
+          data.filter((terminal: TerminalForSelectType) => {
             let flag = false;
-            statement.shops.forEach((statementShop) => {
-              statementShop.terminals.forEach((statementTermimal) => {
-                if (terminal.guid === statementTermimal.guid) flag = true;
-              });
+            statement.shops.forEach((statementShop: any) => {
+              statementShop.terminals.forEach(
+                (statementTerminal: TerminalForSelectType) => {
+                  if (terminal.guid === statementTerminal.guid) flag = true;
+                }
+              );
             });
             return flag;
           })
@@ -179,8 +196,13 @@ export default function StatementForm({ onSubmit, statement }) {
       }));
     }
     if (!selected_additional_fee) {
-      let statementAdditionalFees = [];
-      statement.additional_fees_names.forEach((name) => {
+      let statementAdditionalFees: Array<{
+        name: string;
+        value: string;
+        currency: any;
+        fee_name?: string;
+      }> = [];
+      statement.additional_fees_names.forEach((name: string) => {
         statementAdditionalFees.push({ name, value: "", currency: "" });
       });
       let keys = Object.keys(statement.entityData);
@@ -194,7 +216,8 @@ export default function StatementForm({ onSubmit, statement }) {
               ...item,
               value: statement.entityData[cur].additional_fees[item.name],
               currency: modifiedCurrenciesData.filter(
-                (currency) => currency.name === cur.substring(0, 3)
+                (currency: CurrencyForSelectType) =>
+                  currency.name === cur.substring(0, 3)
               )[0],
             };
           }
@@ -224,25 +247,28 @@ export default function StatementForm({ onSubmit, statement }) {
             .format("YYYY-MM-DDTHH:mm:ss"),
         },
         statement_currency: modifiedCurrenciesData.filter(
-          (cur) => cur.code === statement.statement_currency_code
+          (cur: CurrencyForSelectType) =>
+            cur.code === statement.statement_currency_code
         )[0],
         bank_wire_fee: statement.bank_wire_fee,
         name: statement.name,
         additional_fees: selected_additional_fee,
-        // reason: "",
-        currencies_rates: modifiedRatesData.map((currency) => {
-          let statementCurrency = statement.currency_rates.filter(
-            (c) => c.code === currency.code
-          )[0];
-          if (statementCurrency)
-            return {
-              ...currency,
-              bank_exchange_rate: statementCurrency.bank_exchange_rate,
-              processor_exchange_rate:
-                statementCurrency.processor_exchange_rate,
-            };
-          else return currency;
-        }),
+        reason: "",
+        currencies_rates: modifiedRatesData.map(
+          (currency: CurrencyForSelectType) => {
+            let statementCurrency = statement.currency_rates.filter(
+              (c) => c.code === currency.code
+            )[0];
+            if (statementCurrency)
+              return {
+                ...currency,
+                bank_exchange_rate: statementCurrency.bank_exchange_rate,
+                processor_exchange_rate:
+                  statementCurrency.processor_exchange_rate,
+              };
+            else return currency;
+          }
+        ),
 
         //
         change_name: false,
@@ -296,14 +322,14 @@ export default function StatementForm({ onSubmit, statement }) {
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
-            merchant_guid: values.merchant.guid,
-            terminals: values.terminals.map((element) => element.guid),
+            merchant_guid: values.merchant!.guid,
+            terminals: values.terminals!.map((element) => element.guid),
             from_date: values.date.startDate,
             to_date: values.date.endDate,
             statement_currency: values.statement_currency.code,
             currency_rates: values.currencies_rates,
             bank_wire_fee: values.bank_wire_fee,
-            additional_fees: values.additional_fees.map((item) => ({
+            additional_fees: values.additional_fees!.map((item) => ({
               ...item,
               currency: item.currency.code,
               name: item.name.fee_name,
@@ -329,7 +355,7 @@ export default function StatementForm({ onSubmit, statement }) {
                 inputType="select"
                 label="Merchant*"
                 options={modifiedMerchantsData}
-                callback={(value) => {
+                callback={(value: MerchantForSelectType) => {
                   setMerchant(value);
                   setFieldValue("shops", []);
                   setFieldValue("terminals", []);
@@ -340,7 +366,7 @@ export default function StatementForm({ onSubmit, statement }) {
                 inputType="multi-select"
                 label="Shop*"
                 options={modifiedShopsData}
-                callback={(value) => {
+                callback={(value: Array<ShopForSelectType>) => {
                   setShops(value);
                   setFieldValue("terminals", []);
                 }}
@@ -349,7 +375,7 @@ export default function StatementForm({ onSubmit, statement }) {
                 name="select_all_shops"
                 inputType="checkbox"
                 label="Select all shops"
-                callback={(value) => {
+                callback={(value: boolean) => {
                   if (value) setFieldValue("shops", modifiedShopsData);
                   else setFieldValue("shops", []);
                 }}
@@ -364,7 +390,7 @@ export default function StatementForm({ onSubmit, statement }) {
                 name="select_all_terminals"
                 inputType="checkbox"
                 label="Select all terminals"
-                callback={(value) => {
+                callback={(value: boolean) => {
                   if (value) setFieldValue("terminals", modifiedTerminalsData);
                   else setFieldValue("terminals", []);
                 }}
@@ -374,7 +400,7 @@ export default function StatementForm({ onSubmit, statement }) {
                 inputType="multi-select"
                 label="Filter terminals by currencies"
                 options={modifiedCurrenciesData}
-                callback={(value) => {
+                callback={(value: Array<CurrencyForSelectType>) => {
                   setCurrencies(value);
                   setFieldValue("terminals", []);
                 }}

@@ -12,3 +12,10 @@ export type MerchantType = {
   partner_name: string | null;
   username: string;
 };
+
+export type MerchantForSelectType = MerchantType & {
+  name?: string;
+  label?: string;
+  value?: string;
+  guid?: string;
+};

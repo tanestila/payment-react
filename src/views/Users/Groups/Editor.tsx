@@ -17,7 +17,7 @@ import {
   roundMultiplyNumber,
   roundDivisionNumber,
 } from "../../../helpers/formatNumber";
-import { PartnerType } from "../../../types/partners";
+import { PartnerForSelectType, PartnerType } from "../../../types/partners";
 
 export default function Editor({
   handleClose,
@@ -109,7 +109,7 @@ export default function Editor({
               {status === "error" && (
                 <Alert
                   message="Error"
-                  description={error.message}
+                  description={parseError(error)}
                   type="error"
                   showIcon
                 />

@@ -8,7 +8,6 @@ import { Alert, Button } from "antd";
 import {
   ErrorModal,
   FormLoading,
-  Loading,
   SuccessModal,
 } from "../../../Components/Common";
 import { parseError } from "../../../helpers/parseError";
@@ -24,7 +23,13 @@ const statuses = [
   { name: "3Dwaiting", guid: "4", label: "3Dwaiting", value: "4" },
 ];
 
-export default function Editor({ handleClose, guid }) {
+export default function Editor({
+  handleClose,
+  guid,
+}: {
+  handleClose: () => {};
+  guid: string;
+}) {
   const queryClient = useQueryClient();
   const {
     data: transaction,
@@ -141,7 +146,7 @@ export default function Editor({ handleClose, guid }) {
               {status === "error" && (
                 <Alert
                   message="Error"
-                  description={error.message}
+                  description={parseError(error)}
                   type="error"
                   showIcon
                 />

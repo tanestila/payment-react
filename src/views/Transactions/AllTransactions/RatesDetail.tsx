@@ -1,10 +1,10 @@
 import { useQuery } from "react-query";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 import { Loading } from "../../../Components/Common";
-import { Descriptions } from "antd";
+import { Descriptions, Row } from "antd";
 import { formatDate } from "../../../helpers/formatDate";
 
-export const RatesDetail = ({ guid }) => {
+export const RatesDetail = ({ guid }: { guid: string }) => {
   const { data: rates, status } = useQuery(["transaction-rates", guid], () =>
     transactionsAPI.getTransactionRates(guid)
   );
@@ -63,9 +63,9 @@ export const RatesDetail = ({ guid }) => {
               </Descriptions.Item>
             </Descriptions>
           ) : (
-            <div align="center">
+            <Row justify="center">
               <b>Sorry, this transaction doesn`t have rates</b>
-            </div>
+            </Row>
           )}
         </>
       )}

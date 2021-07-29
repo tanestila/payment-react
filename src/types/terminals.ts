@@ -1,4 +1,4 @@
-export type ShopType = {
+export type TerminalType = {
   created_at: string;
   created_by: string;
   created_by_username: string;
@@ -17,7 +17,7 @@ export type ShopType = {
   url: Array<string>;
 };
 
-export type ShopForSelectType = ShopType & {
+export type TerminalForSelectType = TerminalType & {
   name?: string;
   label?: string;
   value?: string;

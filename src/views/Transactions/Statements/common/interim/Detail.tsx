@@ -67,7 +67,9 @@ const Detail = ({ statement }) => {
         <Button onClick={() => setIsEditorOpen((init) => !init)}>
           Edit statement
         </Button>
-        {isEditorOpen && <StatementForm statement={statement} />}
+        {isEditorOpen && (
+          <StatementForm statement={statement} onSubmit={() => {}} />
+        )}
         <Divider />
         <StatementDetail statement={statement} />
       </Card>

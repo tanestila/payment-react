@@ -15,9 +15,12 @@ import { merchantsAPI } from "../../../../../services/queries/management/users/m
 import { currenciesAPI } from "../../../../../services/queries/management/currencies";
 import { statementsAPI } from "../../../../../services/queries/management/statements";
 import { Currency } from "../component/Currency";
+import { MerchantForSelectType } from "../../../../../types/merchants";
+import { CurrencyForSelectType } from "../../../../../types/currencies";
 
 export default function StatementForm({ onSubmit }) {
-  const [selected_merchant, setMerchant] = useState(null);
+  const [selected_merchant, setMerchant] =
+    useState<MerchantForSelectType | null>(null);
   const [isSave, setIsSave] = useState(0);
 
   const { data: merchants, isLoading: isLoadingMerchant } = useQuery(
@@ -37,7 +40,7 @@ export default function StatementForm({ onSubmit }) {
 
   const modifiedMerchantsData = useMemo(() => {
     return merchants
-      ? merchants.data.map((mer) => ({
+      ? merchants.data.map((mer: MerchantForSelectType) => ({
           ...mer,
           name: mer.merchant_name,
           guid: mer.merchant_guid,
@@ -84,7 +87,7 @@ export default function StatementForm({ onSubmit }) {
         merchant: null,
         statements: [],
         statement_currency: modifiedCurrenciesData.filter(
-          (cur) => cur.code === "EUR"
+          (cur: CurrencyForSelectType) => cur.code === "EUR"
         )[0],
         bank_wire_fee: 0,
         name: "",
@@ -127,8 +130,8 @@ export default function StatementForm({ onSubmit }) {
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {
-            merchant_guid: values.merchant.guid,
-            statements: values.statements.map((element) => element.guid),
+            merchant_guid: values.merchant!.guid,
+            statements: values.statements.map((element: any) => element.guid),
             statement_currency: values.statement_currency.code,
             currency_rates: values.currencies_rates,
             bank_wire_fee: values.bank_wire_fee,
@@ -153,7 +156,7 @@ export default function StatementForm({ onSubmit }) {
                 inputType="select"
                 label="Merchant*"
                 options={modifiedMerchantsData}
-                callback={(value) => {
+                callback={(value: MerchantForSelectType) => {
                   setMerchant(value);
                   setFieldValue("statements", []);
                 }}

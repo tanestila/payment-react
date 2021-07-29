@@ -16,7 +16,13 @@ import { useContext } from "react";
 import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
 import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 
-export default function Editor({ handleClose, guid }) {
+export default function Editor({
+  handleClose,
+  guid,
+}: {
+  handleClose: () => {};
+  guid: string;
+}) {
   const ability = useContext(AbilityContext);
   const queryClient = useQueryClient();
   const {
@@ -118,7 +124,7 @@ export default function Editor({ handleClose, guid }) {
               {status === "error" && (
                 <Alert
                   message="Error"
-                  description={error.message}
+                  description={parseError(error)}
                   type="error"
                   showIcon
                 />

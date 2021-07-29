@@ -18,7 +18,6 @@ import {
   roundMultiplyNumber,
   roundDivisionNumber,
 } from "../../../helpers/formatNumber";
-import { UseMutationResult } from "react-query";
 import { CurrencyForSelectType, CurrencyType } from "../../../types/currencies";
 import { GroupForSelectType, GroupType } from "../../../types/groups";
 
@@ -151,7 +150,7 @@ export default function Editor({
               {status === "error" && (
                 <Alert
                   message="Error"
-                  description={error.message}
+                  description={parseError(error)}
                   type="error"
                   showIcon
                 />

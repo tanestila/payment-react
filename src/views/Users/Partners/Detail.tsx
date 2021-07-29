@@ -190,7 +190,6 @@ export default function PartnerDetail() {
             content={LoginCreator}
             contentProps={{ guid: partner.partner_guid, type: "partner" }}
             button={<Button>Add login</Button>}
-            // dialogClassName="modal-creator"
           />
         </Row>
         <Divider />

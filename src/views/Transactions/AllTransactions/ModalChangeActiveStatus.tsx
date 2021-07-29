@@ -7,7 +7,15 @@ import { parseError } from "../../../helpers/parseError";
 import { useMutation, useQueryClient } from "react-query";
 import { transactionsAPI } from "../../../services/queries/management/transactions/processing";
 
-export const ModalChangeActiveStatus = ({ handleClose, guid, active }) => {
+export const ModalChangeActiveStatus = ({
+  handleClose,
+  guid,
+  active,
+}: {
+  handleClose: () => {};
+  guid: string;
+  active: boolean;
+}) => {
   const queryClient = useQueryClient();
   const mutation = useMutation(transactionsAPI.activeTransaction, {
     onSuccess: () => {
@@ -41,7 +49,7 @@ export const ModalChangeActiveStatus = ({ handleClose, guid, active }) => {
           setSubmitting(false);
         }}
       >
-        {({ values, isSubmitting }) => (
+        {({ isSubmitting }) => (
           <Form className="modal-form">
             <Field name="reason" type="text" label="Reason*" />
             {isSubmitting ? (

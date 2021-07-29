@@ -1,7 +1,7 @@
-export const Params = ({ params }) => {
+export const Params = ({ params }: { params: Array<any> }) => {
   return (
     <>
-      {params.map((param, index) => (
+      {params.map((param: any, index: number) => (
         <>
           {param.name}
           <div className="param-container">

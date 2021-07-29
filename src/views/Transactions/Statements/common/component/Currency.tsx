@@ -3,11 +3,17 @@ import { useFormikContext } from "formik";
 import { useQuery } from "react-query";
 import { Field } from "../../../../../Components/Common/Formik/Field";
 import { currenciesAPI } from "../../../../../services/queries/management/currencies";
+import {
+  CurrencyType,
+  CurrencyForSelectType,
+} from "../../../../../types/currencies";
+import { formDataType } from "../interim/Creator";
 
 export const Currency = () => {
-  const [statement_currency, setCurrency] = useState(null);
+  const [statement_currency, setCurrency] =
+    useState<CurrencyForSelectType | null>(null);
 
-  const { values, setFieldValue } = useFormikContext();
+  const { values, setFieldValue } = useFormikContext<formDataType>();
 
   const { data: currencies } = useQuery(["currencies"], () =>
     currenciesAPI.getCurrencies()
@@ -15,7 +21,7 @@ export const Currency = () => {
 
   const modifiedCurrenciesData = useMemo(() => {
     return currencies
-      ? currencies.data.map((cur: any) => ({
+      ? currencies.data.map((cur: CurrencyType) => ({
           ...cur,
           name: cur.code,
           label: cur.code,
@@ -37,11 +43,11 @@ export const Currency = () => {
   useEffect(() => {
     if (currenciesRates) {
       let newRatesValues = [...values.currencies_rates];
-      currenciesRates.data?.forEach((rate) => {
+      currenciesRates.data?.forEach((rate: any) => {
         for (let index = 0; index < newRatesValues.length; index++) {
           if (newRatesValues[index].code === rate.currency_name) {
             let proc_rate = 0;
-            if (rate.currency_name !== statement_currency.code)
+            if (rate.currency_name !== statement_currency!.code)
               if (newRatesValues[index].isFlat)
                 proc_rate =
                   rate.exchange_rate +
@@ -71,7 +77,7 @@ export const Currency = () => {
         inputType="select"
         label="Statement currency*"
         options={modifiedCurrenciesData}
-        callback={(value) => {
+        callback={(value: CurrencyForSelectType) => {
           setCurrency(value);
         }}
       />
