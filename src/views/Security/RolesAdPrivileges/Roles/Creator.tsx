@@ -23,10 +23,6 @@ export default function Creator({ handleClose }) {
       queryClient.invalidateQueries("admins");
     },
   });
-
-  const { run: checkEmail } = useCheckEmailExist();
-  const { run: checkPhone } = useCheckPhoneExist();
-
   const { data: roles } = useQuery(["roles"], () =>
     rolesAPI.getRoles({ type: "admin" })
   );

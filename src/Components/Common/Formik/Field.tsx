@@ -34,7 +34,8 @@ type CustomInputProps = {
     | "date-time"
     | "rates"
     | "additional-fee"
-    | "number";
+    | "number"
+    | "radio";
   children?: ReactNode;
   id?: string;
   type?: string;
@@ -46,6 +47,7 @@ type CustomInputProps = {
   currencyOptions?: Array<any>;
   callback?: Function;
   isLoading?: boolean;
+  value?: string;
 };
 
 export const Field: React.FC<CustomInputProps> = ({
@@ -60,6 +62,7 @@ export const Field: React.FC<CustomInputProps> = ({
   currencyOptions, // for array input
   precision,
   isLoading,
+  value,
   ...props
 }) => {
   const [field, meta, helpers] = useField(props.name);
@@ -249,6 +252,17 @@ export const Field: React.FC<CustomInputProps> = ({
             {...props}
             type="number"
             onChange={(e) => onChangeNumber(e, precision)}
+          />
+        );
+      case "radio":
+        return (
+          <Form.Control
+            className="form-control ant-input"
+            type="radio"
+            {...field}
+            {...props}
+            value={value}
+            // onChange={(e) => onChangeNumber(e, precision)}
           />
         );
 

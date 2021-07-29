@@ -27,4 +27,8 @@ export const gatewaysAPI = {
     });
     return data;
   },
+  getGatewayTransactionTypes: async (guid) => {
+    let { data } = await managementService.get(`gateways/${guid}/transactions`);
+    return data;
+  },
 };

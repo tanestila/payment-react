@@ -1,11 +1,7 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { Col, Row } from "react-bootstrap";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { rolesAPI } from "../../../services/queries/management/roles";
-import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
-import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
+import { useMutation, useQueryClient } from "react-query";
 import { Button } from "antd";
 import {
   SuccessModal,
@@ -25,7 +21,7 @@ const types = [
   { name: "email", guid: "email", label: "email", value: "email" },
 ];
 
-export default function Creator({ handleClose }) {
+export default function Creator({ handleClose }: { handleClose: () => {} }) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation(adminsAPI.addAdmin, {
@@ -41,9 +37,9 @@ export default function Creator({ handleClose }) {
         type: types[0],
         description: "",
         values: [],
-        textValues: "",
-        valueInputType: false,
+        text_values: "",
         separator: ",",
+        advanced_form: false,
       }}
       validationSchema={() => {
         return Yup.lazy((values) => {
@@ -96,161 +92,71 @@ export default function Creator({ handleClose }) {
             type: Yup.object().required("Required"),
             description: Yup.string().required("Required"),
             values: Yup.array()
+              .min(1)
               .of(ruleValues.required("Required"))
-              // .test(
-              //   "values",
-              //   "Must contain at least one element",
-              //   (value, context) => value.length !== 0
-              // )
+
               .required("Required"),
             valueInputType: Yup.bool(),
-            textValues: Yup.string(),
+            text_values: Yup.string(),
             separator: Yup.string(),
           });
         });
       }}
       onSubmit={async (values, { setSubmitting }) => {
         try {
+          let valuesArray = [];
+          if (values.advanced_form) {
+            if (values.separator === ",")
+              valuesArray = values.text_values.split(",");
+            else valuesArray = values.text_values.split(/\n/);
+          } else {
+            valuesArray = values.values;
+          }
           const data = {
             name: values.name,
             type: values.type.name,
             description: values.description,
+            values: valuesArray,
           };
-          let valuesArray = [];
-          if (values.valueInputType) {
-            if (values.separator === ",")
-              valuesArray = values.textValues.split(",");
-            else valuesArray = values.textValues.split(/\n/);
-          } else {
-            valuesArray = values.values;
-          }
-          console.log(valuesArray);
-          await dispatch(
-            addBlackListItemAction(
-              { ...data, values: valuesArray },
-              currentPage,
-              pageSize
-            )
-          );
-          swal({
-            title: "Record is created",
-            icon: "success",
-            button: false,
-            timer: 2000,
-          });
+
+          await mutation.mutateAsync(data);
+          SuccessModal("Rule was created");
+          handleClose();
           setSubmitting(false);
         } catch (error) {
-          const parsedError = parseResponse(error);
-          Alert({ type: "error", message: parsedError.message });
+          ErrorModal(parseError(error));
         }
       }}
     >
-      {({ isSubmitting, values, errors, touched }) => (
+      {({ values, isSubmitting }) => (
         <Form>
-          <div
-            style={{
-              marginBottom: "15px",
-            }}
-          >
-            <BSForm.Label htmlFor="values">Advanced form </BSForm.Label>
-
-            <Field
-              type="radio"
-              name="valueInputType"
-              type="checkbox"
-              style={{
-                textAlign: "left",
-                marginTop: "5px",
-                marginLeft: "5px",
-              }}
-            />
-          </div>
-
-          <FormField name="name" label="Name" />
           <Field
-            name="type"
-            component={FormSelect}
-            options={types}
-            label={"Type"}
+            name="advanced_form"
+            label="Advanced form"
+            inputType="checkbox-inverse"
           />
-          <FormField name="description" label="Description" />
-          {values.valueInputType ? (
+
+          <Field name="name" label="Name" />
+          <Field name="type" label="Type" />
+          <Field name="description" label="Description" />
+
+          {values.advanced_form ? (
             <>
-              <Row>
-                <Col md={3} sm={4} xs={4} className="form-label">
-                  <BSForm.Label htmlFor="values">Separator</BSForm.Label>
-                </Col>
-                <Col md={8}>
-                  <Field type="radio" name="separator" value="," /> Comma{" "}
-                  <Field type="radio" name="separator" value="\n" /> Enter
-                </Col>
-              </Row>
-              <FormField name="textValues" label="Values" as="textarea" />
+              <Field type="radio" name="separator" value="," label="" /> Comma{" "}
+              <Field type="radio" name="separator" value="\n" label="" /> Enter
+              <Field name="text_values" label="Values" />
             </>
           ) : (
-            <Row>
-              <Col md={3} sm={4} xs={4} className="form-label">
-                <BSForm.Label htmlFor="values">Values</BSForm.Label>
-              </Col>
-              <Col md={8}>
-                <BSForm.Group>
-                  <FieldArray
-                    name="values"
-                    render={(arrayHelpers) => (
-                      <div>
-                        {values.values.map((friend, index) => (
-                          <div>
-                            <div
-                              className="d-flex"
-                              style={{ marginBottom: "5px" }}
-                              key={index}
-                            >
-                              <Field
-                                name={`values.${index}`}
-                                className="form-control"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => arrayHelpers.remove(index)}
-                              >
-                                -
-                              </button>
-                            </div>
-
-                            {errors.values &&
-                            errors.values[index] &&
-                            touched.values &&
-                            touched.values[index]
-                              ? errors.values[index]
-                              : null}
-                          </div>
-                        ))}
-                        {errors.values &&
-                        !Array.isArray(errors.values) &&
-                        touched.values
-                          ? errors.values
-                          : null}
-                        <button
-                          type="button"
-                          onClick={() => arrayHelpers.push("")}
-                        >
-                          +
-                        </button>
-                      </div>
-                    )}
-                  />
-                </BSForm.Group>
-              </Col>
-            </Row>
+            <Field name="values" label="Values" inputType="array" />
           )}
 
-          <Button
-            className="btn btn-fill btn-success"
-            type="submit"
-            // onClick={this.doSubmit}
-          >
-            Add
-          </Button>
+          {isSubmitting ? (
+            <FormLoading />
+          ) : (
+            <Button htmlType="submit" type="primary" className="f-right">
+              Submit
+            </Button>
+          )}
         </Form>
       )}
     </Formik>

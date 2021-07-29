@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { Formik, Form } from "formik";
+import { Formik, Form, ErrorMessage } from "formik";
 import { Field } from "../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -8,15 +8,27 @@ import { Button } from "antd";
 import { SuccessModal, ErrorModal, FormLoading } from "../../Components/Common";
 import { adminsAPI } from "../../services/queries/management/users/admins";
 import { parseError } from "../../helpers/parseError";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { shopsAPI } from "../../services/queries/management/shops";
 
 import { terminalsAPI } from "../../services/queries/management/terminals";
+import { gatewaysAPI } from "../../services/queries/management/gateways";
+import { useHistory, useLocation } from "react-router-dom";
 export default function TransactionForm({ handleClose }) {
   const [isNeedTransactionId, setIsNeedTransactionId] = useState(false);
+  const [isNeedReason, setIsNeedReason] = useState(false);
   const [selected_shop, setShop] = useState(null);
-
+  const [selected_terminal, setTerminal] = useState(null);
   const queryClient = useQueryClient();
+  let { search } = useLocation();
+  let history = useHistory();
+
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    if (params.status === "succeed") SuccessModal("Transaction success");
+    else if (params.status === "failed") ErrorModal("Transaction failed");
+    history.push();
+  }, []);
 
   const mutation = useMutation(adminsAPI.addAdmin, {
     onSuccess: () => {
@@ -46,9 +58,7 @@ export default function TransactionForm({ handleClose }) {
     isFetching: terminalsIsFetching,
   } = useQuery(["terminals", selected_shop], () =>
     terminalsAPI.getTerminals({
-      shop_guid_array: selected_shop
-        ? selected_shop.map((shop) => shop.guid)
-        : undefined,
+      shop_guid: selected_shop ? selected_shop.guid : undefined,
     })
   );
 
@@ -61,6 +71,25 @@ export default function TransactionForm({ handleClose }) {
         }))
       : [];
   }, [terminals]);
+
+  const {
+    data: types,
+    isLoading: typesIsLoading,
+    isFetching: typesIsFetching,
+  } = useQuery(["transaction-types"], () =>
+    gatewaysAPI.getGatewayTransactionTypes(
+      selected_terminal ? selected_terminal.gateway_guid : undefined
+    )
+  );
+
+  const onSelectType = (option) => {
+    if (["Refund", "Capture", "Cancel", "Reverse"].includes(option.name))
+      setIsNeedTransactionId(true);
+    else setIsNeedTransactionId(false);
+    if (["Refund", "Cancel", "Reverse"].includes(option.name))
+      setIsNeedReason(true);
+    else setIsNeedReason(false);
+  };
 
   return (
     <Formik
@@ -100,8 +129,67 @@ export default function TransactionForm({ handleClose }) {
       onSubmit={async (values, { setSubmitting }) => {
         try {
           let data = {};
+          switch (values.type.name) {
+            case "Payment":
+            case "Authorization":
+              data = {
+                tracking_id: values.tracking_id,
+                amount: Math.round(+values.amount * 100),
+                currency: values.terminal.currency_code,
+                description: values.description,
+                type: values.type,
+                billing_address: {
+                  first_name: values.first_name,
+                  last_name: values.last_name,
+                  country: values.country,
+                  city: values.city,
+                  address: values.address,
+                  zip: values.zip,
+                },
+                customer: {
+                  email: values.email,
+                  ip: values.ip,
+                },
+              };
+              break;
+            case "Cancel":
+            case "Refund":
+            case "Reverse":
+              data = {
+                tracking_id: values.tracking_id,
+                amount: Math.round(+values.amount * 100),
+                type: values.type,
+                transactionId: values.transactionId,
+                reason: isNeedReason ? values.reason : undefined,
+              };
+              break;
+            case "Capture":
+              data = {
+                tracking_id: values.tracking_id,
+                amount: Math.round(+values.amount * 100),
+                type: values.type,
+                transactionId: values.transactionId,
+              };
+              break;
+            default:
+              break;
+          }
+
+          const credit_card = {
+            number: values.card_number,
+            verification_value: values.verification_value,
+            holder: values.name_on_card,
+            exp_month: values.exp_month,
+            exp_year: values.exp_year,
+          };
+          if (values.isNeedCardData) data.credit_card = credit_card;
+          else {
+            data.succeed_url = `${window.location}?status=succeed`;
+            data.failed_url = `${window.location}?status=failed`;
+          }
+
           await mutation.mutateAsync(data);
-          SuccessModal("Group was created");
+          SuccessModal("Transaction send");
           handleClose();
         } catch (error) {
           ErrorModal(parseError(error));
@@ -110,7 +198,7 @@ export default function TransactionForm({ handleClose }) {
         setSubmitting(false);
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ values, isSubmitting, setFieldValue }) => (
         <Form>
           {isNeedTransactionId && (
             <>
@@ -140,24 +228,46 @@ export default function TransactionForm({ handleClose }) {
             label="Shops*"
             inputType="select"
             options={modifiedShopsData}
+            isLoading={shopsIsLoading || shopsIsFetching}
+            callback={(value) => {
+              setShop(value);
+              setFieldValue("terminal", null);
+              setFieldValue("type", null);
+            }}
           />
           <Field
             name="terminal"
             label="terminal*"
+            isLoading={terminalsIsLoading || terminalsIsFetching}
             inputType="select"
             options={modifiedTerminalsData}
+            callback={(value) => {
+              setTerminal(value);
+              setFieldValue("type", null);
+              setFieldValue("secret", value.secret);
+              setFieldValue("hash_key", value.hash_key);
+            }}
           />
-          <Field name="type" type="text" label="type*" />
-          <Field name="amount" type="text" label="amount*" />
-          Currency
-          <Field name="tracking_id" type="text" label="Transaction id" />
-          <Field name="reason" type="text" label="reason" />
-          {/* <Field
-            name="tracking_id"
-            label="Transaction id*"
+          <Field
+            name="type"
             inputType="select"
-            options={roles?.data}
-          /> */}
+            isLoading={typesIsLoading || typesIsFetching}
+            label="type*"
+            options={types}
+            callback={(value) => {
+              onSelectType(value);
+            }}
+          />
+          <Field name="amount" inputType="number" label="amount*" />
+          {values.terminal && values.terminal.currency_code
+            ? values.terminal.currency_code
+            : null}
+          <Field name="tracking_id" type="text" label="Transaction id" />
+          {isNeedReason && <Field name="reason" type="text" label="reason" />}
+
+          <ErrorMessage name="secret" />
+          <ErrorMessage name="hash_key" />
+
           {isNeedTransactionId && (
             <>
               <Row>
