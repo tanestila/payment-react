@@ -7,4 +7,21 @@ export const MerchantBlackListAPI = {
     });
     return data;
   },
+  addMerchantBlacklist: async (body) => {
+    let { data } = await managementService.post(`blacklists/merchants`, body);
+    return data;
+  },
+  deleteMerchantBlacklist: async ({
+    blacklist_rule_guid,
+    merchant_guid,
+    reason,
+  }) => {
+    let { data } = await managementService.post("blacklists/merchants", {
+      blacklist_rule_guid,
+      merchant_guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
 };

@@ -7,4 +7,16 @@ export const GlobalBlackListAPI = {
     });
     return data;
   },
+  addGlobalBlacklist: async (body) => {
+    let { data } = await managementService.post(`blacklists/global`, body);
+    return data;
+  },
+  deleteGlobalBlacklist: async ({ blacklist_rule_guid, reason }) => {
+    let { data } = await managementService.post("blacklists/global", {
+      blacklist_rule_guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
 };

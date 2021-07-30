@@ -7,8 +7,10 @@ import { GlobalBlackListAPI } from "../../../services/queries/management/blackli
 import Modal from "../../../Components/Common/Modal";
 import { Button } from "antd/lib/radio";
 import Creator from "./Creator";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function GlobalBlacklist() {
+  const queryClient = useQueryClient();
   const ability = useContext(AbilityContext);
   const {
     isLoading,
@@ -25,7 +27,13 @@ export default function GlobalBlacklist() {
     true
   );
 
-  const columns = useBacklistGlobalColumns(ability);
+  const deleteMutation = useMutation(GlobalBlackListAPI.deleteGlobalBlacklist, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("global-blacklist");
+    },
+  });
+
+  const columns = useBacklistGlobalColumns(ability, deleteMutation);
 
   return (
     <Table
@@ -41,9 +49,9 @@ export default function GlobalBlacklist() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERADMIN")}
-          button={<Button type="primary">Create admin</Button>}
+          button={<Button type="primary">Create record</Button>}
           content={Creator}
-          header="Create admin"
+          header="Create record"
           dialogClassName="modal-creator"
         />
       }

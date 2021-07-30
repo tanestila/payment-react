@@ -3,26 +3,31 @@ import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { rolesAPI } from "../../../services/queries/management/roles";
-import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
-import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
+
 import { Button } from "antd";
 import {
   SuccessModal,
   ErrorModal,
   FormLoading,
 } from "../../../Components/Common";
-import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
+import { blackListRulesAPI } from "../../../services/queries/management/blacklist/rules";
+import { GlobalBlackListAPI } from "../../../services/queries/management/blacklist/global";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(adminsAPI.addAdmin, {
+  const mutation = useMutation(GlobalBlackListAPI.addGlobalBlacklist, {
     onSuccess: () => {
-      queryClient.invalidateQueries("admins");
+      queryClient.invalidateQueries("global-blacklist");
     },
   });
+
+  const {
+    data: rules,
+    isLoading: isMerchantLoading,
+    isFetching: isMerchantFetching,
+  } = useQuery(["rules"], () => blackListRulesAPI.getRules());
 
   const types = [
     { name: "allow", guid: "allow", label: "allow", value: "allow" },
@@ -61,9 +66,10 @@ export default function Creator({ handleClose }) {
             name="blacklist_rule"
             label="Rule*"
             inputType="select"
-            options={[]}
+            options={rules?.data}
+            isLoading={isMerchantLoading || isMerchantFetching}
           />
-          <Field name="type" label="Rule*" inputType="select" options={types} />
+          <Field name="type" label="Type*" inputType="select" options={types} />
 
           {isSubmitting ? (
             <FormLoading />

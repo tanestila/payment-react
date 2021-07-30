@@ -11,6 +11,7 @@ import {
 import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
 import valid from "card-validator";
+import { blackListRulesAPI } from "../../../services/queries/management/blacklist/rules";
 
 const types = [
   { name: "ip", guid: "ip", label: "ip", value: "ip" },
@@ -24,9 +25,9 @@ const types = [
 export default function Creator({ handleClose }: { handleClose: () => {} }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(adminsAPI.addAdmin, {
+  const mutation = useMutation(blackListRulesAPI.addRule, {
     onSuccess: () => {
-      queryClient.invalidateQueries("admins");
+      queryClient.invalidateQueries("blacklist-rules");
     },
   });
 
@@ -92,9 +93,7 @@ export default function Creator({ handleClose }: { handleClose: () => {} }) {
             type: Yup.object().required("Required"),
             description: Yup.string().required("Required"),
             values: Yup.array()
-              .min(1)
               .of(ruleValues.required("Required"))
-
               .required("Required"),
             valueInputType: Yup.bool(),
             text_values: Yup.string(),
@@ -118,7 +117,7 @@ export default function Creator({ handleClose }: { handleClose: () => {} }) {
             description: values.description,
             values: valuesArray,
           };
-
+          console.log(values);
           await mutation.mutateAsync(data);
           SuccessModal("Rule was created");
           handleClose();
@@ -137,13 +136,23 @@ export default function Creator({ handleClose }: { handleClose: () => {} }) {
           />
 
           <Field name="name" label="Name" />
-          <Field name="type" label="Type" />
+          <Field name="type" label="Type" inputType="select" options={types} />
           <Field name="description" label="Description" />
 
           {values.advanced_form ? (
             <>
-              <Field type="radio" name="separator" value="," label="" /> Comma{" "}
-              <Field type="radio" name="separator" value="\n" label="" /> Enter
+              <Field
+                inputType="radio"
+                name="separator"
+                value=","
+                valueLabel="Comma"
+                label="Separator"
+                options={[
+                  { value: ",", label: "Comma" },
+                  { value: ".", label: "Dot" },
+                ]}
+              />
+
               <Field name="text_values" label="Values" />
             </>
           ) : (

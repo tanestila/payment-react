@@ -7,4 +7,16 @@ export const blackListRulesAPI = {
     });
     return data;
   },
+  addRule: async (body) => {
+    let { data } = await managementService.post(`blacklists`, body);
+    return data;
+  },
+  deleteRule: async ({ guid, reason }) => {
+    let { data } = await managementService.post("blacklists", {
+      guid,
+      delete: true,
+      reason,
+    });
+    return data;
+  },
 };

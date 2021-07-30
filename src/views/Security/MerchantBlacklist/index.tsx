@@ -7,8 +7,10 @@ import { MerchantBlackListAPI } from "../../../services/queries/management/black
 import Modal from "../../../Components/Common/Modal";
 import { Button } from "antd/lib/radio";
 import Creator from "./Creator";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function MerchantBlacklist() {
+  const queryClient = useQueryClient();
   const ability = useContext(AbilityContext);
   const {
     isLoading,
@@ -25,7 +27,16 @@ export default function MerchantBlacklist() {
     true
   );
 
-  const columns = useBacklistMerchantColumns(ability);
+  const deleteMutation = useMutation(
+    MerchantBlackListAPI.deleteMerchantBlacklist,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("merchant-blacklist");
+      },
+    }
+  );
+
+  const columns = useBacklistMerchantColumns(ability, deleteMutation);
 
   return (
     <Table
@@ -41,9 +52,9 @@ export default function MerchantBlacklist() {
       modalComponent={
         <Modal
           allowed={ability.can("EXECUTE", "USERADMIN")}
-          button={<Button type="primary">Create admin</Button>}
+          button={<Button type="primary">Create record</Button>}
           content={Creator}
-          header="Create admin"
+          header="Create record"
           dialogClassName="modal-creator"
         />
       }

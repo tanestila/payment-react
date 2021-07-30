@@ -42,10 +42,14 @@ export default function Creator({ shop_guid, handleClose }) {
   const modifiedGatewaysData = useMemo(() => {
     return gateways
       ? gateways.data.map((gate) => {
-          gate.currencies = gate.currencies.map((cur) => ({
-            ...cur,
-            name: cur.code,
-          }));
+          gate.currencies = gate.currencies
+            ? gate.currencies
+                .filter((cur) => !!cur)
+                .map((cur) => ({
+                  ...cur,
+                  name: cur.code,
+                }))
+            : [];
           return gate;
         })
       : [];

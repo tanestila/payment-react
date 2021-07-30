@@ -60,6 +60,7 @@ import {
 } from "../views";
 import { StoryUI } from "../Components/StoryUI";
 import TemplatesDetail from "../views/Transactions/Templates/Detail";
+import TransactionForm from "../views/TestForm";
 
 export const adminRoutes = [
   {
@@ -376,7 +377,7 @@ export const adminRoutes = [
     name: "Test form",
     icon: "icon-test_form",
     privilege: "FORM_TRANSACTIONTEST",
-    component: StoryUI,
+    component: TransactionForm,
   },
   {
     path: "/ui",

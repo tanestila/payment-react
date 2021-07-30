@@ -115,35 +115,35 @@ export const Turnover = () => {
       let data = [];
       const sum = {
         totallyProcessed:
-          response.total.totally_processed?.map((item) => {
+          response.total?.totally_processed?.map((item) => {
             return `${item.amount} ${item.currency} (${item.passed_amount_percent}%) count ${item.transaction_count} (${item.passed_count_percent}%) `;
           }) || [],
         costOfProcessedPaymentsTotal:
-          response.total.percent_fees
+          response.total?.percent_fees
             ?.filter((item) => item.amount !== 0 && item.currency !== null)
             .map((item) => {
               return `${item.amount} ${item.currency} `;
             }) || [],
         grandTotal:
-          response.total.total_fees
+          response.total?.total_fees
             ?.filter((item) => item.amount !== 0 && item.currency !== null)
             .map((item) => {
               return `${item.amount} ${item.currency} `;
             }) || [],
         rateTotal:
-          response.total.fixed_fees
+          response.total?.fixed_fees
             ?.filter((item) => item.amount !== 0 && item.currency !== null)
             .map((item) => {
               return `${item.amount} ${item.currency} `;
             }) || [],
         refundTotal:
-          response.total.refund
+          response.total?.refund
             ?.filter((item) => item.amount !== 0 && item.currency !== null)
             .map((item) => {
               return `${item.amount} ${item.currency} `;
             }) || [],
         chargebackTotal:
-          response.total.chargeback
+          response.total?.chargeback
             ?.filter((item) => item.amount !== 0 && item.currency !== null)
             .map((item) => {
               return `${item.amount} ${item.currency} `;
@@ -217,7 +217,7 @@ export const Turnover = () => {
           "23:00",
         ];
       } else {
-        labels = response.dates.map((date) =>
+        labels = response.dates?.map((date) =>
           moment(date, "YYYY-MM-DDThh:mm:ss").format("DD.MM")
         );
       }

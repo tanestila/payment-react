@@ -42,12 +42,13 @@ export const RowAddRole = ({
             value: role.guid,
             label: role.name,
           }))
-          .filter(
-            (x: RoleType) =>
-              !adminRoles.includes(
+          .filter((x: RoleType) => {
+            if (adminRoles)
+              return !adminRoles.includes(
                 adminRoles.filter((y) => y.guid === x.guid)[0]
-              )
-          )
+              );
+            else return true;
+          })
       : [];
   }, [roles, adminRoles]);
 

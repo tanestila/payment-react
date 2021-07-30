@@ -4,7 +4,7 @@ import { Field } from "../../Components/Common/Formik/Field";
 import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { Button } from "antd";
+import { Button, Card, Divider } from "antd";
 import { SuccessModal, ErrorModal, FormLoading } from "../../Components/Common";
 import { adminsAPI } from "../../services/queries/management/users/admins";
 import { parseError } from "../../helpers/parseError";
@@ -14,6 +14,7 @@ import { shopsAPI } from "../../services/queries/management/shops";
 import { terminalsAPI } from "../../services/queries/management/terminals";
 import { gatewaysAPI } from "../../services/queries/management/gateways";
 import { useHistory, useLocation } from "react-router-dom";
+
 export default function TransactionForm({ handleClose }) {
   const [isNeedTransactionId, setIsNeedTransactionId] = useState(false);
   const [isNeedReason, setIsNeedReason] = useState(false);
@@ -76,7 +77,7 @@ export default function TransactionForm({ handleClose }) {
     data: types,
     isLoading: typesIsLoading,
     isFetching: typesIsFetching,
-  } = useQuery(["transaction-types"], () =>
+  } = useQuery(["transaction-types", selected_terminal], () =>
     gatewaysAPI.getGatewayTransactionTypes(
       selected_terminal ? selected_terminal.gateway_guid : undefined
     )
@@ -200,109 +201,135 @@ export default function TransactionForm({ handleClose }) {
     >
       {({ values, isSubmitting, setFieldValue }) => (
         <Form>
-          {isNeedTransactionId && (
-            <>
-              <Row>
-                <Field
-                  name="isChangeTestData"
-                  inputType="checkbox-inverse"
-                  label="Change test data"
-                />
-              </Row>
-              {values.isChangeTestData && (
-                <>
-                  <Field name="first_name" type="text" label="First Name*" />
-                  <Field name="last_name" type="text" label="Last Name*" />
-                  <Field name="country" type="text" label="Country*" />
-                  <Field name="city" type="text" label="City*" />
-                  <Field name="address" type="text" label="Address*" />
-                  <Field name="zip" type="text" label="Zip*" />
-                  <Field name="email" type="text" label="Email*" />
-                  <Field name="ip" type="text" label="IP*" />
-                </>
-              )}
-            </>
-          )}
-          <Field
-            name="shop"
-            label="Shops*"
-            inputType="select"
-            options={modifiedShopsData}
-            isLoading={shopsIsLoading || shopsIsFetching}
-            callback={(value) => {
-              setShop(value);
-              setFieldValue("terminal", null);
-              setFieldValue("type", null);
-            }}
-          />
-          <Field
-            name="terminal"
-            label="terminal*"
-            isLoading={terminalsIsLoading || terminalsIsFetching}
-            inputType="select"
-            options={modifiedTerminalsData}
-            callback={(value) => {
-              setTerminal(value);
-              setFieldValue("type", null);
-              setFieldValue("secret", value.secret);
-              setFieldValue("hash_key", value.hash_key);
-            }}
-          />
-          <Field
-            name="type"
-            inputType="select"
-            isLoading={typesIsLoading || typesIsFetching}
-            label="type*"
-            options={types}
-            callback={(value) => {
-              onSelectType(value);
-            }}
-          />
-          <Field name="amount" inputType="number" label="amount*" />
-          {values.terminal && values.terminal.currency_code
-            ? values.terminal.currency_code
-            : null}
-          <Field name="tracking_id" type="text" label="Transaction id" />
-          {isNeedReason && <Field name="reason" type="text" label="reason" />}
+          <Card>
+            <Row>
+              <Col>
+                {!isNeedTransactionId && (
+                  <>
+                    <Row>
+                      <Field
+                        name="isChangeTestData"
+                        inputType="checkbox-inverse"
+                        label="Change test data"
+                      />
+                    </Row>
+                    {values.isChangeTestData && (
+                      <>
+                        <Field
+                          name="first_name"
+                          type="text"
+                          label="First Name*"
+                        />
+                        <Field
+                          name="last_name"
+                          type="text"
+                          label="Last Name*"
+                        />
+                        <Field name="country" type="text" label="Country*" />
+                        <Field name="city" type="text" label="City*" />
+                        <Field name="address" type="text" label="Address*" />
+                        <Field name="zip" type="text" label="Zip*" />
+                        <Field name="email" type="text" label="Email*" />
+                        <Field name="ip" type="text" label="IP*" />
+                      </>
+                    )}
+                  </>
+                )}
+              </Col>
+              <Col>
+                {!isNeedTransactionId && (
+                  <>
+                    <Row>
+                      <Field
+                        name="isNeedCardData"
+                        inputType="checkbox-inverse"
+                        label="Enter card data"
+                      />
+                    </Row>
+                    {values.isNeedCardData && (
+                      <>
+                        <Field
+                          name="card_number"
+                          type="text"
+                          label="card_number*"
+                        />
+                        <Field
+                          name="name_on_card"
+                          type="text"
+                          label="name on card*"
+                        />
+                        <Field
+                          name="exp_month"
+                          type="text"
+                          label="exp_month*"
+                        />
+                        <Field name="exp_year" type="text" label="exp_year*" />
+                        <Field
+                          name="verification_value"
+                          type="text"
+                          label="verification_value*"
+                        />
+                      </>
+                    )}
+                  </>
+                )}
+              </Col>
+            </Row>
+            <Divider />
+            <Field
+              name="shop"
+              label="Shops*"
+              inputType="select"
+              options={modifiedShopsData}
+              isLoading={shopsIsLoading || shopsIsFetching}
+              callback={(value) => {
+                setShop(value);
+                setFieldValue("terminal", null);
+                setFieldValue("type", null);
+              }}
+            />
+            <Field
+              name="terminal"
+              label="terminal*"
+              isLoading={terminalsIsLoading || terminalsIsFetching}
+              inputType="select"
+              options={modifiedTerminalsData}
+              callback={(value) => {
+                setTerminal(value);
+                setFieldValue("type", null);
+                setFieldValue("secret", value.secret);
+                setFieldValue("hash_key", value.hash_key);
+              }}
+            />
+            <Field
+              name="type"
+              inputType="select"
+              isLoading={typesIsLoading || typesIsFetching}
+              label="type*"
+              options={types}
+              callback={(value) => {
+                onSelectType(value);
+              }}
+            />
+            <Field name="amount" inputType="number" label="amount*" />
+            {values.terminal && values.terminal.currency_code
+              ? values.terminal.currency_code
+              : null}
+            <Field name="tracking_id" type="text" label="Transaction id" />
+            {isNeedReason && <Field name="reason" type="text" label="reason" />}
 
-          <ErrorMessage name="secret" />
-          <ErrorMessage name="hash_key" />
+            <ErrorMessage name="secret" />
+            <ErrorMessage name="hash_key" />
+            <Divider />
 
-          {isNeedTransactionId && (
-            <>
-              <Row>
-                <Field
-                  name="isNeedCardData"
-                  inputType="checkbox-inverse"
-                  label="Enter card data"
-                />
-              </Row>
-              {values.isNeedCardData && (
-                <>
-                  <Field name="card_number" type="text" label="card_number*" />
-                  <Field
-                    name="name_on_card"
-                    type="text"
-                    label="name on card*"
-                  />
-                  <Field name="exp_month" type="text" label="exp_month*" />
-                  <Field name="exp_year" type="text" label="exp_year*" />
-                  <Field
-                    name="verification_value"
-                    type="text"
-                    label="verification_value*"
-                  />
-                </>
-              )}
-            </>
-          )}
-          {isSubmitting ? (
-            <FormLoading />
-          ) : (
-            <Button htmlType="submit" type="primary" className="f-right">
-              Submit
-            </Button>
-          )}
+            {isSubmitting ? (
+              <FormLoading />
+            ) : (
+              <Button htmlType="submit" type="primary" className="f-right">
+                Submit
+              </Button>
+            )}
+          </Card>
         </Form>
       )}
     </Formik>

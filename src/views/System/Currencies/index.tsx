@@ -40,7 +40,7 @@ export default function Currencies() {
           button={<Button type="primary">Create currency</Button>}
           content={Creator}
           header="Create currency"
-          dialogClassName="modal-creator"
+          // dialogClassName="modal-creator"
         />
       }
     />

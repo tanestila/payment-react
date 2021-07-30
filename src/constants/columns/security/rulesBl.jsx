@@ -1,7 +1,8 @@
 import { useMemo } from "react";
+import { DeleteModal } from "../../../Components/Common/DeleteModal";
 import CustomModal from "../../../Components/Common/Modal";
 
-export default function useBacklistRulesColumns(ability) {
+export default function useBacklistRulesColumns(ability, handleDelete) {
   return useMemo(
     () => [
       {
@@ -39,12 +40,17 @@ export default function useBacklistRulesColumns(ability) {
           />
         ),
       },
-      // ability.can("DELETE", "USERMERCHANT") && {
-      //   title: "Delete",
-      //   key: "delete",
-      //   align: "center",
-      //   render: () => <span>delete</span>,
-      // },
+      ability.can("DELETE", "USERADMIN") && {
+        key: "delete",
+        align: "center",
+        render: (text, record) => (
+          <i
+            className="far fa-trash-alt  icon red"
+            style={{ cursor: "pointer" }}
+            onClick={() => DeleteModal(handleDelete, { guid: record.guid })}
+          />
+        ),
+      },
     ],
     [ability]
   );

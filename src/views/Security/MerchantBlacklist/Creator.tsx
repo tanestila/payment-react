@@ -1,32 +1,49 @@
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { Field } from "../../../Components/Common/Formik/Field";
-import { Col, Row } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { rolesAPI } from "../../../services/queries/management/roles";
-import { useCheckEmailExist } from "../../../customHooks/checkEmailExist";
-import { useCheckPhoneExist } from "../../../customHooks/checkPhoneExist";
 import { Button } from "antd";
 import {
   SuccessModal,
   ErrorModal,
   FormLoading,
 } from "../../../Components/Common";
-import { adminsAPI } from "../../../services/queries/management/users/admins";
 import { parseError } from "../../../helpers/parseError";
+import { merchantsAPI } from "../../../services/queries/management/users/merchnats";
+import { blackListRulesAPI } from "../../../services/queries/management/blacklist/rules";
+import { useMemo } from "react";
+import { MerchantBlackListAPI } from "../../../services/queries/management/blacklist/merchant";
 
 export default function Creator({ handleClose }) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation(adminsAPI.addAdmin, {
+  const mutation = useMutation(MerchantBlackListAPI.addMerchantBlacklist, {
     onSuccess: () => {
-      queryClient.invalidateQueries("admins");
+      queryClient.invalidateQueries("merchant-blacklist");
     },
   });
 
-  const { data: merchants } = useQuery(["merchants"], () =>
-    rolesAPI.getRoles({ type: "admin" })
-  );
+  const {
+    data: rules,
+    isLoading: isRulesLoading,
+    isFetching: isRulesFetching,
+  } = useQuery(["rules"], () => blackListRulesAPI.getRules());
+
+  const {
+    data: merchants,
+    isLoading: isMerchantLoading,
+    isFetching: isMerchantFetching,
+  } = useQuery(["merchants"], () => merchantsAPI.getMerchants());
+
+  const modifiedMerchantsData = useMemo(() => {
+    return merchants
+      ? merchants.data.map((mer) => ({
+          ...mer,
+          name: mer.merchant_name,
+          guid: mer.merchant_guid,
+        }))
+      : [];
+  }, [merchants]);
 
   const types = [
     { name: "allow", guid: "allow", label: "allow", value: "allow" },
@@ -50,6 +67,7 @@ export default function Creator({ handleClose }) {
           let data = {
             blacklist_rule_guid: values.blacklist_rule!["guid"],
             type: values.type!["name"],
+            merchant_guid: values.merchant!["merchant_guid"],
           };
           await mutation.mutateAsync(data);
           SuccessModal("Record was created");
@@ -67,14 +85,16 @@ export default function Creator({ handleClose }) {
             name="blacklist_rule"
             label="Rule*"
             inputType="select"
-            options={[]}
+            options={rules?.data}
+            isLoading={isRulesLoading || isRulesFetching}
           />
           <Field name="type" label="Rule*" inputType="select" options={types} />
           <Field
             name="merchant"
             label="Merchant*"
             inputType="select"
-            options={[]}
+            options={modifiedMerchantsData}
+            isLoading={isMerchantLoading || isMerchantFetching}
           />
           {isSubmitting ? (
             <FormLoading />

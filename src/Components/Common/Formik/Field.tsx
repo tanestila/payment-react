@@ -8,7 +8,7 @@ import { FileInput } from "../Inputs/FileInput";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import "bootstrap-daterangepicker/daterangepicker.css";
 import moment from "moment";
-import { DatePicker } from "antd";
+import { DatePicker, Radio } from "antd";
 import { RatesInput } from "../Inputs/RatesInput";
 import { ArrayInput } from "../Inputs/ArrayInput";
 import { AdditionalFeesInput } from "../Inputs/AdditionalFeesInput";
@@ -48,6 +48,7 @@ type CustomInputProps = {
   callback?: Function;
   isLoading?: boolean;
   value?: string;
+  valueLabel?: string;
 };
 
 export const Field: React.FC<CustomInputProps> = ({
@@ -63,6 +64,7 @@ export const Field: React.FC<CustomInputProps> = ({
   precision,
   isLoading,
   value,
+  valueLabel,
   ...props
 }) => {
   const [field, meta, helpers] = useField(props.name);
@@ -72,6 +74,21 @@ export const Field: React.FC<CustomInputProps> = ({
       helpers.setValue(value);
       // helpers.setTouched(true);
       callback && callback(value);
+    },
+    [helpers]
+  );
+
+  const onChangeCallbackRadio = useCallback(
+    (value) => {
+      if (value.currentTarget) {
+        helpers.setValue(value.currentTarget.value);
+        helpers.setTouched(true);
+        callback && callback(value.currentTarget.value);
+      } else {
+        helpers.setValue(value.target.value);
+        helpers.setTouched(true);
+        callback && callback(value.target.value);
+      }
     },
     [helpers]
   );
@@ -254,17 +271,17 @@ export const Field: React.FC<CustomInputProps> = ({
             onChange={(e) => onChangeNumber(e, precision)}
           />
         );
-      case "radio":
-        return (
-          <Form.Control
-            className="form-control ant-input"
-            type="radio"
-            {...field}
-            {...props}
-            value={value}
-            // onChange={(e) => onChangeNumber(e, precision)}
-          />
-        );
+      // case "radio":
+      //   return (
+      //     <Form.Control
+      //       className="form-control ant-input"
+      //       type="radio"
+      //       {...field}
+      //       {...props}
+      //       value={value}
+      //       // onChange={(e) => onChangeNumber(e, precision)}
+      //     />
+      //   );
 
       default:
         return (
@@ -287,6 +304,21 @@ export const Field: React.FC<CustomInputProps> = ({
       >
         {label}
       </Checkbox>
+    );
+  if (inputType === "radio")
+    return (
+      <Row>
+        <Col lg={4} md={4} sm={5} xs={6}>
+          <Form.Label htmlFor={props.id || props.name}>{label}</Form.Label>
+        </Col>
+        <Col>
+          <Radio.Group name="radiogroup" onChange={onChangeCallbackRadio}>
+            {options.map((option) => (
+              <Radio value={option.value}>{option.label}</Radio>
+            ))}
+          </Radio.Group>
+        </Col>
+      </Row>
     );
   if (inputType === "additional-fee")
     return (
